@@ -75,7 +75,7 @@ public interface ServiceManager {
 	
 	List<WebService> getWebServices(String techId, String customerId) throws PhrescoException;
 	
-	List<ModuleGroup> getModules(String techId, String customerId) throws PhrescoException;
+	List<ModuleGroup> getModules(String customerId) throws PhrescoException;
 	
 	ModuleGroup getModule(String moduleId) throws PhrescoException;
 	
@@ -115,11 +115,17 @@ public interface ServiceManager {
 	
 	ClientResponse deletePilotProject(String projectId) throws PhrescoException;
 	
-	List<Role> getRoles(String customerId) throws PhrescoException;
+	List<Role> getRoles() throws PhrescoException;
+	
+	//List<Role> getRoles(String customerId) throws PhrescoException;
 	
 	Role getRole(String roleId) throws PhrescoException;
 
 	ClientResponse createRoles(List<Role> role) throws PhrescoException;
+	
+	void updateRole(Role role, String id) throws PhrescoException;
+	
+	ClientResponse deleteRole(String id) throws PhrescoException;
 	
 	List<DownloadInfo> getDownloads(String customerId) throws PhrescoException;
 	
