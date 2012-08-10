@@ -51,23 +51,23 @@ public interface ServiceManager {
 	
 	ClientResponse createApplicationTypes(List<ApplicationType> appTypes, String customerId) throws PhrescoException;
 	
-	void updateApplicationTypes(ApplicationType appType, String appTypeId, String customerId) throws PhrescoException;
+	void updateApplicationType(ApplicationType appType, String appTypeId, String customerId) throws PhrescoException;
 	
 	ClientResponse deleteApplicationType(String appTypeId, String customerId) throws PhrescoException;
    
 	List<Technology> getArcheTypes(String customerId) throws PhrescoException;
 	
-	Technology getArcheType(String archeTypeId) throws PhrescoException;
+	Technology getArcheType(String archeTypeId, String customerId) throws PhrescoException;
 	
 	ClientResponse createArcheTypes(List<Technology> archeTypes, String customerId) throws PhrescoException;
 	
-	void updateArcheTypes(Technology technology, String archeTypeId) throws PhrescoException;
+	void updateArcheType(Technology technology, String archeTypeId, String customerId) throws PhrescoException;
 	
-	ClientResponse deleteArcheType(String archeTypeId) throws PhrescoException;
+	ClientResponse deleteArcheType(String archeTypeId, String customerId) throws PhrescoException;
 	
 	List<ApplicationType> getApplicationTypes(String customerId) throws PhrescoException;
 	
-	ApplicationType getApplicationType(String appTypeId) throws PhrescoException;
+	ApplicationType getApplicationType(String appTypeId, String customerId) throws PhrescoException;
 	
 	List<Server> getServers(String techId, String customerId) throws PhrescoException;
 	
@@ -77,15 +77,17 @@ public interface ServiceManager {
 	
 	List<ModuleGroup> getModules(String customerId) throws PhrescoException;
 	
-	ModuleGroup getModule(String moduleId) throws PhrescoException;
+	List<ModuleGroup> getJsLibs(String customerId) throws PhrescoException;
 	
-	List<ModuleGroup> getJSLibs(String techId, String customerId) throws PhrescoException;
+	List<ModuleGroup> getFeatures(String customerId) throws PhrescoException;
 	
-	ClientResponse createModules(List<ModuleGroup> modules) throws PhrescoException;
+	ModuleGroup getFeature(String moduleId, String customerId) throws PhrescoException;
 	
-	void updateModuleGroups(ModuleGroup moduleGroup, String moduleId) throws PhrescoException;
+	ClientResponse createFeatures(List<ModuleGroup> modules, String customerId) throws PhrescoException;
 	
-	ClientResponse deleteModule(String moduleId) throws PhrescoException;
+	void updateFeature(ModuleGroup moduleGroup, String moduleId, String customerId) throws PhrescoException;
+	
+	ClientResponse deleteFeature(String moduleId, String customerId) throws PhrescoException;
 	
 	List<Customer> getCustomers() throws PhrescoException;
 	
@@ -103,21 +105,17 @@ public interface ServiceManager {
 	
 	ClientResponse createSettings(List<SettingsTemplate> settings) throws PhrescoException;
 	
-	List<ProjectInfo> getPilotProject(String techId, String customerId) throws PhrescoException;
+	List<ProjectInfo> getPilotProjects(String techId) throws PhrescoException;
 	
-	List<ProjectInfo> getPilots(String techId, String customerId) throws PhrescoException;
+	ProjectInfo getPilotProject(String projectId, String customerId) throws PhrescoException;
 	
-	ProjectInfo getPilotPro(String projectId) throws PhrescoException;
+	ClientResponse createPilotProjects(List<ProjectInfo> proInfo, String customerId) throws PhrescoException;
 	
-	ClientResponse createPilotProject(List<ProjectInfo> proInfo) throws PhrescoException;
+	void updatePilotProject(ProjectInfo projectInfo, String projectId, String customerId) throws PhrescoException;
 	
-	void updatePilotProject(ProjectInfo projectInfo, String projectId) throws PhrescoException;
-	
-	ClientResponse deletePilotProject(String projectId) throws PhrescoException;
+	ClientResponse deletePilotProject(String projectId, String customerId) throws PhrescoException;
 	
 	List<Role> getRoles() throws PhrescoException;
-	
-	//List<Role> getRoles(String customerId) throws PhrescoException;
 	
 	Role getRole(String roleId) throws PhrescoException;
 
@@ -129,13 +127,13 @@ public interface ServiceManager {
 	
 	List<DownloadInfo> getDownloads(String customerId) throws PhrescoException;
 	
-	DownloadInfo getDownload(String id) throws PhrescoException;
+	DownloadInfo getDownload(String id, String customerId) throws PhrescoException;
 	
-	ClientResponse createDownload(List<DownloadInfo> downloadInfo) throws PhrescoException;
+	ClientResponse createDownloads(List<DownloadInfo> downloadInfo, String customerId) throws PhrescoException;
 	
-	void updateDownload(DownloadInfo downloadInfo, String id) throws PhrescoException;
+	void updateDownload(DownloadInfo downloadInfo, String id, String customerId) throws PhrescoException;
 	
-	ClientResponse deleteDownloadInfo(String id) throws PhrescoException;
+	ClientResponse deleteDownloadInfo(String id, String customerId) throws PhrescoException;
 	
 	ClientResponse createProject(ProjectInfo projectInfo) throws PhrescoException;
 }
