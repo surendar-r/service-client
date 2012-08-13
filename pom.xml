@@ -16,6 +16,13 @@
 	
 	<properties>
 	  <jersey-version>1.9-ea07</jersey-version>
+	  <log4j.version>1.2.16</log4j.version>
+	  <junit.version>4.9</junit.version>
+	  <gson.version>1.7.2</gson.version>
+	  <ehcache.version>1.6.1</ehcache.version>
+	  <commons-collections.version>3.2.1</commons-collections.version>
+	  <jersey-multipart.version>1.8</jersey-multipart.version>
+	  <tools-maven-plugin.version>1.1</tools-maven-plugin.version>
 	</properties>
 	
     <distributionManagement>
@@ -57,37 +64,37 @@
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
-            <version>1.2.16</version>
+            <version>${log4j.version}</version>
         </dependency>
         
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.9</version>
+            <version>${junit.version}</version>
         </dependency>
         
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>1.7.2</version>
+            <version>${gson.version}</version>
         </dependency>
         
         <dependency>
 			<groupId>net.sf.ehcache</groupId>
 			<artifactId>ehcache</artifactId>
-			<version>1.6.1</version>
+			<version>${ehcache.version}</version>
 		</dependency>
 		
 		<dependency>
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
-            <version>3.2.1</version>
+            <version>${commons-collections.version}</version>
         </dependency>
             
         <dependency>
 		    <groupId>com.sun.jersey.contribs</groupId>
 		    <artifactId>jersey-multipart</artifactId>
-		    <version>1.8</version>
+		    <version>${jersey-multipart.version}</version>
 		</dependency>
 		
     </dependencies>
@@ -97,7 +104,7 @@
             <plugin>
                 <groupId>org.apache.geronimo.genesis.plugins</groupId>
                 <artifactId>tools-maven-plugin</artifactId>
-                <version>1.1</version>
+                <version>${tools-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>install-legal-files</id>
