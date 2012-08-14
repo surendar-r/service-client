@@ -19,6 +19,7 @@
  */
 package com.photon.phresco.service.client.impl;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +44,7 @@ import com.photon.phresco.model.SettingsTemplate;
 import com.photon.phresco.model.Technology;
 import com.photon.phresco.model.VideoInfo;
 import com.photon.phresco.model.WebService;
+import com.photon.phresco.service.client.api.Content;
 import com.photon.phresco.service.client.api.ServiceClientConstant;
 import com.photon.phresco.service.client.api.ServiceContext;
 import com.photon.phresco.service.client.api.ServiceManager;
@@ -53,6 +55,7 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.multipart.BodyPart;
 import com.sun.jersey.multipart.MultiPart;
 
 @SuppressWarnings("unchecked")
@@ -196,6 +199,16 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         }
         
         return null;
+    }
+    
+    public BodyPart createBodyPart (String name, String jarType, InputStream jarIs ) throws PhrescoException {
+    	BodyPart binaryPart = new BodyPart();
+	    binaryPart.setMediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE);
+	    binaryPart.setEntity(jarIs);
+	    Content content = new Content(jarType, name, null, null, null, 0);
+		binaryPart.setContentDisposition(content);
+
+		return binaryPart;
     }
     
     public ClientResponse createArcheTypes(MultiPart multiPart, String customerId) throws PhrescoException {

@@ -19,6 +19,7 @@
  */
 package com.photon.phresco.service.client.api;
 
+import java.io.InputStream;
 import java.util.List;
 
 import com.photon.phresco.commons.model.Customer;
@@ -37,6 +38,7 @@ import com.photon.phresco.model.VideoInfo;
 import com.photon.phresco.model.WebService;
 import com.photon.phresco.service.client.impl.RestClient;
 import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.multipart.BodyPart;
 import com.sun.jersey.multipart.MultiPart;
 
 /**
@@ -59,6 +61,8 @@ public interface ServiceManager {
 	List<Technology> getArcheTypes(String customerId) throws PhrescoException;
 	
 	Technology getArcheType(String archeTypeId, String customerId) throws PhrescoException;
+	
+	BodyPart createBodyPart( String name, String jarType, InputStream jarIs ) throws PhrescoException;
 	
 	ClientResponse createArcheTypes(MultiPart multiPart, String customerId) throws PhrescoException;
 	
