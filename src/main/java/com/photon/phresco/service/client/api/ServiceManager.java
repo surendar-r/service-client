@@ -37,6 +37,7 @@ import com.photon.phresco.model.VideoInfo;
 import com.photon.phresco.model.WebService;
 import com.photon.phresco.service.client.impl.RestClient;
 import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.multipart.MultiPart;
 
 /**
  * Interface for making service calls to Phresco Framework
@@ -59,7 +60,7 @@ public interface ServiceManager {
 	
 	Technology getArcheType(String archeTypeId, String customerId) throws PhrescoException;
 	
-	ClientResponse createArcheTypes(List<Technology> archeTypes, String customerId) throws PhrescoException;
+	ClientResponse createArcheTypes(MultiPart multiPart, String customerId) throws PhrescoException;
 	
 	void updateArcheType(Technology technology, String archeTypeId, String customerId) throws PhrescoException;
 	

@@ -53,6 +53,7 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.multipart.MultiPart;
 
 @SuppressWarnings("unchecked")
 public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant, ServiceConstants, Constants {
@@ -197,13 +198,13 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         return null;
     }
     
-    public ClientResponse createArcheTypes(List<Technology> archeTypes, String customerId) throws PhrescoException {
+    public ClientResponse createArcheTypes(MultiPart multiPart, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.createArcheTypes(List<Technology> archeTypes, String customerId)");
         }
         
     	RestClient<Technology> newApp = getRestClient(REST_API_COMPONENT + REST_API_TECHNOLOGIES);
-		ClientResponse clientResponse = newApp.create(archeTypes);
+		ClientResponse clientResponse = newApp.create(multiPart);
 		CacheKey key = new CacheKey(customerId, CACHE_ARCHETYPES_KEY);
 		manager.add(key, getArcheTypesFromServer(customerId));
 		
