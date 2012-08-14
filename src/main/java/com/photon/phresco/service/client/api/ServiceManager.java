@@ -25,6 +25,7 @@ import java.util.List;
 import com.photon.phresco.commons.model.Customer;
 import com.photon.phresco.commons.model.Role;
 import com.photon.phresco.commons.model.User;
+import com.photon.phresco.configuration.Environment;
 import com.photon.phresco.exception.PhrescoException;
 import com.photon.phresco.model.ApplicationType;
 import com.photon.phresco.model.Database;
@@ -141,4 +142,6 @@ public interface ServiceManager {
 	ClientResponse deleteDownloadInfo(String id, String customerId) throws PhrescoException;
 	
 	ClientResponse createProject(ProjectInfo projectInfo) throws PhrescoException;
+	
+	List<Environment> getDefaultEnvFromServer() throws PhrescoException;
 }
