@@ -105,11 +105,15 @@ public interface ServiceManager {
 	
 	ClientResponse deleteCustomer(String customerId) throws PhrescoException;
 	
-	List<SettingsTemplate> getSettings() throws PhrescoException;
+	List<SettingsTemplate> getconfigTemplates(String customerId) throws PhrescoException;
 	
-	SettingsTemplate getSettings(String settingsId) throws PhrescoException;
+	SettingsTemplate getConfigTemplate(String configId, String customerId) throws PhrescoException;
 	
-	ClientResponse createSettings(List<SettingsTemplate> settings) throws PhrescoException;
+	ClientResponse createConfigTemplates(List<SettingsTemplate> settings, String customerId) throws PhrescoException;
+	
+	void updateConfigTemp(SettingsTemplate settingTemp, String configId, String customerId) throws PhrescoException;
+	
+	ClientResponse deleteConfigTemp(String id, String customerId) throws PhrescoException;
 	
 	List<ProjectInfo> getPilotProjects(String techId) throws PhrescoException;
 	

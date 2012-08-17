@@ -679,37 +679,94 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         return response;
     }
     
-    public List<SettingsTemplate> getSettings() throws PhrescoException {
-        if (isDebugEnabled) {
-            S_LOGGER.debug("Entered into ServiceManagerImpl.getSettings()");
+    private List<SettingsTemplate> getConfigTemplatesFromServer(String customerId) throws PhrescoException {
+    	if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getConfigTemplatesFromServer(String customerId)" + customerId);
         }
-        
-        RestClient<SettingsTemplate> settingClient = getRestClient(REST_API_COMPONENT + REST_API_SETTINGS);
+    	
+    	RestClient<SettingsTemplate> settingClient = getRestClient(REST_API_COMPONENT + REST_API_SETTINGS);
+    	settingClient.queryString(REST_QUERY_CUSTOMERID, customerId);
         GenericType<List<SettingsTemplate>> genericType = new GenericType<List<SettingsTemplate>>(){};
         
         return settingClient.get(genericType);
+    	
     }
     
-    public SettingsTemplate getSettings(String settingsId) throws PhrescoException {
-        if (isDebugEnabled) {
-            S_LOGGER.debug("Entered into ServiceManagerImpl.getSettings(String settingsId)" + settingsId);
-        }
-        
-        RestClient<SettingsTemplate> settingClient = getRestClient(REST_API_COMPONENT + REST_API_SETTINGS);
-        settingClient.setPath(settingsId);
-        GenericType<SettingsTemplate> genericType = new GenericType<SettingsTemplate>(){};
-        
-        return settingClient.getById(genericType);
+    public List<SettingsTemplate> getconfigTemplates(String customerId) throws PhrescoException {
+    	if (isDebugEnabled) {
+    		S_LOGGER.debug("Enetered into ServiceManagerImpl.getconfigTemplates(String customerId)");
+    	}
+
+    	CacheKey key = new CacheKey(customerId, SettingsTemplate.class.getName());
+    	List<SettingsTemplate> configTemplates = (List<SettingsTemplate>) manager.get(key);
+		if (CollectionUtils.isEmpty(configTemplates)) {
+			configTemplates = getConfigTemplatesFromServer(customerId);
+			manager.add(key, configTemplates);
+		}
+    	
+    	return configTemplates;
     }
     
-    public ClientResponse createSettings(List<SettingsTemplate> settings) throws PhrescoException {
+    public ClientResponse createConfigTemplates(List<SettingsTemplate> settings, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
-            S_LOGGER.debug("Entered into ServiceManagerImpl.createSettings(List<SettingTemplate> settings)");
+            S_LOGGER.debug("Entered into ServiceManagerImpl.createConfigTemplates(List<SettingTemplate> settings, String customerId)");
         }
         
         RestClient<SettingsTemplate> settingsClient = getRestClient(REST_API_COMPONENT + REST_API_SETTINGS);
+        ClientResponse clientResponse = settingsClient.create(settings);
+        CacheKey key = new CacheKey(customerId, SettingsTemplate.class.getName());
+    	manager.add(key, getConfigTemplatesFromServer(customerId));
         
-        return settingsClient.create(settings);
+        return clientResponse ;
+    }
+    
+    public SettingsTemplate getConfigTemplate(String configId, String customerId) throws PhrescoException {
+    	if (isDebugEnabled) {
+    		S_LOGGER.debug("Entered into ServiceManagerImpl.getConfigTemplate(String configId, String customerId)");
+    	}
+    	
+    	CacheKey key = new CacheKey(customerId, SettingsTemplate.class.getName());
+    	List<SettingsTemplate> configTemps = (List<SettingsTemplate>) manager.get(key);
+    	if (CollectionUtils.isEmpty(configTemps)) {
+    		configTemps = getConfigTemplatesFromServer(customerId);
+			manager.add(key, configTemps);
+    	}
+    	if (CollectionUtils.isNotEmpty(configTemps)) {
+    		for (SettingsTemplate configTemp : configTemps) {
+				if (configTemp.getId().equals(configId)) {
+					return configTemp;
+				}
+			}
+    	}
+    	
+    	return null;
+    }
+    
+    public void updateConfigTemp(SettingsTemplate settingTemp, String configId, String customerId) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.updateConfigTemp(String configId, String customerId)");
+        }
+    	
+    	RestClient<SettingsTemplate> editConfigTemp = getRestClient(REST_API_COMPONENT + REST_API_SETTINGS);
+    	editConfigTemp.setPath(configId);
+		GenericType<SettingsTemplate> genericType = new GenericType<SettingsTemplate>() {};
+		editConfigTemp.updateById(settingTemp, genericType);
+		CacheKey key = new CacheKey(customerId, SettingsTemplate.class.getName());
+		manager.add(key, getConfigTemplatesFromServer(customerId));
+    }
+    
+    public ClientResponse deleteConfigTemp(String id, String customerId) throws PhrescoException {
+    	if (isDebugEnabled) {
+    		S_LOGGER.debug("Entered into ServiceManagerImpl.deleteConfigTemp(String id, String customerId)");
+    	}
+
+    	RestClient<SettingsTemplate> configTempClient = getRestClient(REST_API_COMPONENT + REST_API_SETTINGS);
+    	configTempClient.setPath(id);
+    	ClientResponse response = configTempClient.deleteById();
+    	CacheKey key = new CacheKey(customerId, SettingsTemplate.class.getName());
+    	manager.add(key, getConfigTemplatesFromServer(customerId));
+    	
+    	return response;
     }
     
     private List<ProjectInfo> getPilotProjectsFromServer(String customerId) throws PhrescoException {
