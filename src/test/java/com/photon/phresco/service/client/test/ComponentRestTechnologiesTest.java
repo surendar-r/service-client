@@ -19,14 +19,22 @@
  */
 package com.photon.phresco.service.client.test;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.core.MediaType;
+
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Test;
 
 import com.photon.phresco.exception.PhrescoException;
 import com.photon.phresco.model.Technology;
+import com.photon.phresco.service.client.api.Content;
 import com.photon.phresco.service.client.api.ServiceClientConstant;
 import com.photon.phresco.service.client.api.ServiceContext;
 import com.photon.phresco.service.client.api.ServiceManager;
@@ -34,6 +42,8 @@ import com.photon.phresco.service.client.factory.ServiceClientFactory;
 import com.photon.phresco.service.client.impl.RestClient;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.GenericType;
+import com.sun.jersey.multipart.BodyPart;
+import com.sun.jersey.multipart.MultiPart;
 
 public class ComponentRestTechnologiesTest {
 	
@@ -46,7 +56,7 @@ public class ComponentRestTechnologiesTest {
 	@Before
 	public void Initilaization() {
 		context = new ServiceContext();
-        context.put(ServiceClientConstant.SERVICE_URL, "http://localhost:3030/service/rest/api");
+        context.put(ServiceClientConstant.SERVICE_URL, "http://localhost:8080/service/rest/api");
         context.put(ServiceClientConstant.SERVICE_USERNAME, "demouser");
         context.put(ServiceClientConstant.SERVICE_PASSWORD, "phresco");
 	}
@@ -80,7 +90,7 @@ public class ComponentRestTechnologiesTest {
 		techs.add(tech3);
     	
 		serviceManager = ServiceClientFactory.getServiceManager(context);
-		RestClient<Technology> techClient = serviceManager.getRestClient("/component/technologies");
+		RestClient<Technology> techClient = serviceManager.getRestClient("/components/technologies");
 		ClientResponse response = techClient.create(techs);
 		System.out.println("response " + response.getStatus());
     }
@@ -167,5 +177,40 @@ public class ComponentRestTechnologiesTest {
     	System.out.println(response.getStatus());
     }
 	
-	
+	@Test
+	public void createTest() throws FileNotFoundException, PhrescoException {
+	    MultiPart multiPart = new MultiPart();
+	    
+	    Technology technology = new Technology("drup", "sample tech", null, null);
+        technology.setCustomerId("photon");
+        
+        BodyPart jsonPart = new BodyPart();
+        jsonPart.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+        jsonPart.setEntity(technology);
+        Content content = new Content("plugin", "drup", null, null, null, 0);
+        jsonPart.setContentDisposition(content);
+        multiPart.bodyPart(jsonPart);
+               
+        BodyPart binaryPart = new BodyPart();
+        binaryPart.setMediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE);
+        InputStream fis  = new FileInputStream(new File("d://Temp/drupal-maven-plugin-2.0.0.6001-SNAPSHOT.jar"));
+        binaryPart.setEntity(fis);
+        content = new Content("plugin", "drup", null, null, null, 0);
+        binaryPart.setContentDisposition(content);
+        multiPart.bodyPart(binaryPart);
+
+        BodyPart binaryPart2 = new BodyPart();
+        binaryPart2.setMediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE);
+        fis  = new FileInputStream(new File("d://Temp/phresco-drupal7-archetype-1.2.0.9000.jar"));
+        binaryPart2.setEntity(fis);
+        content = new Content("appType", "drup", null, null, null, 0);
+        binaryPart2.setContentDisposition(content);
+        multiPart.bodyPart(binaryPart2);
+        
+        serviceManager = ServiceClientFactory.getServiceManager(context);            
+        RestClient<Technology> techClient = serviceManager.getRestClient("/components/technologies");
+        techClient.queryString("appId", "web-app");
+        ClientResponse create = techClient.create(multiPart);
+        System.out.println(create.getStatus());
+	}
 }

@@ -15,7 +15,7 @@
     <name>Phresco Service Client</name>
 	
 	<properties>
-	  <jersey-version>1.9-ea07</jersey-version>
+	  <jersey-version>1.8</jersey-version>
 	  <log4j.version>1.2.16</log4j.version>
 	  <junit.version>4.9</junit.version>
 	  <gson.version>1.7.2</gson.version>
