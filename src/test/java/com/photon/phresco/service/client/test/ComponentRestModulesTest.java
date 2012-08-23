@@ -23,7 +23,9 @@ package com.photon.phresco.service.client.test;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -61,7 +63,7 @@ public class ComponentRestModulesTest implements ServiceConstants{
 		moduleGroup.setName("TestModuleone");
 		moduleGroup.setCustomerId("photon");
 		moduleGroup.setTechId("php");
-		moduleGroup.setType("test"); 
+		moduleGroup.setType("module"); 
 		modules.add(moduleGroup);
         RestClient<ModuleGroup> newApp = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
         ClientResponse clientResponse = newApp.create(modules);
@@ -71,9 +73,11 @@ public class ComponentRestModulesTest implements ServiceConstants{
 	@Test
     public void testGetModules() throws PhrescoException {
     	RestClient<ModuleGroup> moduleGroupClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
-    	moduleGroupClient.queryString(REST_QUERY_TYPE, "test");
-    	moduleGroupClient.queryString(REST_QUERY_TECHID, "drupal");
-    	moduleGroupClient.queryString(REST_QUERY_CUSTOMERID, "photon");
+    	Map<String, String> query = new HashMap<String, String>();
+    	query.put(REST_QUERY_TYPE, "module");
+    	query.put(REST_QUERY_TECHID, "drupal");
+    	query.put(REST_QUERY_CUSTOMERID, "photon");
+    	moduleGroupClient.queryStrings(query);
 		GenericType<List<ModuleGroup>> genericType = new GenericType<List<ModuleGroup>>(){};
 		List<ModuleGroup> modules = moduleGroupClient.get(genericType);
 		assertNotNull(modules);

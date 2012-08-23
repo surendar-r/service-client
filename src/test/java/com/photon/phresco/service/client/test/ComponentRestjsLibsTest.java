@@ -20,12 +20,15 @@
 
 package com.photon.phresco.service.client.test;
 
+import static org.junit.Assert.assertNotNull;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.Test;
 
 import com.photon.phresco.exception.PhrescoException;
 import com.photon.phresco.model.ModuleGroup;
@@ -35,6 +38,7 @@ import com.photon.phresco.service.client.api.ServiceManager;
 import com.photon.phresco.service.client.factory.ServiceClientFactory;
 import com.photon.phresco.service.client.impl.RestClient;
 import com.photon.phresco.util.ServiceConstants;
+import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.GenericType;
 
 public class ComponentRestjsLibsTest implements ServiceConstants {
@@ -51,21 +55,82 @@ public class ComponentRestjsLibsTest implements ServiceConstants {
         serviceManager = ServiceClientFactory.getServiceManager(context);
 	}
 	
-	@Ignore
-	public void getJSLibs() throws PhrescoException {
-		String techId = "tech-php";
-    	RestClient<ModuleGroup> jsLibClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_JSBYID);
-    	Map<String, String> headers = new HashMap<String, String>();
-        headers.put(REST_QUERY_TECHID, techId);
-        headers.put(REST_QUERY_TYPE, REST_QUERY_TYPE_JS);
-        jsLibClient.queryStrings(headers);
-    	GenericType<List<ModuleGroup>> genericType = new GenericType<List<ModuleGroup>>(){};
-    	List<ModuleGroup> jsLibs = jsLibClient.get(genericType);
-    	System.out.println("jsLibs.size():" + jsLibs.size());
-    	if (jsLibs != null) {
-    		for (ModuleGroup jsLib : jsLibs) {
-				System.out.println("jsLib.getModuleId():" + jsLib.getModuleId());
-			}
-    	}
+	@Test
+	public void testCreatejsLibs() throws PhrescoException {
+		List<ModuleGroup> modules=new ArrayList<ModuleGroup>();
+		ModuleGroup moduleGroup = new ModuleGroup();
+		moduleGroup.setId("test-jsLibs");
+		moduleGroup.setName("TestjsLibsone");
+		moduleGroup.setCustomerId("photon");
+		moduleGroup.setTechId("php");
+		moduleGroup.setGroupId("phresco");
+		moduleGroup.setType("Js"); 
+		modules.add(moduleGroup);
+        RestClient<ModuleGroup> newApp = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
+        ClientResponse clientResponse = newApp.create(modules);
+        assertNotNull(clientResponse);    
+	}
+	
+	@Test
+    public void testGetjsLibs() throws PhrescoException {
+    	RestClient<ModuleGroup> moduleGroupClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
+    	Map<String, String> query = new HashMap<String, String>();
+    	query.put(REST_QUERY_TYPE, "Js");
+    	query.put(REST_QUERY_TECHID, "drupal");
+    	query.put(REST_QUERY_CUSTOMERID, "photon");
+    	moduleGroupClient.queryStrings(query);
+		GenericType<List<ModuleGroup>> genericType = new GenericType<List<ModuleGroup>>(){};
+		List<ModuleGroup> modules = moduleGroupClient.get(genericType);
+		assertNotNull(modules);
+    }
+	
+	@Test
+	public void testUpdatejsLibs() throws PhrescoException{
+		RestClient<ModuleGroup> moduleGroupClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
+	    List<ModuleGroup> ModuleGroups = new ArrayList<ModuleGroup>();
+	    ModuleGroup moduleGroup = new ModuleGroup();
+	    moduleGroup.setId("test-jsLibs");
+		moduleGroup.setName("TestjsLibsUpdate");
+		moduleGroup.setCustomerId("phresco");
+		moduleGroup.setTechId("php");
+		moduleGroup.setType("Js");
+		ModuleGroups.add(moduleGroup);
+	    GenericType<List<ModuleGroup>> genericType = new GenericType<List<ModuleGroup>>() {};
+	    List<ModuleGroup> modules = moduleGroupClient.update(ModuleGroups, genericType);
+	    assertNotNull(modules);
+	}
+	
+	@Test
+    public void testGetjsLibsById() throws PhrescoException {
+		String id= "test-jsLibs" ;
+    	RestClient<ModuleGroup> moduleGroupClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
+		GenericType<ModuleGroup> genericType = new GenericType<ModuleGroup>(){};
+		moduleGroupClient.setPath(id);
+		ModuleGroup module = moduleGroupClient.getById(genericType);
+        assertNotNull(module);
+	}
+	
+	@Test
+	public void testUpdatejsLibsById() throws PhrescoException {
+		String moduleId="test-jsLibs";
+        ModuleGroup module = new ModuleGroup();
+        module.setId("test-module");
+        module.setName("Test-moduleUpdateById");
+        module.setCustomerId("photon");
+        RestClient<ModuleGroup> moduleGroupClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
+        moduleGroupClient.setPath(moduleId);
+        GenericType<ModuleGroup> genericType = new GenericType<ModuleGroup>() {};
+        ModuleGroup modules = moduleGroupClient.updateById(module, genericType);
+        assertNotNull(modules);
+	}
+	
+	@Test
+	public void testDeletejsLibsById() throws PhrescoException {
+		String id="test-jsLibs";
+        RestClient<ModuleGroup> moduleGroupClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
+        moduleGroupClient.setPath(id);
+        ClientResponse clientResponse = moduleGroupClient.deleteById();
+        assertNotNull(clientResponse);
+        
     }
 }
