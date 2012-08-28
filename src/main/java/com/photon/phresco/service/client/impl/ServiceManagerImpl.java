@@ -38,6 +38,7 @@ import com.photon.phresco.exception.PhrescoException;
 import com.photon.phresco.model.ApplicationType;
 import com.photon.phresco.model.Database;
 import com.photon.phresco.model.DownloadInfo;
+import com.photon.phresco.model.GlobalURL;
 import com.photon.phresco.model.ModuleGroup;
 import com.photon.phresco.model.ProjectInfo;
 import com.photon.phresco.model.Server;
@@ -1067,5 +1068,97 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		GenericType<List<Environment>> genericType = new GenericType<List<Environment>>(){};
 		
 		return envClient.get(genericType);
+    }
+    
+    private List<GlobalURL> getGlobalUrlFromServer(String customerId) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getGlobalUrlFromServer(String customerId)");
+        }
+    	
+    	RestClient<GlobalURL> globalUrlClient = getRestClient(REST_API_ADMIN + REST_API_GLOBALURL);
+		GenericType<List<GlobalURL>> genericType = new GenericType<List<GlobalURL>>(){};
+		
+		return globalUrlClient.get(genericType);
+    }
+
+    public List<GlobalURL> getGlobalUrls(String customerId) throws PhrescoException {
+    	if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getGlobalUrls(List<GlobalURL> globalUrl)");
+        }
+    	
+    	CacheKey key = new CacheKey(GlobalURL.class.getName());
+     	List<GlobalURL> globalUrls = (List<GlobalURL>) manager.get(key);
+    	try {	
+    		if (CollectionUtils.isEmpty(globalUrls)) {
+    			globalUrls = getGlobalUrlFromServer(customerId);
+    			manager.add(key, globalUrls);
+    		}
+    	} catch(Exception e){
+    		throw new PhrescoException(e);
+    	}
+    	
+    	return globalUrls;
+    }
+    
+    public GlobalURL getGlobalUrl(String globalUrlId, String customerId) throws PhrescoException {
+    	if(isDebugEnabled){
+    		S_LOGGER.debug("Entered into ServiceManagerImpl.getGlobalUrl(String globalUrlId, String customerId)");
+    	}
+    	
+    	CacheKey key = new CacheKey(GlobalURL.class.getName());
+    	List<GlobalURL> globalUrls = (List<GlobalURL>) manager.get(key);
+    	if (CollectionUtils.isEmpty(globalUrls)) {
+    		globalUrls = getGlobalUrlFromServer(customerId);
+			manager.add(key, globalUrls);
+    	}
+    	if (CollectionUtils.isNotEmpty(globalUrls)) {
+    		for (GlobalURL globalUrl : globalUrls) {
+				if (globalUrl.getId().equals(globalUrlId)) {
+					return globalUrl;
+				}
+			}
+    	}
+    	
+    	return null;
+    }
+    
+    public ClientResponse createGlobalUrl(List<GlobalURL> globalUrl, String customerId) throws PhrescoException {
+    	if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.createGlobalUrl(List<GlobalURL> globalUrl)");
+        }
+    	
+    	RestClient<GlobalURL> globalClient = getRestClient(REST_API_ADMIN + REST_API_GLOBALURL);
+    	ClientResponse response = globalClient.create(globalUrl);
+    	CacheKey key = new CacheKey(GlobalURL.class.getName());
+    	manager.add(key, getGlobalUrlFromServer(customerId));
+    	
+    	return response;
+    }
+    
+    public void updateGlobalUrl(GlobalURL globalUrl, String globalurlId, String customerId) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.updateGlobalUrl(GlobalURL globalUrl, String globalurlId, String customerId)");
+        }
+    	
+    	RestClient<GlobalURL> editGlobalUrl = getRestClient(REST_API_COMPONENT + REST_API_GLOBALURL);
+    	editGlobalUrl.setPath(globalurlId);
+		GenericType<GlobalURL> genericType = new GenericType<GlobalURL>() {};
+		editGlobalUrl.updateById(globalUrl, genericType);
+		CacheKey key = new CacheKey(customerId, GlobalURL.class.getName());
+		manager.add(key, getGlobalUrlFromServer(customerId));
+    }
+    
+    public ClientResponse deleteglobalUrl(String globalurlId, String customerId) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.deleteglobalUrl(String globalurlId, String customerId)");
+        }
+
+        RestClient<GlobalURL> globalUrlClient = getRestClient(REST_API_ADMIN + REST_API_GLOBALURL);
+        globalUrlClient.setPath(globalurlId);
+        ClientResponse response = globalUrlClient.deleteById();
+        CacheKey key = new CacheKey(GlobalURL.class.getName());
+        manager.add(key, getGlobalUrlFromServer(customerId));
+
+        return response;
     }
 }

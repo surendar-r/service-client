@@ -30,6 +30,7 @@ import com.photon.phresco.exception.PhrescoException;
 import com.photon.phresco.model.ApplicationType;
 import com.photon.phresco.model.Database;
 import com.photon.phresco.model.DownloadInfo;
+import com.photon.phresco.model.GlobalURL;
 import com.photon.phresco.model.ModuleGroup;
 import com.photon.phresco.model.ProjectInfo;
 import com.photon.phresco.model.Server;
@@ -148,4 +149,14 @@ public interface ServiceManager {
 	ClientResponse createProject(ProjectInfo projectInfo) throws PhrescoException;
 	
 	List<Environment> getDefaultEnvFromServer() throws PhrescoException;
+	
+	List<GlobalURL> getGlobalUrls(String customerId) throws PhrescoException;
+	
+	GlobalURL getGlobalUrl(String globalUrlId, String customerId) throws PhrescoException;
+	
+	ClientResponse createGlobalUrl(List<GlobalURL> globalUrl, String customerId) throws PhrescoException;
+	
+	ClientResponse deleteglobalUrl(String globalurlId, String customerId) throws PhrescoException;
+	
+	void updateGlobalUrl(GlobalURL globalUrl, String globalurlId, String customerId) throws PhrescoException;
 }
