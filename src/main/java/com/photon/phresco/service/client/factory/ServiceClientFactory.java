@@ -29,7 +29,7 @@ import com.photon.phresco.service.client.api.ServiceContext;
 import com.photon.phresco.service.client.api.ServiceManager;
 import com.photon.phresco.service.client.impl.ServiceManagerImpl;
 
-public class ServiceClientFactory implements ServiceClientConstant {
+public final class ServiceClientFactory implements ServiceClientConstant {
 	
 	private static final Map<User, ServiceManager> CONTEXT_MANAGER_MAP = new HashMap<User, ServiceManager>();
 	
@@ -37,7 +37,7 @@ public class ServiceClientFactory implements ServiceClientConstant {
 
  	}
  	
-	public static final ServiceManager getServiceManager(ServiceContext context) throws PhrescoException {
+	public static ServiceManager getServiceManager(ServiceContext context) throws PhrescoException {
 		ServiceManager serviceManager = CONTEXT_MANAGER_MAP.get(context);
 		if (serviceManager == null) {
 			serviceManager = new ServiceManagerImpl(context);

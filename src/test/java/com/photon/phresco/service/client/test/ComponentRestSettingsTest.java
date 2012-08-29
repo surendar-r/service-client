@@ -1,23 +1,20 @@
 package com.photon.phresco.service.client.test;
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.photon.phresco.exception.PhrescoException;
-import com.photon.phresco.model.Database;
-import com.photon.phresco.model.ProjectInfo;
 import com.photon.phresco.model.SettingsTemplate;
 import com.photon.phresco.service.client.api.ServiceClientConstant;
 import com.photon.phresco.service.client.api.ServiceContext;
 import com.photon.phresco.service.client.api.ServiceManager;
 import com.photon.phresco.service.client.factory.ServiceClientFactory;
 import com.photon.phresco.service.client.impl.RestClient;
+import com.photon.phresco.service.client.util.RestUtil;
 import com.photon.phresco.util.ServiceConstants;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.GenericType;
@@ -30,7 +27,7 @@ public class ComponentRestSettingsTest implements ServiceConstants {
 	@Before
 	public void Initilaization() throws PhrescoException {
 		context = new ServiceContext();
-        context.put(ServiceClientConstant.SERVICE_URL, "http://localhost:3030/service/rest/api");
+        context.put(ServiceClientConstant.SERVICE_URL, RestUtil.getServerPath());
         context.put(ServiceClientConstant.SERVICE_USERNAME, "demouser");
         context.put(ServiceClientConstant.SERVICE_PASSWORD, "phresco");
         serviceManager = ServiceClientFactory.getServiceManager(context);

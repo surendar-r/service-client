@@ -15,6 +15,7 @@ import com.photon.phresco.service.client.api.ServiceContext;
 import com.photon.phresco.service.client.api.ServiceManager;
 import com.photon.phresco.service.client.factory.ServiceClientFactory;
 import com.photon.phresco.service.client.impl.RestClient;
+import com.photon.phresco.service.client.util.RestUtil;
 import com.photon.phresco.util.ServiceConstants;
 import com.sun.jersey.api.client.ClientResponse;
 
@@ -26,7 +27,7 @@ public class RestProjectCreationTest implements ServiceConstants {
     @Before
     public void Initilaization() throws PhrescoException {
         context = new ServiceContext();
-        context.put(ServiceClientConstant.SERVICE_URL, "http://localhost:3030/service/rest/api");
+        context.put(ServiceClientConstant.SERVICE_URL, RestUtil.getServerPath());
         context.put(ServiceClientConstant.SERVICE_USERNAME, "demouser");
         context.put(ServiceClientConstant.SERVICE_PASSWORD, "phresco");
         serviceManager = ServiceClientFactory.getServiceManager(context);

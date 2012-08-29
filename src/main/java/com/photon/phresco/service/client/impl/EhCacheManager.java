@@ -29,15 +29,15 @@ public class EhCacheManager {
 	/**
 	 * The CacheManager provides us access to individual Cache instances
 	 */
-	private static final CacheManager cacheManager = CacheManager.getInstance();
+	private static final CacheManager CACHE_MANAGER = CacheManager.getInstance();
 
 	private Cache cache;
 	
-	private String CACHE_CONFIG = "cacheConfig";
+	private static final String CACHE_CONFIG = "cacheConfig";
 	
 	public EhCacheManager() {
 		// Load cache:
-		cache = cacheManager.getCache(CACHE_CONFIG);
+		cache = CACHE_MANAGER.getCache(CACHE_CONFIG);
 	}
 
 	public void add(CacheKey id, Object obj) {

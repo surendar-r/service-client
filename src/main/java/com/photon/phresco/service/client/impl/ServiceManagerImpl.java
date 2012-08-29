@@ -68,11 +68,11 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     private EhCacheManager manager;
     
     private String serverPath = null;
-    User userInfo = null;
+    private static User userInfo = null;
     
-    private String CACHE_FEATURES_KEY = "features";
-    private String CACHE_MODULES_KEY = "modules";
-    private String CACHE_JSLIBS_KEY = "jsLibs";
+    private static final String CACHE_FEATURES_KEY = "features";
+    private static final String CACHE_MODULES_KEY = "modules";
+    private static final String CACHE_JSLIBS_KEY = "jsLibs";
 
 	public ServiceManagerImpl(String serverPath) throws PhrescoException {
     	super();
@@ -956,8 +956,27 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	CacheKey key = new CacheKey(Role.class.getName());
     	manager.add(key, getRolesFromServer());
     }
-
-    private List<DownloadInfo> getDownloadsFromServer(String customerId) throws PhrescoException {
+    
+    public List<DownloadInfo> getDownloads(String customerId) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getDownloadInfo(List<DownloadInfo> downloadInfo)");
+        }
+        
+        CacheKey key = new CacheKey(DownloadInfo.class.getName());
+        List<DownloadInfo> downloadInfos = (List<DownloadInfo>) manager.get(key);
+        try {   
+            if (CollectionUtils.isEmpty(downloadInfos)) {
+                downloadInfos = getDownloadsFromServer();
+                manager.add(key, downloadInfos);
+            }
+        } catch(Exception e){
+            throw new PhrescoException(e);
+        }
+        
+        return downloadInfos;
+    }
+    
+    private List<DownloadInfo> getDownloadsFromServer() throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getDownloadInfosFromServer()");
         }
@@ -968,24 +987,6 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		return downloadClient.get(genericType);
     }
 
-    public List<DownloadInfo> getDownloads(String customerId) throws PhrescoException {
-    	if (isDebugEnabled) {
-            S_LOGGER.debug("Entered into ServiceManagerImpl.getDownloadInfo(List<DownloadInfo> downloadInfo)");
-        }
-    	
-    	CacheKey key = new CacheKey(DownloadInfo.class.getName());
-     	List<DownloadInfo> downloadInfos = (List<DownloadInfo>) manager.get(key);
-    	try {	
-    		if (CollectionUtils.isEmpty(downloadInfos)) {
-    			downloadInfos = getDownloadsFromServer(customerId);
-    			manager.add(key, downloadInfos);
-    		}
-    	} catch(Exception e){
-    		throw new PhrescoException(e);
-    	}
-    	
-    	return downloadInfos;
-    }
     
     public DownloadInfo getDownload(String downloadId, String customerId) throws PhrescoException {
     	if(isDebugEnabled){
@@ -995,7 +996,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	CacheKey key = new CacheKey(DownloadInfo.class.getName());
     	List<DownloadInfo> downloadInfos = (List<DownloadInfo>) manager.get(key);
     	if (CollectionUtils.isEmpty(downloadInfos)) {
-    		downloadInfos = getDownloadsFromServer(customerId);
+    		downloadInfos = getDownloadsFromServer();
 			manager.add(key, downloadInfos);
     	}
     	if (CollectionUtils.isNotEmpty(downloadInfos)) {
@@ -1017,7 +1018,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	RestClient<DownloadInfo> downloadClient = getRestClient(REST_API_ADMIN + REST_API_DOWNLOADS);
     	ClientResponse response = downloadClient.create(downloadInfo);
     	CacheKey key = new CacheKey(DownloadInfo.class.getName());
-    	manager.add(key, getDownloadsFromServer(customerId));
+    	manager.add(key, getDownloadsFromServer());
     	
     	return response;
     }
@@ -1032,7 +1033,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         GenericType<DownloadInfo> genericType = new GenericType<DownloadInfo>() {};
         downloadClient.updateById(downloadInfo, genericType);
         CacheKey key = new CacheKey(DownloadInfo.class.getName());
-        manager.add(key, getDownloadsFromServer(customerId));
+        manager.add(key, getDownloadsFromServer());
     }
 
     public ClientResponse deleteDownloadInfo(String downloadId, String customerId) throws PhrescoException {
@@ -1044,7 +1045,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         downloadClient.setPath(downloadId);
         ClientResponse response = downloadClient.deleteById();
         CacheKey key = new CacheKey(DownloadInfo.class.getName());
-        manager.add(key, getDownloadsFromServer(customerId));
+        manager.add(key, getDownloadsFromServer());
 
         return response;
     }

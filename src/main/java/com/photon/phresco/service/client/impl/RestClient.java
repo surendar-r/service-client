@@ -39,7 +39,6 @@ import com.sun.jersey.api.client.WebResource.Builder;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.jersey.multipart.MultiPart;
 import com.sun.jersey.multipart.MultiPartMediaTypes;
-import com.sun.jersey.server.impl.model.method.dispatch.MultipartFormDispatchProvider;
 
 public class RestClient<E> {
 	
@@ -48,7 +47,7 @@ public class RestClient<E> {
 	private WebResource resource = null;
 	private Builder builder = null;
 	private String path = null;
-	private Map<String, String> header = new HashMap<String, String>(8);
+	private static final Map<String, String> HEADER = new HashMap<String, String>();
 
 	public RestClient(String serverUrl) {
 		Client client = ClientHelper.createClient();
@@ -77,7 +76,7 @@ public class RestClient<E> {
 	        S_LOGGER.debug("Entered into RestClient.addHeader(String key, String value)" + value);
 	    }
 		
-		header.put(key, value);
+		HEADER.put(key, value);
 	}
 	
 	/**
@@ -122,13 +121,13 @@ public class RestClient<E> {
 			resource = resource.path(path);
 		}
 		
-		Set<String> keySet = header.keySet();
+		Set<String> keySet = HEADER.keySet();
 		int i = 0;
 		for (String key : keySet) {
 			if (i == 0) {
-				builder = resource.header(key, header.get(key));
+				builder = resource.header(key, HEADER.get(key));
 			} else {
-				builder.header(key, header.get(key));
+				builder.header(key, HEADER.get(key));
 				i++;
 			}
 		}
@@ -359,9 +358,9 @@ public class RestClient<E> {
 	    }
 		
 		int status = clientResponse.getStatus();
-		System.out.println(status);
 		if (status == ClientResponse.Status.ACCEPTED.getStatusCode() || 
 				status == ClientResponse.Status.OK.getStatusCode() || status == ClientResponse.Status.CREATED.getStatusCode()) {
+		    System.out.println(status);
 		} else {
 			throw new PhrescoException("Not able to Create");
 		}

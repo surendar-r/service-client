@@ -36,8 +36,11 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.client.urlconnection.HTTPSProperties;
 
-public class ClientHelper {
-
+public final class ClientHelper {
+    
+    private ClientHelper() {
+    }
+    
 	public static ClientConfig configureClient() {
 		
 		TrustManager[ ] certs = new TrustManager[ ] {
@@ -70,8 +73,6 @@ public class ClientHelper {
 					new HostnameVerifier() {
 						
 						public boolean verify(String hostname, SSLSession session) {
-							System.out.println(hostname);
-							System.out.println(session);
 							return true;
 						}
 					}, ctx ));
