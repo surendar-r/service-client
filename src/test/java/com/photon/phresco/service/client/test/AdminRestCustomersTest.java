@@ -32,7 +32,7 @@ public class AdminRestCustomersTest implements ServiceConstants {
     @Before
     public void Initilaization() throws PhrescoException {
         context = new ServiceContext();
-        context.put(ServiceClientConstant.SERVICE_URL, RestUtil.getServerPath());
+        context.put(ServiceClientConstant.SERVICE_URL, "http://localhost:8080/service/rest/api");
         context.put(ServiceClientConstant.SERVICE_USERNAME, "demouser");
         context.put(ServiceClientConstant.SERVICE_PASSWORD, "phresco");
         serviceManager = ServiceClientFactory.getServiceManager(context);
