@@ -132,7 +132,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         userInfo = response.getEntity(genericType);
     }
     
-    
+    @Override
     public List<VideoInfo> getVideoInfos() throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getVideoInfos()");
@@ -143,7 +143,6 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	
     	return videoInfosClient.get(genericType);
     }
-    
     
     private List<Technology> getArcheTypesFromServer(String customerId) throws PhrescoException {
         if (isDebugEnabled) {
@@ -157,6 +156,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		return archeTypeClient.get(genericType);
     }
     
+    @Override
     public List<Technology> getArcheTypes(String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getArcheTypes(String customerId)");
@@ -172,6 +172,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	return archeTypes;
 	}
     
+    @Override
     public Technology getArcheType(String archeTypeId, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getArcheType(String archeTypeId, String customerId)");
@@ -194,6 +195,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         return null;
     }
     
+    @Override
     public BodyPart createBodyPart (String name, String jarType, InputStream jarIs ) throws PhrescoException {
     	BodyPart binaryPart = new BodyPart();
 	    binaryPart.setMediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE);
@@ -204,6 +206,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		return binaryPart;
     }
     
+    @Override
     public ClientResponse createArcheTypes(MultiPart multiPart, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.createArcheTypes(List<Technology> archeTypes, String customerId)");
@@ -217,6 +220,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		return clientResponse;
     }
     
+    @Override
     public void updateArcheType(Technology technology, String archeTypeId, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.updateArcheTypes(Technology technology, String archeTypeId, String customerId)");
@@ -230,6 +234,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		manager.add(key, getArcheTypesFromServer(customerId));
     }
     
+    @Override
     public ClientResponse deleteArcheType(String archeTypeId, String customerId) throws PhrescoException {
     	if (isDebugEnabled) {
     		S_LOGGER.debug("Entered into ServiceManagerImpl.deleteArcheType(String archeTypeId, String customerId)");
@@ -244,7 +249,6 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	return clientResponse;
     }
     
-    
     private List<ApplicationType> getApplicationTypesFromServer(String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getApplicationTypesFromServer(String customerId)");
@@ -257,6 +261,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		return appTypeClient.get(genericType);
     }
     
+    @Override
     public List<ApplicationType> getApplicationTypes(String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getApplicationTypes(String customerId)");
@@ -276,6 +281,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	return appTypes;
 	}
     
+    @Override
     public ApplicationType getApplicationType(String appTypeId, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getApplicationType(String appTypeId, String customerId)");
@@ -298,6 +304,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         return null;
     }
 
+    @Override
     public ClientResponse createApplicationTypes(List<ApplicationType> appTypes, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.createApplicationTypes(List<ApplicationType> appTypes, String customerId)");
@@ -311,6 +318,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		return clientResponse;
     }
     
+    @Override
     public void updateApplicationType(ApplicationType appType, String appTypeId, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.updateApplicationTypes(ApplicationType appType, String appTypeId, String customerId)");
@@ -324,6 +332,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		manager.add(key, getApplicationTypesFromServer(customerId));
     }
     
+    @Override
     public ClientResponse deleteApplicationType(String appTypeId, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.deleteApplicationType(String appTypeId, String customerId)");
@@ -338,7 +347,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 	    return clientResponse;
     }
     
-    public List<Server> getServersFromServer(String customerId) throws PhrescoException {
+    private List<Server> getServersFromServer(String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getServers(String customerId)");
         }
@@ -350,6 +359,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		return serverClient.get(genericType);
 	}
     
+    @Override
     public List<Server> getServers(String techId, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getServers(String techId, String customerId)");
@@ -385,6 +395,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		return dbClient.get(genericType);
 	}
     
+    @Override
     public List<Database> getDatabases(String techId, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getDatabases(String techId, String customerId)");
@@ -420,6 +431,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		return webServiceClient.get(genericType);
 	}
     
+    @Override
     public List<WebService> getWebServices(String techId, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getWebServices(String techId, String customerId)");
@@ -458,6 +470,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	return moduleGroupClient.get(genericType);
     }
     
+    @Override
     public List<ModuleGroup> getModules(String customerId) throws PhrescoException {
     	if(isDebugEnabled) {
     		S_LOGGER.debug("Enetered into ServiceManagerImpl.getModules(String customerId)");
@@ -488,6 +501,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	return jsLibClient.get(genericType);
     }
     
+    @Override
     public List<ModuleGroup> getJsLibs(String customerId) throws PhrescoException {
     	if(isDebugEnabled) {
     		S_LOGGER.debug("Enetered into ServiceManagerImpl.getJsLibs(String customerId)");
@@ -515,6 +529,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	return moduleGroupClient.get(genericType);
     }
     
+    @Override
     public List<ModuleGroup> getFeatures(String customerId) throws PhrescoException {
     	if(isDebugEnabled) {
     		S_LOGGER.debug("Enetered into ServiceManagerImpl.getFeatures(String customerId)");
@@ -530,6 +545,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	return modules;
     }
      
+    @Override
     public ModuleGroup getFeature(String moduleId, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getFeature(String moduleId, String customerId)");
@@ -552,6 +568,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         return null;
     }
     
+    @Override
     public ClientResponse createFeatures(List<ModuleGroup> modules, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.createFeatures(List<ModuleGroup> modules)");
@@ -564,7 +581,8 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         
         return response;
     }
-     
+    
+    @Override
     public void updateFeature(ModuleGroup module, String moduleId, String customerId) throws PhrescoException {
     	if (isDebugEnabled) {
     		S_LOGGER.debug("Entered into ServiceManagerImpl.updateFeatures(ModuleGroup module, String moduleId)");
@@ -578,6 +596,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
  		manager.add(key, getModulesFromServer(customerId));
     }
 
+    @Override
     public ClientResponse deleteFeature(String moduleId, String customerId) throws PhrescoException {
     	if (isDebugEnabled) {
      		S_LOGGER.debug("Entered into ServiceManagerImpl.deleteFeatures(String moduleId, String customerId)");
@@ -592,7 +611,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
      	return response;
     }
     
-    public List<Customer> getCustomersFromServer() throws PhrescoException {
+    private List<Customer> getCustomersFromServer() throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getCustomersFromServer()");
         }
@@ -603,6 +622,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         return customersClient.get(genericType);
     }
     
+    @Override
     public List<Customer> getCustomers() throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getCustomers()");
@@ -618,6 +638,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         return customers;
     }
     
+    @Override
     public Customer getCustomer(String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getCustomer(String customerId)" + customerId);
@@ -640,6 +661,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         return null;
     }
     
+    @Override
     public ClientResponse createCustomers(List<Customer> customers) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.createCustomers(List<Customer> customers)");
@@ -653,6 +675,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         return response;
     }
     
+    @Override
     public void updateCustomer(Customer customer, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.updateCustomer(Customer customer, String customerId)" + customerId);
@@ -666,6 +689,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         manager.add(key, getCustomersFromServer());
     }
     
+    @Override
     public ClientResponse deleteCustomer(String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.deleteCustomer(String customerId)" + customerId);
@@ -693,6 +717,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	
     }
     
+    @Override
     public List<SettingsTemplate> getconfigTemplates(String customerId) throws PhrescoException {
     	if (isDebugEnabled) {
     		S_LOGGER.debug("Enetered into ServiceManagerImpl.getconfigTemplates(String customerId)");
@@ -708,6 +733,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	return configTemplates;
     }
     
+    @Override
     public ClientResponse createConfigTemplates(List<SettingsTemplate> settings, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.createConfigTemplates(List<SettingTemplate> settings, String customerId)");
@@ -721,6 +747,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         return clientResponse ;
     }
     
+    @Override
     public SettingsTemplate getConfigTemplate(String configId, String customerId) throws PhrescoException {
     	if (isDebugEnabled) {
     		S_LOGGER.debug("Entered into ServiceManagerImpl.getConfigTemplate(String configId, String customerId)");
@@ -743,6 +770,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	return null;
     }
     
+    @Override
     public void updateConfigTemp(SettingsTemplate settingTemp, String configId, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.updateConfigTemp(String configId, String customerId)");
@@ -756,6 +784,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		manager.add(key, getConfigTemplatesFromServer(customerId));
     }
     
+    @Override
     public ClientResponse deleteConfigTemp(String id, String customerId) throws PhrescoException {
     	if (isDebugEnabled) {
     		S_LOGGER.debug("Entered into ServiceManagerImpl.deleteConfigTemp(String id, String customerId)");
@@ -784,6 +813,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		return pilotClient.get(genericType);
     }
     
+    @Override
     public List<ProjectInfo> getPilotProjects(String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getPilotProjects(String customerId)" + customerId);
@@ -803,6 +833,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         return pilotProjects;
     }
     
+    @Override
     public ProjectInfo getPilotProject(String projectId, String customerId) throws PhrescoException {
     	if (isDebugEnabled) {
     		S_LOGGER.debug("Entered into ServiceManagerImpl.getPilotProject(String projectId, String customerId)");
@@ -825,6 +856,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	return null;
     }
     
+    @Override
     public ClientResponse createPilotProjects(List<ProjectInfo> proInfo, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.createPilotProjects(List<ProjectInfo> proInfo, String customerId)");
@@ -838,6 +870,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         return response;
     }
     
+    @Override
     public void updatePilotProject(ProjectInfo projectInfo, String projectId, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.updatePilotProject(ProjectInfo projectInfo, String projectId)" + projectId);
@@ -851,6 +884,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         manager.add(key, getPilotProjectsFromServer(customerId));
     }
     
+    @Override
     public ClientResponse deletePilotProject(String projectId, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.deletePilotProject(String projectId)" + projectId);
@@ -876,6 +910,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         return roleClient.get(genericType);	
     }
     
+    @Override
     public List<Role> getRoles() throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getRoles())");
@@ -895,6 +930,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         return roles;	
     }
     
+    @Override
     public Role getRole(String roleId) throws PhrescoException {
     	if (isDebugEnabled) {
     		S_LOGGER.debug("Entered into ServiceManagerImpl.getPilotsProjects(List<ProjectInfo> proInfo)");
@@ -917,6 +953,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	return null;
     }
     
+    @Override
     public ClientResponse createRoles(List<Role> role) throws PhrescoException {
     	if (isDebugEnabled) {
     		S_LOGGER.debug("Entered into ServiceManagerImpl.createroles(List<Role> role)");
@@ -930,6 +967,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	return response;
     }
     
+    @Override
     public ClientResponse deleteRole(String id) throws PhrescoException {
     	if (isDebugEnabled) {
     		S_LOGGER.debug("Entered into RestClient.deleteRole(String id)" + id);
@@ -944,6 +982,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	return response;
     }
 
+    @Override
     public void updateRole(Role role, String id) throws PhrescoException {
     	if (isDebugEnabled) {
     		S_LOGGER.debug("Entered into RestClient.updateRole(Role role, String id)" + id);
@@ -957,6 +996,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	manager.add(key, getRolesFromServer());
     }
     
+    @Override
     public List<DownloadInfo> getDownloads(String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getDownloadInfo(List<DownloadInfo> downloadInfo)");
@@ -987,7 +1027,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		return downloadClient.get(genericType);
     }
 
-    
+    @Override
     public DownloadInfo getDownload(String downloadId, String customerId) throws PhrescoException {
     	if(isDebugEnabled){
     		S_LOGGER.debug("Entered into Restclient.getDownload(String downloadId, String customerId)");
@@ -1010,6 +1050,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	return null;
     }
     
+    @Override
     public ClientResponse createDownloads(List<DownloadInfo> downloadInfo, String customerId) throws PhrescoException {
     	if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.createDownloadInfo(List<DownloadInfo> downloadInfo)");
@@ -1023,6 +1064,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	return response;
     }
 
+    @Override
     public void updateDownload(DownloadInfo downloadInfo, String downloadId, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.updateDownload(DownloadInfo downloadInfo, String downloadId)");
@@ -1036,6 +1078,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         manager.add(key, getDownloadsFromServer());
     }
 
+    @Override
     public ClientResponse deleteDownloadInfo(String downloadId, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.deleteDownloadInfo(String downloadId)");
@@ -1050,6 +1093,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         return response;
     }
 
+    @Override
     public ClientResponse createProject(ProjectInfo projectInfo) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.createProject(ProjectInfo projectInfo)");
@@ -1060,6 +1104,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         return projectClient.create(projectInfo, MEDIATYPE_ZIP, MediaType.APPLICATION_JSON);
     }
     
+    @Override
     public List<Environment> getDefaultEnvFromServer() throws PhrescoException {
     	if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getDefaultEnvFromServer()");
@@ -1082,6 +1127,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		return globalUrlClient.get(genericType);
     }
 
+    @Override
     public List<GlobalURL> getGlobalUrls(String customerId) throws PhrescoException {
     	if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getGlobalUrls(List<GlobalURL> globalUrl)");
@@ -1101,6 +1147,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	return globalUrls;
     }
     
+    @Override
     public GlobalURL getGlobalUrl(String globalUrlId, String customerId) throws PhrescoException {
     	if(isDebugEnabled){
     		S_LOGGER.debug("Entered into ServiceManagerImpl.getGlobalUrl(String globalUrlId, String customerId)");
@@ -1123,6 +1170,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	return null;
     }
     
+    @Override
     public ClientResponse createGlobalUrl(List<GlobalURL> globalUrl, String customerId) throws PhrescoException {
     	if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.createGlobalUrl(List<GlobalURL> globalUrl)");
@@ -1136,6 +1184,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	return response;
     }
     
+    @Override
     public void updateGlobalUrl(GlobalURL globalUrl, String globalurlId, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.updateGlobalUrl(GlobalURL globalUrl, String globalurlId, String customerId)");
@@ -1149,6 +1198,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		manager.add(key, getGlobalUrlFromServer(customerId));
     }
     
+    @Override
     public ClientResponse deleteglobalUrl(String globalurlId, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.deleteglobalUrl(String globalurlId, String customerId)");
@@ -1161,5 +1211,85 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         manager.add(key, getGlobalUrlFromServer(customerId));
 
         return response;
+    }
+    
+    @Override
+    public String getCiConfigPath(String repoType, String customerId) throws PhrescoException {
+    	if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getCiConfigPath(String repoType, String customerId)");
+        }
+    	
+    	RestClient<String> ciClient = getRestClient(REST_REPO + REST_CI_CONFIG_PATH);
+    	Map<String, String> queryStringsMap = new HashMap<String, String>();
+    	queryStringsMap.put(REST_QUERY_TYPE, repoType);
+    	queryStringsMap.put(REST_QUERY_CUSTOMERID, customerId);
+    	ciClient.queryStrings(queryStringsMap);
+    	GenericType<String> genericType = new GenericType<String>() {};
+    	
+    	return ciClient.getById(genericType, MediaType.TEXT_PLAIN, MediaType.TEXT_PLAIN);
+    }
+    
+    @Override
+    public InputStream getCredentialXml(String customerId) throws PhrescoException {
+    	if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.deleteglobalUrl(String globalurlId, String customerId)");
+        }
+    	
+    	RestClient<String> ciClient = getRestClient(REST_REPO + REST_CI_CREDENTIAL_PATH);
+    	ciClient.queryString(REST_QUERY_CUSTOMERID, customerId);
+    	ClientResponse response = ciClient.get(MediaType.APPLICATION_XML);
+
+    	return response.getEntityInputStream();
+    }
+    
+    @Override
+    public InputStream getJdkHomeXml(String customerId) throws PhrescoException {
+    	if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.deleteglobalUrl(String globalurlId, String customerId)");
+        }
+    	
+    	RestClient<String> ciClient = getRestClient(REST_REPO + REST_CI_JDK_HOME);
+    	ciClient.queryString(REST_QUERY_CUSTOMERID, customerId);
+    	ClientResponse response = ciClient.get(MediaType.APPLICATION_XML);
+
+    	return response.getEntityInputStream();
+    }
+    
+    @Override
+    public InputStream getMavenHomeXml(String customerId) throws PhrescoException {
+    	if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.deleteglobalUrl(String globalurlId, String customerId)");
+        }
+    	
+    	RestClient<String> ciClient = getRestClient(REST_REPO + REST_CI_MAVEN_HOME);
+    	ciClient.queryString(REST_QUERY_CUSTOMERID, customerId);
+    	ClientResponse response = ciClient.get(MediaType.APPLICATION_XML);
+
+    	return response.getEntityInputStream();
+    }
+    
+    @Override
+    public InputStream getMailerXml(String customerId) throws PhrescoException {
+    	if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.deleteglobalUrl(String globalurlId, String customerId)");
+        }
+    	
+    	RestClient<String> ciClient = getRestClient(REST_REPO + REST_CI_MAVEN_HOME);
+    	ciClient.queryString(REST_QUERY_CUSTOMERID, customerId);
+    	ClientResponse response = ciClient.get(MediaType.APPLICATION_XML);
+
+    	return response.getEntityInputStream();
+    }
+    
+    @Override
+    public ClientResponse getEmailExtPlugin(String customerId) throws PhrescoException {
+    	if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.deleteglobalUrl(String globalurlId, String customerId)");
+        }
+    	
+    	RestClient<String> ciClient = getRestClient(REST_REPO + REST_CI_MAIL_PLUGIN);
+    	ciClient.queryString(REST_QUERY_CUSTOMERID, customerId);
+    	
+        return ciClient.get(MediaType.APPLICATION_OCTET_STREAM);
     }
 }

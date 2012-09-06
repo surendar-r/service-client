@@ -159,4 +159,16 @@ public interface ServiceManager {
 	ClientResponse deleteglobalUrl(String globalurlId, String customerId) throws PhrescoException;
 	
 	void updateGlobalUrl(GlobalURL globalUrl, String globalurlId, String customerId) throws PhrescoException;
+	
+	String getCiConfigPath(String repoType, String customerId) throws PhrescoException;
+	
+	InputStream getCredentialXml(String customerId) throws PhrescoException;
+	
+	InputStream getJdkHomeXml(String customerId) throws PhrescoException;
+	
+	InputStream getMavenHomeXml(String customerId) throws PhrescoException;
+	
+	InputStream getMailerXml(String customerId) throws PhrescoException;
+	
+	ClientResponse getEmailExtPlugin(String customerId) throws PhrescoException;
 }

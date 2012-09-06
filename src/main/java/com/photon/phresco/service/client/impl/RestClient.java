@@ -389,5 +389,10 @@ public class RestClient<E> {
 		updateBuilder();
 		return builder.delete(ClientResponse.class);
 	}
-
+	
+	public ClientResponse get(String type) {
+		updateBuilder();
+		ClientResponse response = builder.type(type).get(ClientResponse.class);
+		return response;
+	}
 }
