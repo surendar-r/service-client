@@ -104,9 +104,9 @@ public class ComponentRestWebserviceTest implements ServiceConstants {
     public void testGetWebservicesById() throws PhrescoException {
 		String techId = "testws";
     	RestClient<WebService> webserviceClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_WEBSERVICES);
-    	webserviceClient.queryString(REST_API_PATH_PARAM_ID, techId);
-		GenericType<List<WebService>> genericType = new GenericType<List<WebService>>(){};
-		List<WebService> webservices = webserviceClient.get(genericType);
+    	webserviceClient.setPath(techId);
+		GenericType<WebService> genericType = new GenericType<WebService>(){};
+		WebService webservices = webserviceClient.getById(genericType);
 		assertNotNull(webservices);
     }
 	

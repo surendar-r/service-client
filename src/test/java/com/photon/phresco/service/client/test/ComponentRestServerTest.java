@@ -74,7 +74,7 @@ public class ComponentRestServerTest implements ServiceConstants {
 	@Test
     public void testFindServers() throws PhrescoException {
     	RestClient<Server> serverClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_SERVERS);
-    	serverClient.queryString(REST_QUERY_TECHID, "Html5");
+    	serverClient.queryString(REST_QUERY_CUSTOMERID, "photon");
 		GenericType<List<Server>> genericType = new GenericType<List<Server>>(){};
 		List<Server> servers = serverClient.get(genericType);
 		assertNotNull(servers);
@@ -101,11 +101,11 @@ public class ComponentRestServerTest implements ServiceConstants {
 	
 	@Test
     public void testGetServerById() throws PhrescoException {
-		String Id = "Html5";
+		String Id = "testServer";
     	RestClient<Server> srClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_SERVERS);
-    	srClient.queryString(REST_QUERY_TECHID, Id);
-		GenericType<List<Server>> genericType = new GenericType<List<Server>>(){};
-		List<Server> server = srClient.get(genericType);
+    	srClient.setPath(Id);
+		GenericType<Server> genericType = new GenericType<Server>(){};
+		Server server = srClient.getById(genericType);
 		assertNotNull(server);
     }
 	

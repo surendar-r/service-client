@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.photon.phresco.exception.PhrescoException;
@@ -104,11 +105,11 @@ public class ComponentRestDatabaseTest implements ServiceConstants {
 
 	@Test
     public void testGetDatabasesById() throws PhrescoException {
-		String Id = "Html5";
+		String Id = "testDatabase";
     	RestClient<Database> dbClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_DATABASES);
-    	dbClient.queryString(REST_QUERY_TECHID, Id);
-		GenericType<List<Database>> genericType = new GenericType<List<Database>>(){};
-		List<Database> databases = dbClient.get(genericType);
+    	dbClient.setPath(Id);
+		GenericType<Database> genericType = new GenericType<Database>(){};
+		Database databases=dbClient.getById(genericType);
 		assertNotNull(databases);
     }
 	

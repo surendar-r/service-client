@@ -50,7 +50,8 @@ public class ComponentRestSettingsTest implements ServiceConstants {
 	@Test
     public void testGetSettings() throws PhrescoException {
     	RestClient<SettingsTemplate> stClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_SETTINGS);
-		GenericType<List<SettingsTemplate>> genericType = new GenericType<List<SettingsTemplate>>(){};
+    	stClient.queryString(REST_QUERY_CUSTOMERID, "photon");
+    	GenericType<List<SettingsTemplate>> genericType = new GenericType<List<SettingsTemplate>>(){};
 		List<SettingsTemplate> settingTemplate = stClient.get(genericType);
 		assertNotNull(settingTemplate);
     }
@@ -73,9 +74,9 @@ public class ComponentRestSettingsTest implements ServiceConstants {
     public void testGetSettingsById() throws PhrescoException {
 		String Id = "testSetting";
     	RestClient<SettingsTemplate> stClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_SETTINGS);
-    	stClient.queryString(REST_API_PATH_PARAM_ID, Id);
-		GenericType<List<SettingsTemplate>> genericType = new GenericType<List<SettingsTemplate>>(){};
-		List<SettingsTemplate> settingsTemplate = stClient.get(genericType);
+    	stClient.setPath(Id);
+		GenericType<SettingsTemplate> genericType = new GenericType<SettingsTemplate>(){};
+		SettingsTemplate settingsTemplate = stClient.getById(genericType);
 		assertNotNull(settingsTemplate);
     }
 	

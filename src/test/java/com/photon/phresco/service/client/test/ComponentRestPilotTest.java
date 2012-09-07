@@ -74,9 +74,9 @@ public class ComponentRestPilotTest implements ServiceConstants {
 	
 	@Test
     public void testFindPilots() throws PhrescoException {
-		String techID="Html5";
+		String techID="photon";
     	RestClient<ProjectInfo> pilotClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_PILOTS);
-    	pilotClient.queryString(REST_QUERY_TECHID, techID);
+    	pilotClient.queryString(REST_QUERY_CUSTOMERID, techID);
 		GenericType<List<ProjectInfo>> genericType = new GenericType<List<ProjectInfo>>(){};
 		List<ProjectInfo> pi = pilotClient.get(genericType);
 		assertNotNull(pi);
@@ -104,9 +104,9 @@ public class ComponentRestPilotTest implements ServiceConstants {
     public void testGetPilotById() throws PhrescoException {
 		String Id = "testPilot";
     	RestClient<ProjectInfo> pilotClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_PILOTS);
-    	pilotClient.queryString(REST_API_PATH_PARAM_ID, Id);
-		GenericType<List<ProjectInfo>> genericType = new GenericType<List<ProjectInfo>>(){};
-		List<ProjectInfo> projectInfo = pilotClient.get(genericType);
+    	pilotClient.setPath(Id);
+		GenericType<ProjectInfo> genericType = new GenericType<ProjectInfo>(){};
+		ProjectInfo projectInfo = pilotClient.getById(genericType);
 		assertNotNull(projectInfo);
     }
 	
