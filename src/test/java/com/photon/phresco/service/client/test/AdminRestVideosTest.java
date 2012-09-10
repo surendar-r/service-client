@@ -113,12 +113,7 @@ public class AdminRestVideosTest implements ServiceConstants {
     	RestClient<VideoInfo> videoInfosClient = serviceManager.getRestClient(REST_API_ADMIN + REST_API_VIDEOS);
     	GenericType<List<VideoInfo>> genericType = new GenericType<List<VideoInfo>>(){};
     	List<VideoInfo> videoInfos = videoInfosClient.get(genericType);
-    	System.out.println("videoInfos.size():" + videoInfos.size());
-    	if (videoInfos != null) {
-	    	for (VideoInfo videoInfo : videoInfos) {
-	    		System.out.println("videoInfo.getName():" + videoInfo.getName());
-			}
-    	}
+    	assertNotNull(videoInfos);
 	
 	}	
 	@Test

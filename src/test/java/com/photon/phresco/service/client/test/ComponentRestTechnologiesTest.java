@@ -192,7 +192,7 @@ public class ComponentRestTechnologiesTest {
         jsonPart.setContentDisposition(content);
         multiPart.bodyPart(jsonPart);
                
-        BodyPart binaryPart = new BodyPart();
+       /* BodyPart binaryPart = new BodyPart();
         binaryPart.setMediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE);
         InputStream fis  = new FileInputStream(new File("d://Temp/drupal-maven-plugin-2.0.0.6001-SNAPSHOT.jar"));
         binaryPart.setEntity(fis);
@@ -206,7 +206,7 @@ public class ComponentRestTechnologiesTest {
         binaryPart2.setEntity(fis);
         content = new Content("appType", "drup", null, null, null, 0);
         binaryPart2.setContentDisposition(content);
-        multiPart.bodyPart(binaryPart2);
+        multiPart.bodyPart(binaryPart2);*/
         
         serviceManager = ServiceClientFactory.getServiceManager(context);            
         RestClient<Technology> techClient = serviceManager.getRestClient("/components/technologies");
