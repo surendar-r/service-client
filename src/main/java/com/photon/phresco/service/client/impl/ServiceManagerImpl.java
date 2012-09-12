@@ -360,7 +360,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 	}
     
     @Override
-    public List<Server> getServers(String techId, String customerId) throws PhrescoException {
+    public List<Server> getServers(String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getServers(String techId, String customerId)");
         }
@@ -370,14 +370,6 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         if (CollectionUtils.isEmpty(servers)) {
         	servers = getServersFromServer(customerId);
         	manager.add(key, servers);
-        }
-        List<Server> serversByTechId = new ArrayList<Server>();
-        if (CollectionUtils.isNotEmpty(servers)) {
-        	for (Server server : servers) {
-				if (server.getTechnologies().contains(techId)) {
-					serversByTechId.add(server);
-				}
-			}
         }
 		
 		return servers;
@@ -396,7 +388,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 	}
     
     @Override
-    public List<Database> getDatabases(String techId, String customerId) throws PhrescoException {
+    public List<Database> getDatabases(String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getDatabases(String techId, String customerId)");
         }
@@ -407,16 +399,8 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         	databases = getDatabasesFromServer(customerId);
         	manager.add(key, databases);
         }
-        List<Database> dbsByTechId = new ArrayList<Database>();
-        if (CollectionUtils.isNotEmpty(databases)) {
-        	for (Database database : databases) {
-				if (database.getTechnologies().contains(techId)) {
-					dbsByTechId.add(database);
-				}
-			}
-        }
 		
-		return dbsByTechId;
+		return databases;
 	}
     
     public List<WebService> getWebServicesFromServer(String customerId) throws PhrescoException {

@@ -76,9 +76,9 @@ public interface ServiceManager {
 	
 	ApplicationType getApplicationType(String appTypeId, String customerId) throws PhrescoException;
 	
-	List<Server> getServers(String techId, String customerId) throws PhrescoException;
+	List<Server> getServers(String customerId) throws PhrescoException;
 	
-	List<Database> getDatabases(String techId, String customerId) throws PhrescoException;
+	List<Database> getDatabases(String customerId) throws PhrescoException;
 	
 	List<WebService> getWebServices(String techId, String customerId) throws PhrescoException;
 	
