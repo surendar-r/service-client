@@ -35,6 +35,7 @@ import com.photon.phresco.commons.model.Role;
 import com.photon.phresco.commons.model.User;
 import com.photon.phresco.configuration.Environment;
 import com.photon.phresco.exception.PhrescoException;
+import com.photon.phresco.model.AdminConfigInfo;
 import com.photon.phresco.model.ApplicationType;
 import com.photon.phresco.model.Database;
 import com.photon.phresco.model.DownloadInfo;
@@ -1291,5 +1292,19 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	ciClient.queryString(REST_QUERY_CUSTOMERID, customerId);
     	
         return ciClient.get(MediaType.APPLICATION_OCTET_STREAM);
+    }
+    
+    @Override
+    public AdminConfigInfo getForumPath(String customerId) throws PhrescoException {
+    	if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getForumPath(String customerId)");
+        }
+    	
+    	RestClient<AdminConfigInfo> adminClient = getRestClient(REST_API_ADMIN + REST_API_FORUMS);
+    	GenericType<AdminConfigInfo> genericType = new GenericType<AdminConfigInfo>() {};
+    	adminClient.queryString(REST_QUERY_CUSTOMERID, customerId);
+    	AdminConfigInfo adminConfigInfo = adminClient.getById(genericType);
+    	
+    	return adminConfigInfo;
     }
 }

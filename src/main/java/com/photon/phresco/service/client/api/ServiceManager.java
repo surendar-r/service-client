@@ -27,6 +27,7 @@ import com.photon.phresco.commons.model.Role;
 import com.photon.phresco.commons.model.User;
 import com.photon.phresco.configuration.Environment;
 import com.photon.phresco.exception.PhrescoException;
+import com.photon.phresco.model.AdminConfigInfo;
 import com.photon.phresco.model.ApplicationType;
 import com.photon.phresco.model.Database;
 import com.photon.phresco.model.DownloadInfo;
@@ -171,4 +172,6 @@ public interface ServiceManager {
 	InputStream getMailerXml(String customerId) throws PhrescoException;
 	
 	ClientResponse getEmailExtPlugin(String customerId) throws PhrescoException;
+	
+	AdminConfigInfo getForumPath(String customerId) throws PhrescoException;
 }
