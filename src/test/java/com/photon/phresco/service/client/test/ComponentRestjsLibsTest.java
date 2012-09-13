@@ -65,7 +65,7 @@ public class ComponentRestjsLibsTest implements ServiceConstants {
 		moduleGroup.setCustomerId("photon");
 		moduleGroup.setTechId("php");
 		moduleGroup.setGroupId("phresco");
-		moduleGroup.setType("Js"); 
+		moduleGroup.setType("js"); 
 		modules.add(moduleGroup);
         RestClient<ModuleGroup> newApp = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
         ClientResponse clientResponse = newApp.create(modules);
@@ -74,12 +74,11 @@ public class ComponentRestjsLibsTest implements ServiceConstants {
 	
 	@Test
     public void testGetjsLibs() throws PhrescoException {
-    	RestClient<ModuleGroup> moduleGroupClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
-    	Map<String, String> query = new HashMap<String, String>();
-    	query.put(REST_QUERY_TYPE, "Js");
-    	query.put(REST_QUERY_TECHID, "drupal");
-    	query.put(REST_QUERY_CUSTOMERID, "photon");
-    	moduleGroupClient.queryStrings(query);
+		RestClient<ModuleGroup> moduleGroupClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
+		Map<String, String> query = new HashMap<String, String>();
+		query.put(REST_QUERY_TYPE, "js");
+		query.put(REST_QUERY_CUSTOMERID, "photon");
+		moduleGroupClient.queryStrings(query);
 		GenericType<List<ModuleGroup>> genericType = new GenericType<List<ModuleGroup>>(){};
 		List<ModuleGroup> modules = moduleGroupClient.get(genericType);
 		assertNotNull(modules);
