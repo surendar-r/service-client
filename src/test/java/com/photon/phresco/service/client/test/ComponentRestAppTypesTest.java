@@ -77,19 +77,13 @@ public class ComponentRestAppTypesTest implements ServiceConstants {
     
     @Test
     public void testGetAppTypesById() throws PhrescoException {
-        String appId = "test-appType";
-        RestClient<ApplicationType> applicationTypeClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_APPTYPES);
-        applicationTypeClient.queryString(REST_API_PATH_PARAM_ID, appId);
-        GenericType<List<ApplicationType>> genericType = new GenericType<List<ApplicationType>>(){};
-        List<ApplicationType> applicationTypes = applicationTypeClient.get(genericType);
-       /* if (applicationTypes != null) {
-            for (ApplicationType applicationType : applicationTypes) {
-                if (applicationType.getId().equals(appId)) {
-                	assertNotNull(applicationTypes);
-                }
-            }
-        }*/
-        assertNotNull(applicationTypes);
+    	String appId = "test-appType";
+    	RestClient<ApplicationType> applicationTypeClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_APPTYPES);
+    	applicationTypeClient.setPath(appId);
+    	GenericType<ApplicationType> genericType = new GenericType<ApplicationType>(){};
+    	ApplicationType applicationTypes = applicationTypeClient.getById(genericType);
+    	assertNotNull(applicationTypes);
+
     }
 	
 	@Test
