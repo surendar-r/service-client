@@ -35,6 +35,7 @@ import com.photon.phresco.commons.model.Role;
 import com.photon.phresco.commons.model.User;
 import com.photon.phresco.configuration.Environment;
 import com.photon.phresco.exception.PhrescoException;
+import com.photon.phresco.model.AdminConfigInfo;
 import com.photon.phresco.model.ApplicationType;
 import com.photon.phresco.model.Database;
 import com.photon.phresco.model.DownloadInfo;
@@ -360,7 +361,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 	}
     
     @Override
-    public List<Server> getServers(String techId, String customerId) throws PhrescoException {
+    public List<Server> getServers(String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getServers(String techId, String customerId)");
         }
@@ -370,14 +371,6 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         if (CollectionUtils.isEmpty(servers)) {
         	servers = getServersFromServer(customerId);
         	manager.add(key, servers);
-        }
-        List<Server> serversByTechId = new ArrayList<Server>();
-        if (CollectionUtils.isNotEmpty(servers)) {
-        	for (Server server : servers) {
-				if (server.getTechnologies().contains(techId)) {
-					serversByTechId.add(server);
-				}
-			}
         }
 		
 		return servers;
@@ -396,7 +389,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 	}
     
     @Override
-    public List<Database> getDatabases(String techId, String customerId) throws PhrescoException {
+    public List<Database> getDatabases(String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getDatabases(String techId, String customerId)");
         }
@@ -407,16 +400,8 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         	databases = getDatabasesFromServer(customerId);
         	manager.add(key, databases);
         }
-        List<Database> dbsByTechId = new ArrayList<Database>();
-        if (CollectionUtils.isNotEmpty(databases)) {
-        	for (Database database : databases) {
-				if (database.getTechnologies().contains(techId)) {
-					dbsByTechId.add(database);
-				}
-			}
-        }
 		
-		return dbsByTechId;
+		return databases;
 	}
     
     public List<WebService> getWebServicesFromServer(String customerId) throws PhrescoException {
@@ -1291,5 +1276,19 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	ciClient.queryString(REST_QUERY_CUSTOMERID, customerId);
     	
         return ciClient.get(MediaType.APPLICATION_OCTET_STREAM);
+    }
+    
+    @Override
+    public AdminConfigInfo getForumPath(String customerId) throws PhrescoException {
+    	if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getForumPath(String customerId)");
+        }
+    	
+    	RestClient<AdminConfigInfo> adminClient = getRestClient(REST_API_ADMIN + REST_API_FORUMS);
+    	GenericType<AdminConfigInfo> genericType = new GenericType<AdminConfigInfo>() {};
+    	adminClient.queryString(REST_QUERY_CUSTOMERID, customerId);
+    	AdminConfigInfo adminConfigInfo = adminClient.getById(genericType);
+    	
+    	return adminConfigInfo;
     }
 }
