@@ -58,29 +58,30 @@ public class ComponentRestPilotTest implements ServiceConstants {
 
 	@Test
 	public void testCreatePilots() throws PhrescoException {
-		Technology technology=new Technology();
-		technology.setId("Html5");
-	    List<ProjectInfo> projectInfo = new ArrayList<ProjectInfo>();
-	    ProjectInfo pi = new ProjectInfo();
-	    pi.setId("testPilot");
-	    pi.setName("TestPilot");
-	    pi.setDescription("This is a test pilot");
-	    pi.setCustomerId("photon");
-	    pi.setTechnology(technology);
-	    projectInfo.add(pi);
-        RestClient<ProjectInfo> newPilot = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_PILOTS);
-        ClientResponse clientResponse = newPilot.create(projectInfo);
-    }
-	
+	Technology technology=new Technology();
+	technology.setId("tech-php");
+	List<ProjectInfo> projectInfos = new ArrayList<ProjectInfo>();
+	ProjectInfo projectInfo = new ProjectInfo();
+	projectInfo.setId("testPilot");
+	projectInfo.setName("testPilot");
+	projectInfo.setDescription("This is a test pilot");
+	projectInfo.setCustomerId("photon");
+	projectInfo.setTechId("tech-php");
+	projectInfo.setTechnology(technology);
+	projectInfos.add(projectInfo);
+	RestClient<ProjectInfo> newPilot = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_PILOTS);
+	ClientResponse clientResponse = newPilot.create(projectInfos);
+	}
+
 	@Test
-    public void testFindPilots() throws PhrescoException {
-		String techID="photon";
-    	RestClient<ProjectInfo> pilotClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_PILOTS);
-    	pilotClient.queryString(REST_QUERY_CUSTOMERID, techID);
-		GenericType<List<ProjectInfo>> genericType = new GenericType<List<ProjectInfo>>(){};
-		List<ProjectInfo> pi = pilotClient.get(genericType);
-		assertNotNull(pi);
-    }
+	public void testFindPilots() throws PhrescoException {
+	String customerId="photon";
+	RestClient<ProjectInfo> pilotClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_PILOTS);
+	pilotClient.queryString(REST_QUERY_CUSTOMERID, customerId);
+	GenericType<List<ProjectInfo>> genericType = new GenericType<List<ProjectInfo>>(){};
+	List<ProjectInfo> projectInfos = pilotClient.get(genericType);
+	assertNotNull(projectInfos);
+	}
 	
 
 	@Test
