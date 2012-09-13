@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import com.photon.phresco.commons.model.Customer;
+import com.photon.phresco.commons.model.Permission;
 import com.photon.phresco.commons.model.Role;
 import com.photon.phresco.commons.model.User;
 import com.photon.phresco.configuration.Environment;
@@ -160,6 +161,10 @@ public interface ServiceManager {
 	ClientResponse deleteglobalUrl(String globalurlId, String customerId) throws PhrescoException;
 	
 	void updateGlobalUrl(GlobalURL globalUrl, String globalurlId, String customerId) throws PhrescoException;
+	
+	List<Permission> getPermissions() throws PhrescoException;
+	
+	ClientResponse deletePermission(String permissionId) throws PhrescoException;
 	
 	String getCiConfigPath(String repoType, String customerId) throws PhrescoException;
 	

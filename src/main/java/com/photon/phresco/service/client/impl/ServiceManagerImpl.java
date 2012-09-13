@@ -31,6 +31,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 
 import com.photon.phresco.commons.model.Customer;
+import com.photon.phresco.commons.model.Permission;
 import com.photon.phresco.commons.model.Role;
 import com.photon.phresco.commons.model.User;
 import com.photon.phresco.configuration.Environment;
@@ -1195,6 +1196,48 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         CacheKey key = new CacheKey(GlobalURL.class.getName());
         manager.add(key, getGlobalUrlFromServer(customerId));
 
+        return response;
+    }
+   
+    private List<Permission> getPermissionsFromServer() throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getPermissionsFromServer()");
+        }
+        
+        RestClient<Permission> permissionClient = getRestClient(REST_API_ADMIN + REST_API_PERMISSIONS);
+        GenericType<List<Permission>> genericType = new GenericType<List<Permission>>(){};
+        
+        return permissionClient.get(genericType);
+    }
+    
+    @Override
+    public List<Permission> getPermissions() throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getPermissions()");
+        }
+        
+        CacheKey key = new CacheKey(Permission.class.getName());
+		List<Permission> permissions = (List<Permission>) manager.get(key);
+        if (CollectionUtils.isEmpty(permissions)) {
+        	permissions = getPermissionsFromServer();
+        	manager.add(key, permissions);
+        }
+        
+        return permissions;
+    }
+    
+    @Override
+    public ClientResponse deletePermission(String permissionId) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.deletePermission(String permissionId)" + permissionId);
+        }
+        
+        RestClient<Permission> permissionClient = getRestClient(REST_API_ADMIN + REST_API_PERMISSIONS);
+        permissionClient.setPath(permissionId);
+        ClientResponse response = permissionClient.deleteById();
+        CacheKey key = new CacheKey(Permission.class.getName());
+        manager.add(key, getPermissionsFromServer());
+        
         return response;
     }
     
