@@ -532,6 +532,23 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
      
     @Override
+    public List<ModuleGroup> getFeaturesByTech(String customerId, String techId, String type) throws PhrescoException {
+    	if(isDebugEnabled) {
+    		S_LOGGER.debug("Enetered into ServiceManagerImpl.getFeatures(String customerId)");
+    	}
+
+    	RestClient<ModuleGroup> moduleGroupClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
+    	Map<String, String> queryStringsMap = new HashMap<String, String>();
+    	queryStringsMap.put(REST_QUERY_CUSTOMERID, customerId);
+    	queryStringsMap.put(REST_QUERY_TECHID, techId);
+    	queryStringsMap.put(REST_QUERY_TYPE, type);
+    	moduleGroupClient.queryStrings(queryStringsMap);
+    	GenericType<List<ModuleGroup>> genericType = new GenericType<List<ModuleGroup>>(){};
+
+    	return moduleGroupClient.get(genericType);
+    }
+    
+    @Override
     public ModuleGroup getFeature(String moduleId, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getFeature(String moduleId, String customerId)");

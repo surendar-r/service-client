@@ -90,6 +90,8 @@ public interface ServiceManager {
 	
 	List<ModuleGroup> getFeatures(String customerId) throws PhrescoException;
 	
+	List<ModuleGroup> getFeaturesByTech(String customerId, String techId, String type) throws PhrescoException;
+	
 	ModuleGroup getFeature(String moduleId, String customerId) throws PhrescoException;
 	
 	ClientResponse createFeatures(List<ModuleGroup> modules, String customerId) throws PhrescoException;
