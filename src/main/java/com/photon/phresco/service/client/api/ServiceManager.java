@@ -150,6 +150,10 @@ public interface ServiceManager {
 	
 	ClientResponse createProject(ProjectInfo projectInfo) throws PhrescoException;
 	
+	ClientResponse updateProject(ProjectInfo projectInfo) throws PhrescoException;
+	
+	ClientResponse updateDocumentProject(ProjectInfo projectInfo) throws PhrescoException;
+	
 	List<Environment> getDefaultEnvFromServer() throws PhrescoException;
 	
 	List<GlobalURL> getGlobalUrls(String customerId) throws PhrescoException;

@@ -1085,9 +1085,32 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             S_LOGGER.debug("Entered into ServiceManagerImpl.createProject(ProjectInfo projectInfo)");
         }
 
-        RestClient<ProjectInfo> projectClient = getRestClient(REST_API_PROJECT);
+        RestClient<ProjectInfo> projectClient = getRestClient(REST_API_PROJECT + REST_API_PROJECT_CREATE);
 
         return projectClient.create(projectInfo, MEDIATYPE_ZIP, MediaType.APPLICATION_JSON);
+    }
+    
+    @Override
+    public ClientResponse updateProject(ProjectInfo projectInfo) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.updateProject(ProjectInfo projectInfo)");
+        }
+
+        RestClient<ProjectInfo> projectClient = getRestClient(REST_API_PROJECT + REST_API_PROJECT_UPDATE);
+
+        return projectClient.create(projectInfo, MEDIATYPE_ZIP, MediaType.APPLICATION_JSON);
+    }
+    
+    @Override
+    public ClientResponse updateDocumentProject(ProjectInfo projectInfo) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.updateDocumentProject(ProjectInfo projectInfo)");
+        }
+        
+        RestClient<ProjectInfo> projectClient = getRestClient(REST_API_PROJECT + REST_APP_UPDATEDOCS);
+        ClientResponse response = projectClient.create(projectInfo, MediaType.APPLICATION_OCTET_STREAM, MediaType.APPLICATION_JSON);
+        
+        return response;
     }
     
     @Override
