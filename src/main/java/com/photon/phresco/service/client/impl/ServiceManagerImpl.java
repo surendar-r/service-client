@@ -1024,7 +1024,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             S_LOGGER.debug("Entered into ServiceManagerImpl.getDownloadInfosFromServer()");
         }
     	
-    	RestClient<DownloadInfo> downloadClient = getRestClient(REST_API_ADMIN + REST_API_DOWNLOADS);
+    	RestClient<DownloadInfo> downloadClient = getRestClient(REST_API_COMPONENT + REST_API_DOWNLOADS);
 		GenericType<List<DownloadInfo>> genericType = new GenericType<List<DownloadInfo>>(){};
 		
 		return downloadClient.get(genericType);
@@ -1059,7 +1059,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             S_LOGGER.debug("Entered into ServiceManagerImpl.createDownloadInfo(List<DownloadInfo> downloadInfo)");
         }
     	
-    	RestClient<DownloadInfo> downloadClient = getRestClient(REST_API_ADMIN + REST_API_DOWNLOADS);
+    	RestClient<DownloadInfo> downloadClient = getRestClient(REST_API_COMPONENT + REST_API_DOWNLOADS);
     	ClientResponse response = downloadClient.create(downloadInfo);
     	CacheKey key = new CacheKey(DownloadInfo.class.getName());
     	manager.add(key, getDownloadsFromServer());
@@ -1073,7 +1073,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             S_LOGGER.debug("Entered into ServiceManagerImpl.updateDownload(DownloadInfo downloadInfo, String downloadId)");
         }
         
-        RestClient<DownloadInfo> downloadClient = getRestClient(REST_API_ADMIN + REST_API_DOWNLOADS);
+        RestClient<DownloadInfo> downloadClient = getRestClient(REST_API_COMPONENT + REST_API_DOWNLOADS);
         downloadClient.setPath(downloadId);
         GenericType<DownloadInfo> genericType = new GenericType<DownloadInfo>() {};
         downloadClient.updateById(downloadInfo, genericType);
@@ -1087,7 +1087,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             S_LOGGER.debug("Entered into ServiceManagerImpl.deleteDownloadInfo(String downloadId)");
         }
 
-        RestClient<DownloadInfo> downloadClient = getRestClient(REST_API_ADMIN + REST_API_DOWNLOADS);
+        RestClient<DownloadInfo> downloadClient = getRestClient(REST_API_COMPONENT + REST_API_DOWNLOADS);
         downloadClient.setPath(downloadId);
         ClientResponse response = downloadClient.deleteById();
         CacheKey key = new CacheKey(DownloadInfo.class.getName());
