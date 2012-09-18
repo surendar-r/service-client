@@ -94,7 +94,7 @@ public interface ServiceManager {
 	
 	ModuleGroup getFeature(String moduleId, String customerId) throws PhrescoException;
 	
-	ClientResponse createFeatures(List<ModuleGroup> modules, String customerId) throws PhrescoException;
+	ClientResponse createFeatures(MultiPart multiPart, String customerId) throws PhrescoException;
 	
 	void updateFeature(ModuleGroup moduleGroup, String moduleId, String customerId) throws PhrescoException;
 	

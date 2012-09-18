@@ -572,13 +572,13 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public ClientResponse createFeatures(List<ModuleGroup> modules, String customerId) throws PhrescoException {
+    public ClientResponse createFeatures(MultiPart multiPart, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.createFeatures(List<ModuleGroup> modules)");
         }
         
         RestClient<ModuleGroup> moduleClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
-        ClientResponse response = moduleClient.create(modules);
+        ClientResponse response = moduleClient.create(multiPart);
         CacheKey key = new CacheKey(customerId, CACHE_FEATURES_KEY);
         manager.add(key, getModulesFromServer(customerId));
         
