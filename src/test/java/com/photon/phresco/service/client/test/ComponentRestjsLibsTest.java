@@ -64,7 +64,6 @@ public class ComponentRestjsLibsTest implements ServiceConstants {
 		moduleGroup.setName("TestjsLibsone");
 		moduleGroup.setCustomerId("photon");
 		moduleGroup.setTechId("php");
-		moduleGroup.setGroupId("phresco");
 		moduleGroup.setType("js"); 
 		modules.add(moduleGroup);
         RestClient<ModuleGroup> newApp = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
