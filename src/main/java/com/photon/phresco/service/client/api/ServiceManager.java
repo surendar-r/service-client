@@ -96,7 +96,7 @@ public interface ServiceManager {
 	
 	ClientResponse createFeatures(MultiPart multiPart, String customerId) throws PhrescoException;
 	
-	void updateFeature(ModuleGroup moduleGroup, String moduleId, String customerId) throws PhrescoException;
+	ClientResponse updateFeature(MultiPart multiPart, String moduleId, String customerId) throws PhrescoException;
 	
 	ClientResponse deleteFeature(String moduleId, String customerId) throws PhrescoException;
 	

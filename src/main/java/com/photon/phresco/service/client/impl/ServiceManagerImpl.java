@@ -574,7 +574,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     @Override
     public ClientResponse createFeatures(MultiPart multiPart, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
-            S_LOGGER.debug("Entered into ServiceManagerImpl.createFeatures(List<ModuleGroup> modules)");
+            S_LOGGER.debug("Entered into ServiceManagerImpl.createFeatures(MultiPart multiPart, String customerId)");
         }
         
         RestClient<ModuleGroup> moduleClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
@@ -586,17 +586,18 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public void updateFeature(ModuleGroup module, String moduleId, String customerId) throws PhrescoException {
+    public ClientResponse updateFeature(MultiPart multiPart, String moduleId, String customerId) throws PhrescoException {
     	if (isDebugEnabled) {
-    		S_LOGGER.debug("Entered into ServiceManagerImpl.updateFeatures(ModuleGroup module, String moduleId)");
+    		S_LOGGER.debug("Entered into ServiceManagerImpl.updateFeature(MultiPart multiPart, String moduleId, String customerId)");
     	}
      	
     	RestClient<ModuleGroup> editModule = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
      	editModule.setPath(moduleId);
- 		GenericType<ModuleGroup> genericType = new GenericType<ModuleGroup>() {};
- 		editModule.updateById(module, genericType);
+ 		ClientResponse response = editModule.create(multiPart);
  		CacheKey key = new CacheKey(customerId, CACHE_FEATURES_KEY);
  		manager.add(key, getModulesFromServer(customerId));
+ 		
+ 		return response;
     }
 
     @Override
