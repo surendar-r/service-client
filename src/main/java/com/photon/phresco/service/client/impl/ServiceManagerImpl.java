@@ -860,13 +860,13 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public ClientResponse createPilotProjects(List<ProjectInfo> proInfo, String customerId) throws PhrescoException {
+    public ClientResponse createPilotProjects(MultiPart multiPart, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.createPilotProjects(List<ProjectInfo> proInfo, String customerId)");
         }
         
         RestClient<ProjectInfo> pilotClient = getRestClient(REST_API_COMPONENT + REST_API_PILOTS);
-        ClientResponse response = pilotClient.create(proInfo);
+        ClientResponse response = pilotClient.create(multiPart);
         CacheKey key = new CacheKey(customerId, ProjectInfo.class.getName());
         manager.add(key, getPilotProjectsFromServer(customerId));
         

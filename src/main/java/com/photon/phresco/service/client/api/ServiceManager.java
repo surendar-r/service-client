@@ -124,7 +124,7 @@ public interface ServiceManager {
 	
 	ProjectInfo getPilotProject(String projectId, String customerId) throws PhrescoException;
 	
-	ClientResponse createPilotProjects(List<ProjectInfo> proInfo, String customerId) throws PhrescoException;
+	ClientResponse createPilotProjects(MultiPart multiPart, String customerId) throws PhrescoException;
 	
 	void updatePilotProject(ProjectInfo projectInfo, String projectId, String customerId) throws PhrescoException;
 	
