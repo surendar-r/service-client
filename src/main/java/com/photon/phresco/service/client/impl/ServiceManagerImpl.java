@@ -30,24 +30,22 @@ import javax.ws.rs.core.MediaType;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 
+import com.photon.phresco.commons.model.ApplicationInfo;
+import com.photon.phresco.commons.model.ApplicationType;
+import com.photon.phresco.commons.model.ArtifactGroup;
 import com.photon.phresco.commons.model.Customer;
+import com.photon.phresco.commons.model.DownloadInfo;
 import com.photon.phresco.commons.model.Permission;
+import com.photon.phresco.commons.model.ProjectInfo;
+import com.photon.phresco.commons.model.Property;
 import com.photon.phresco.commons.model.Role;
+import com.photon.phresco.commons.model.SettingsTemplate;
+import com.photon.phresco.commons.model.Technology;
 import com.photon.phresco.commons.model.User;
+import com.photon.phresco.commons.model.VideoInfo;
+import com.photon.phresco.commons.model.WebService;
 import com.photon.phresco.configuration.Environment;
 import com.photon.phresco.exception.PhrescoException;
-import com.photon.phresco.model.AdminConfigInfo;
-import com.photon.phresco.model.ApplicationType;
-import com.photon.phresco.model.Database;
-import com.photon.phresco.model.DownloadInfo;
-import com.photon.phresco.model.GlobalURL;
-import com.photon.phresco.model.ModuleGroup;
-import com.photon.phresco.model.ProjectInfo;
-import com.photon.phresco.model.Server;
-import com.photon.phresco.model.SettingsTemplate;
-import com.photon.phresco.model.Technology;
-import com.photon.phresco.model.VideoInfo;
-import com.photon.phresco.model.WebService;
 import com.photon.phresco.service.client.api.Content;
 import com.photon.phresco.service.client.api.ServiceClientConstant;
 import com.photon.phresco.service.client.api.ServiceContext;
@@ -349,26 +347,26 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 	    return clientResponse;
     }
     
-    private List<Server> getServersFromServer(String customerId) throws PhrescoException {
+    private List<DownloadInfo> getServersFromServer(String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getServers(String customerId)");
         }
     	
-		RestClient<Server> serverClient = getRestClient(REST_API_COMPONENT + REST_API_SERVERS);
+		RestClient<DownloadInfo> serverClient = getRestClient(REST_API_COMPONENT + REST_API_SERVERS);
         serverClient.queryString(REST_QUERY_CUSTOMERID, customerId);
-		GenericType<List<Server>> genericType = new GenericType<List<Server>>(){};
+		GenericType<List<DownloadInfo>> genericType = new GenericType<List<DownloadInfo>>(){};
 		
 		return serverClient.get(genericType);
 	}
     
     @Override
-    public List<Server> getServers(String customerId) throws PhrescoException {
+    public List<DownloadInfo> getServers(String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getServers(String techId, String customerId)");
         }
     	
-        CacheKey key = new CacheKey(Server.class.getName());
-		List<Server> servers = (List<Server>) manager.get(key);
+        CacheKey key = new CacheKey(DownloadInfo.class.getName());
+		List<DownloadInfo> servers = (List<DownloadInfo>) manager.get(key);
         if (CollectionUtils.isEmpty(servers)) {
         	servers = getServersFromServer(customerId);
         	manager.add(key, servers);
@@ -377,26 +375,26 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		return servers;
 	}
     
-    private List<Database> getDatabasesFromServer(String customerId) throws PhrescoException {
+    private List<DownloadInfo> getDatabasesFromServer(String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getDatabases(String customerId)");
         }
     	
-		RestClient<Database> dbClient = getRestClient(REST_API_COMPONENT + REST_API_DATABASES);
+		RestClient<DownloadInfo> dbClient = getRestClient(REST_API_COMPONENT + REST_API_DATABASES);
         dbClient.queryString(REST_QUERY_CUSTOMERID, customerId);
-		GenericType<List<Database>> genericType = new GenericType<List<Database>>(){};
+		GenericType<List<DownloadInfo>> genericType = new GenericType<List<DownloadInfo>>(){};
 		
 		return dbClient.get(genericType);
 	}
     
     @Override
-    public List<Database> getDatabases(String customerId) throws PhrescoException {
+    public List<DownloadInfo> getDatabases(String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getDatabases(String techId, String customerId)");
         }
     	
-        CacheKey key = new CacheKey(Database.class.getName());
-		List<Database> databases = (List<Database>) manager.get(key);
+        CacheKey key = new CacheKey(DownloadInfo.class.getName());
+		List<DownloadInfo> databases = (List<DownloadInfo>) manager.get(key);
         if (CollectionUtils.isEmpty(databases)) {
         	databases = getDatabasesFromServer(customerId);
         	manager.add(key, databases);
@@ -432,7 +430,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         List<WebService> webServiceByTechId = new ArrayList<WebService>();
         if (CollectionUtils.isNotEmpty(webServices)) {
         	for (WebService webService : webServices) {
-				if (webService.getTechnologies().contains(techId)) {
+				if (webService.getAppliesToTechs().contains(techId)) {
 					webServiceByTechId.add(webService);
 				}
 			}
@@ -441,29 +439,29 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		return webServiceByTechId;
 	}
     
-    private List<ModuleGroup> getModulesFromServer(String customerId) throws PhrescoException {
+    private List<ArtifactGroup> getModulesFromServer(String customerId) throws PhrescoException {
     	if (isDebugEnabled) {
     		S_LOGGER.debug("Entered into ServiceManagerImpl.getModulesFromServer(String customerId)");
     	}
 
-    	RestClient<ModuleGroup> moduleGroupClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
+    	RestClient<ArtifactGroup> moduleGroupClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
     	Map<String, String> headers = new HashMap<String, String>();
     	headers.put(REST_QUERY_CUSTOMERID, customerId);
     	headers.put(REST_QUERY_TYPE, REST_QUERY_TYPE_MODULE);
     	moduleGroupClient.queryStrings(headers);
-    	GenericType<List<ModuleGroup>> genericType = new GenericType<List<ModuleGroup>>(){};
+    	GenericType<List<ArtifactGroup>> genericType = new GenericType<List<ArtifactGroup>>(){};
 
     	return moduleGroupClient.get(genericType);
     }
     
     @Override
-    public List<ModuleGroup> getModules(String customerId) throws PhrescoException {
+    public List<ArtifactGroup> getModules(String customerId) throws PhrescoException {
     	if(isDebugEnabled) {
     		S_LOGGER.debug("Enetered into ServiceManagerImpl.getModules(String customerId)");
     	}
 
     	CacheKey key = new CacheKey(customerId, CACHE_MODULES_KEY);
-    	List<ModuleGroup> modules = (List<ModuleGroup>) manager.get(key);
+    	List<ArtifactGroup> modules = (List<ArtifactGroup>) manager.get(key);
 		if (CollectionUtils.isEmpty(modules)) {
 			modules = getModulesFromServer(customerId);
 			manager.add(key, modules);
@@ -472,29 +470,29 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	return modules;
     }
     
-    private List<ModuleGroup> getJSLibsFromServer(String customerId) throws PhrescoException {
+    private List<ArtifactGroup> getJSLibsFromServer(String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getJSLibsFromServer(String customerId)");
         }
     	
-    	RestClient<ModuleGroup> jsLibClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
+    	RestClient<ArtifactGroup> jsLibClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
     	Map<String, String> headers = new HashMap<String, String>();
     	headers.put(REST_QUERY_CUSTOMERID, customerId);
     	headers.put(REST_QUERY_TYPE, REST_QUERY_TYPE_JS);
     	jsLibClient.queryStrings(headers);
-    	GenericType<List<ModuleGroup>> genericType = new GenericType<List<ModuleGroup>>(){};
+    	GenericType<List<ArtifactGroup>> genericType = new GenericType<List<ArtifactGroup>>(){};
     	
     	return jsLibClient.get(genericType);
     }
     
     @Override
-    public List<ModuleGroup> getJsLibs(String customerId) throws PhrescoException {
+    public List<ArtifactGroup> getJsLibs(String customerId) throws PhrescoException {
     	if(isDebugEnabled) {
     		S_LOGGER.debug("Enetered into ServiceManagerImpl.getJsLibs(String customerId)");
     	}
 
     	CacheKey key = new CacheKey(customerId, CACHE_JSLIBS_KEY);
-    	List<ModuleGroup> modules = (List<ModuleGroup>) manager.get(key);
+    	List<ArtifactGroup> modules = (List<ArtifactGroup>) manager.get(key);
 		if (CollectionUtils.isEmpty(modules)) {
 			modules = getJSLibsFromServer(customerId);
 			manager.add(key, modules);
@@ -503,26 +501,26 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	return modules;
     }
     
-    private List<ModuleGroup> getFeaturesFromServer(String customerId) throws PhrescoException {
+    private List<ArtifactGroup> getFeaturesFromServer(String customerId) throws PhrescoException {
     	if (isDebugEnabled) {
     		S_LOGGER.debug("Entered into ServiceManagerImpl.getFeaturesFromServer(String customerId)");
     	}
 
-    	RestClient<ModuleGroup> moduleGroupClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
+    	RestClient<ArtifactGroup> moduleGroupClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
     	moduleGroupClient.queryString(REST_QUERY_CUSTOMERID, customerId);
-    	GenericType<List<ModuleGroup>> genericType = new GenericType<List<ModuleGroup>>(){};
+    	GenericType<List<ArtifactGroup>> genericType = new GenericType<List<ArtifactGroup>>(){};
 
     	return moduleGroupClient.get(genericType);
     }
     
     @Override
-    public List<ModuleGroup> getFeatures(String customerId) throws PhrescoException {
+    public List<ArtifactGroup> getFeatures(String customerId) throws PhrescoException {
     	if(isDebugEnabled) {
     		S_LOGGER.debug("Enetered into ServiceManagerImpl.getFeatures(String customerId)");
     	}
 
     	CacheKey key = new CacheKey(customerId, CACHE_FEATURES_KEY);
-    	List<ModuleGroup> modules = (List<ModuleGroup>) manager.get(key);
+    	List<ArtifactGroup> modules = (List<ArtifactGroup>) manager.get(key);
 		if (CollectionUtils.isEmpty(modules)) {
 			modules = getFeaturesFromServer(customerId);
 			manager.add(key, modules);
@@ -532,38 +530,38 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
      
     @Override
-    public List<ModuleGroup> getFeaturesByTech(String customerId, String techId, String type) throws PhrescoException {
+    public List<ArtifactGroup> getFeaturesByTech(String customerId, String techId, String type) throws PhrescoException {
     	if(isDebugEnabled) {
     		S_LOGGER.debug("Enetered into ServiceManagerImpl.getFeatures(String customerId)");
     	}
 
-    	RestClient<ModuleGroup> moduleGroupClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
+    	RestClient<ArtifactGroup> moduleGroupClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
     	Map<String, String> queryStringsMap = new HashMap<String, String>();
     	queryStringsMap.put(REST_QUERY_CUSTOMERID, customerId);
     	queryStringsMap.put(REST_QUERY_TECHID, techId);
     	queryStringsMap.put(REST_QUERY_TYPE, type);
     	moduleGroupClient.queryStrings(queryStringsMap);
-    	GenericType<List<ModuleGroup>> genericType = new GenericType<List<ModuleGroup>>(){};
+    	GenericType<List<ArtifactGroup>> genericType = new GenericType<List<ArtifactGroup>>(){};
 
     	return moduleGroupClient.get(genericType);
     }
     
     @Override
-    public ModuleGroup getFeature(String moduleId, String customerId) throws PhrescoException {
+    public ArtifactGroup getFeature(String moduleId, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getFeature(String moduleId, String customerId)");
         }
 
         CacheKey key = new CacheKey(customerId, CACHE_FEATURES_KEY);
-        List<ModuleGroup> modules = (List<ModuleGroup>) manager.get(key);
+        List<ArtifactGroup> modules = (List<ArtifactGroup>) manager.get(key);
         if (CollectionUtils.isEmpty(modules)) {
         	modules = getFeaturesFromServer(customerId);
 			manager.add(key, modules);
         }
         if (CollectionUtils.isNotEmpty(modules)) {
-        	for (ModuleGroup moduleGroup : modules) {
-				if (moduleGroup.getId().equals(moduleId)) {
-					return moduleGroup;
+        	for (ArtifactGroup ArtifactGroup : modules) {
+				if (ArtifactGroup.getId().equals(moduleId)) {
+					return ArtifactGroup;
 				}
 			}
         }
@@ -577,7 +575,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             S_LOGGER.debug("Entered into ServiceManagerImpl.createFeatures(MultiPart multiPart, String customerId)");
         }
         
-        RestClient<ModuleGroup> moduleClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
+        RestClient<ArtifactGroup> moduleClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
         ClientResponse response = moduleClient.create(multiPart);
         CacheKey key = new CacheKey(customerId, CACHE_FEATURES_KEY);
         manager.add(key, getModulesFromServer(customerId));
@@ -591,7 +589,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     		S_LOGGER.debug("Entered into ServiceManagerImpl.updateFeature(MultiPart multiPart, String moduleId, String customerId)");
     	}
      	
-    	RestClient<ModuleGroup> editModule = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
+    	RestClient<ArtifactGroup> editModule = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
      	editModule.setPath(moduleId);
  		ClientResponse response = editModule.create(multiPart);
  		CacheKey key = new CacheKey(customerId, CACHE_FEATURES_KEY);
@@ -606,7 +604,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
      		S_LOGGER.debug("Entered into ServiceManagerImpl.deleteFeatures(String moduleId, String customerId)");
      	}
 
-     	RestClient<ModuleGroup> deleteModule = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
+     	RestClient<ArtifactGroup> deleteModule = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
      	deleteModule.setPath(moduleId);
      	ClientResponse response = deleteModule.deleteById();
      	CacheKey key = new CacheKey(customerId, CACHE_FEATURES_KEY);
@@ -803,28 +801,28 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	return response;
     }
     
-    private List<ProjectInfo> getPilotProjectsFromServer(String customerId) throws PhrescoException {
+    private List<ApplicationInfo> getPilotProjectsFromServer(String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getPilotProjectFromServer(String customerId)");
         }
     	
-    	RestClient<ProjectInfo> pilotClient = getRestClient(REST_API_COMPONENT + REST_API_PILOTS);
+    	RestClient<ApplicationInfo> pilotClient = getRestClient(REST_API_COMPONENT + REST_API_PILOTS);
     	Map<String, String> headers = new HashMap<String, String>();
     	headers.put(REST_QUERY_CUSTOMERID, customerId);
     	pilotClient.queryStrings(headers);
-		GenericType<List<ProjectInfo>> genericType = new GenericType<List<ProjectInfo>>(){};
+		GenericType<List<ApplicationInfo>> genericType = new GenericType<List<ApplicationInfo>>(){};
 		
 		return pilotClient.get(genericType);
     }
     
     @Override
-    public List<ProjectInfo> getPilotProjects(String customerId) throws PhrescoException {
+    public List<ApplicationInfo> getPilotProjects(String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getPilotProjects(String customerId)" + customerId);
         }
         
         CacheKey key = new CacheKey(customerId, ProjectInfo.class.getName());
-        List<ProjectInfo> pilotProjects = (List<ProjectInfo>) manager.get(key);
+        List<ApplicationInfo> pilotProjects = (List<ApplicationInfo>) manager.get(key);
         try {	
     		if (CollectionUtils.isEmpty(pilotProjects)) {
     			pilotProjects = getPilotProjectsFromServer(customerId);
@@ -838,19 +836,19 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public ProjectInfo getPilotProject(String projectId, String customerId) throws PhrescoException {
+    public ApplicationInfo getPilotProject(String projectId, String customerId) throws PhrescoException {
     	if (isDebugEnabled) {
     		S_LOGGER.debug("Entered into ServiceManagerImpl.getPilotProject(String projectId, String customerId)");
     	}
     	
-    	CacheKey key = new CacheKey(customerId, ProjectInfo.class.getName());
-    	List<ProjectInfo> pilotProjects = (List<ProjectInfo>) manager.get(key);
+    	CacheKey key = new CacheKey(customerId, ApplicationInfo.class.getName());
+    	List<ApplicationInfo> pilotProjects = (List<ApplicationInfo>) manager.get(key);
     	if (CollectionUtils.isEmpty(pilotProjects)) {
 			pilotProjects = getPilotProjectsFromServer(customerId);
 			manager.add(key, pilotProjects);
 		}
     	if (CollectionUtils.isNotEmpty(pilotProjects)) {
-    		for (ProjectInfo pilotProject : pilotProjects) {
+    		for (ApplicationInfo pilotProject : pilotProjects) {
 				if (pilotProject.getId().equals(projectId)) {
 					return pilotProject;
 				}
@@ -875,15 +873,15 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public void updatePilotProject(ProjectInfo projectInfo, String projectId, String customerId) throws PhrescoException {
+    public void updatePilotProject(ApplicationInfo appInfo, String projectId, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.updatePilotProject(ProjectInfo projectInfo, String projectId)" + projectId);
         }
         
-        RestClient<ProjectInfo> pilotproClient = getRestClient(REST_API_COMPONENT + REST_API_PILOTS);
+        RestClient<ApplicationInfo> pilotproClient = getRestClient(REST_API_COMPONENT + REST_API_PILOTS);
         pilotproClient.setPath(projectId);
-        GenericType<ProjectInfo> genericType = new GenericType<ProjectInfo>() {};
-        pilotproClient.updateById(projectInfo, genericType);
+        GenericType<ApplicationInfo> genericType = new GenericType<ApplicationInfo>() {};
+        pilotproClient.updateById(appInfo, genericType);
         CacheKey key = new CacheKey(customerId, ProjectInfo.class.getName());
         manager.add(key, getPilotProjectsFromServer(customerId));
     }
@@ -1098,34 +1096,34 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
 
     @Override
-    public ClientResponse createProject(ProjectInfo projectInfo) throws PhrescoException {
+    public ClientResponse createProject(ApplicationInfo projectInfo) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.createProject(ProjectInfo projectInfo)");
         }
 
-        RestClient<ProjectInfo> projectClient = getRestClient(REST_API_PROJECT + REST_API_PROJECT_CREATE);
+        RestClient<ApplicationInfo> projectClient = getRestClient(REST_API_PROJECT + REST_API_PROJECT_CREATE);
 
         return projectClient.create(projectInfo, MEDIATYPE_ZIP, MediaType.APPLICATION_JSON);
     }
     
     @Override
-    public ClientResponse updateProject(ProjectInfo projectInfo) throws PhrescoException {
+    public ClientResponse updateProject(ApplicationInfo projectInfo) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.updateProject(ProjectInfo projectInfo)");
         }
 
-        RestClient<ProjectInfo> projectClient = getRestClient(REST_API_PROJECT + REST_API_PROJECT_UPDATE);
+        RestClient<ApplicationInfo> projectClient = getRestClient(REST_API_PROJECT + REST_API_PROJECT_UPDATE);
 
         return projectClient.create(projectInfo, MEDIATYPE_ZIP, MediaType.APPLICATION_JSON);
     }
     
     @Override
-    public ClientResponse updateDocumentProject(ProjectInfo projectInfo) throws PhrescoException {
+    public ClientResponse updateDocumentProject(ApplicationInfo projectInfo) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.updateDocumentProject(ProjectInfo projectInfo)");
         }
         
-        RestClient<ProjectInfo> projectClient = getRestClient(REST_API_PROJECT + REST_APP_UPDATEDOCS);
+        RestClient<ApplicationInfo> projectClient = getRestClient(REST_API_PROJECT + REST_APP_UPDATEDOCS);
         ClientResponse response = projectClient.create(projectInfo, MediaType.APPLICATION_OCTET_STREAM, MediaType.APPLICATION_JSON);
         
         return response;
@@ -1143,25 +1141,25 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		return envClient.get(genericType);
     }
     
-    private List<GlobalURL> getGlobalUrlFromServer(String customerId) throws PhrescoException {
+    private List<Property> getGlobalUrlFromServer(String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getGlobalUrlFromServer(String customerId)");
         }
     	
-    	RestClient<GlobalURL> globalUrlClient = getRestClient(REST_API_ADMIN + REST_API_GLOBALURL);
-		GenericType<List<GlobalURL>> genericType = new GenericType<List<GlobalURL>>(){};
+    	RestClient<Property> globalUrlClient = getRestClient(REST_API_ADMIN + REST_API_GLOBALURL);
+		GenericType<List<Property>> genericType = new GenericType<List<Property>>(){};
 		
 		return globalUrlClient.get(genericType);
     }
 
     @Override
-    public List<GlobalURL> getGlobalUrls(String customerId) throws PhrescoException {
+    public List<Property> getGlobalUrls(String customerId) throws PhrescoException {
     	if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getGlobalUrls(List<GlobalURL> globalUrl)");
         }
     	
-    	CacheKey key = new CacheKey(GlobalURL.class.getName());
-     	List<GlobalURL> globalUrls = (List<GlobalURL>) manager.get(key);
+    	CacheKey key = new CacheKey(Property.class.getName());
+     	List<Property> globalUrls = (List<Property>) manager.get(key);
     	try {	
     		if (CollectionUtils.isEmpty(globalUrls)) {
     			globalUrls = getGlobalUrlFromServer(customerId);
@@ -1175,19 +1173,19 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public GlobalURL getGlobalUrl(String globalUrlId, String customerId) throws PhrescoException {
+    public Property getGlobalUrl(String globalUrlId, String customerId) throws PhrescoException {
     	if(isDebugEnabled){
     		S_LOGGER.debug("Entered into ServiceManagerImpl.getGlobalUrl(String globalUrlId, String customerId)");
     	}
     	
-    	CacheKey key = new CacheKey(GlobalURL.class.getName());
-    	List<GlobalURL> globalUrls = (List<GlobalURL>) manager.get(key);
+    	CacheKey key = new CacheKey(Property.class.getName());
+    	List<Property> globalUrls = (List<Property>) manager.get(key);
     	if (CollectionUtils.isEmpty(globalUrls)) {
     		globalUrls = getGlobalUrlFromServer(customerId);
 			manager.add(key, globalUrls);
     	}
     	if (CollectionUtils.isNotEmpty(globalUrls)) {
-    		for (GlobalURL globalUrl : globalUrls) {
+    		for (Property globalUrl : globalUrls) {
 				if (globalUrl.getId().equals(globalUrlId)) {
 					return globalUrl;
 				}
@@ -1198,30 +1196,30 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public ClientResponse createGlobalUrl(List<GlobalURL> globalUrl, String customerId) throws PhrescoException {
+    public ClientResponse createGlobalUrl(List<Property> globalUrl, String customerId) throws PhrescoException {
     	if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.createGlobalUrl(List<GlobalURL> globalUrl)");
         }
     	
-    	RestClient<GlobalURL> globalClient = getRestClient(REST_API_ADMIN + REST_API_GLOBALURL);
+    	RestClient<Property> globalClient = getRestClient(REST_API_ADMIN + REST_API_GLOBALURL);
     	ClientResponse response = globalClient.create(globalUrl);
-    	CacheKey key = new CacheKey(GlobalURL.class.getName());
+    	CacheKey key = new CacheKey(Property.class.getName());
     	manager.add(key, getGlobalUrlFromServer(customerId));
     	
     	return response;
     }
     
     @Override
-    public void updateGlobalUrl(GlobalURL globalUrl, String globalurlId, String customerId) throws PhrescoException {
+    public void updateGlobalUrl(Property globalUrl, String globalurlId, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.updateGlobalUrl(GlobalURL globalUrl, String globalurlId, String customerId)");
         }
     	
-    	RestClient<GlobalURL> editGlobalUrl = getRestClient(REST_API_COMPONENT + REST_API_GLOBALURL);
+    	RestClient<Property> editGlobalUrl = getRestClient(REST_API_COMPONENT + REST_API_GLOBALURL);
     	editGlobalUrl.setPath(globalurlId);
-		GenericType<GlobalURL> genericType = new GenericType<GlobalURL>() {};
+		GenericType<Property> genericType = new GenericType<Property>() {};
 		editGlobalUrl.updateById(globalUrl, genericType);
-		CacheKey key = new CacheKey(customerId, GlobalURL.class.getName());
+		CacheKey key = new CacheKey(customerId, Property.class.getName());
 		manager.add(key, getGlobalUrlFromServer(customerId));
     }
     
@@ -1231,10 +1229,10 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             S_LOGGER.debug("Entered into ServiceManagerImpl.deleteglobalUrl(String globalurlId, String customerId)");
         }
 
-        RestClient<GlobalURL> globalUrlClient = getRestClient(REST_API_ADMIN + REST_API_GLOBALURL);
+        RestClient<Property> globalUrlClient = getRestClient(REST_API_ADMIN + REST_API_GLOBALURL);
         globalUrlClient.setPath(globalurlId);
         ClientResponse response = globalUrlClient.deleteById();
-        CacheKey key = new CacheKey(GlobalURL.class.getName());
+        CacheKey key = new CacheKey(Property.class.getName());
         manager.add(key, getGlobalUrlFromServer(customerId));
 
         return response;
@@ -1363,15 +1361,15 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public AdminConfigInfo getForumPath(String customerId) throws PhrescoException {
+    public Property getForumPath(String customerId) throws PhrescoException {
     	if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getForumPath(String customerId)");
         }
     	
-    	RestClient<AdminConfigInfo> adminClient = getRestClient(REST_API_ADMIN + REST_API_FORUMS);
-    	GenericType<AdminConfigInfo> genericType = new GenericType<AdminConfigInfo>() {};
+    	RestClient<Property> adminClient = getRestClient(REST_API_ADMIN + REST_API_FORUMS);
+    	GenericType<Property> genericType = new GenericType<Property>() {};
     	adminClient.queryString(REST_QUERY_CUSTOMERID, customerId);
-    	AdminConfigInfo adminConfigInfo = adminClient.getById(genericType);
+    	Property adminConfigInfo = adminClient.getById(genericType);
     	
     	return adminConfigInfo;
     }

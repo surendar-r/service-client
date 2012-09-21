@@ -22,24 +22,21 @@ package com.photon.phresco.service.client.api;
 import java.io.InputStream;
 import java.util.List;
 
+import com.photon.phresco.commons.model.ApplicationInfo;
+import com.photon.phresco.commons.model.ApplicationType;
+import com.photon.phresco.commons.model.ArtifactGroup;
 import com.photon.phresco.commons.model.Customer;
+import com.photon.phresco.commons.model.DownloadInfo;
 import com.photon.phresco.commons.model.Permission;
+import com.photon.phresco.commons.model.Property;
 import com.photon.phresco.commons.model.Role;
+import com.photon.phresco.commons.model.SettingsTemplate;
+import com.photon.phresco.commons.model.Technology;
 import com.photon.phresco.commons.model.User;
+import com.photon.phresco.commons.model.VideoInfo;
+import com.photon.phresco.commons.model.WebService;
 import com.photon.phresco.configuration.Environment;
 import com.photon.phresco.exception.PhrescoException;
-import com.photon.phresco.model.AdminConfigInfo;
-import com.photon.phresco.model.ApplicationType;
-import com.photon.phresco.model.Database;
-import com.photon.phresco.model.DownloadInfo;
-import com.photon.phresco.model.GlobalURL;
-import com.photon.phresco.model.ModuleGroup;
-import com.photon.phresco.model.ProjectInfo;
-import com.photon.phresco.model.Server;
-import com.photon.phresco.model.SettingsTemplate;
-import com.photon.phresco.model.Technology;
-import com.photon.phresco.model.VideoInfo;
-import com.photon.phresco.model.WebService;
 import com.photon.phresco.service.client.impl.RestClient;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.multipart.BodyPart;
@@ -78,21 +75,21 @@ public interface ServiceManager {
 	
 	ApplicationType getApplicationType(String appTypeId, String customerId) throws PhrescoException;
 	
-	List<Server> getServers(String customerId) throws PhrescoException;
+	List<DownloadInfo> getServers(String customerId) throws PhrescoException;
 	
-	List<Database> getDatabases(String customerId) throws PhrescoException;
+	List<DownloadInfo> getDatabases(String customerId) throws PhrescoException;
 	
 	List<WebService> getWebServices(String techId, String customerId) throws PhrescoException;
 	
-	List<ModuleGroup> getModules(String customerId) throws PhrescoException;
+	List<ArtifactGroup> getModules(String customerId) throws PhrescoException;
 	
-	List<ModuleGroup> getJsLibs(String customerId) throws PhrescoException;
+	List<ArtifactGroup> getJsLibs(String customerId) throws PhrescoException;
 	
-	List<ModuleGroup> getFeatures(String customerId) throws PhrescoException;
+	List<ArtifactGroup> getFeatures(String customerId) throws PhrescoException;
 	
-	List<ModuleGroup> getFeaturesByTech(String customerId, String techId, String type) throws PhrescoException;
+	List<ArtifactGroup> getFeaturesByTech(String customerId, String techId, String type) throws PhrescoException;
 	
-	ModuleGroup getFeature(String moduleId, String customerId) throws PhrescoException;
+	ArtifactGroup getFeature(String moduleId, String customerId) throws PhrescoException;
 	
 	ClientResponse createFeatures(MultiPart multiPart, String customerId) throws PhrescoException;
 	
@@ -120,13 +117,13 @@ public interface ServiceManager {
 	
 	ClientResponse deleteConfigTemp(String id, String customerId) throws PhrescoException;
 	
-	List<ProjectInfo> getPilotProjects(String techId) throws PhrescoException;
+	List<ApplicationInfo> getPilotProjects(String techId) throws PhrescoException;
 	
-	ProjectInfo getPilotProject(String projectId, String customerId) throws PhrescoException;
+	ApplicationInfo getPilotProject(String projectId, String customerId) throws PhrescoException;
 	
 	ClientResponse createPilotProjects(MultiPart multiPart, String customerId) throws PhrescoException;
 	
-	void updatePilotProject(ProjectInfo projectInfo, String projectId, String customerId) throws PhrescoException;
+	void updatePilotProject(ApplicationInfo appInfo, String projectId, String customerId) throws PhrescoException;
 	
 	ClientResponse deletePilotProject(String projectId, String customerId) throws PhrescoException;
 	
@@ -150,23 +147,23 @@ public interface ServiceManager {
 	
 	ClientResponse deleteDownloadInfo(String id, String customerId) throws PhrescoException;
 	
-	ClientResponse createProject(ProjectInfo projectInfo) throws PhrescoException;
+	ClientResponse createProject(ApplicationInfo appInfo) throws PhrescoException;
 	
-	ClientResponse updateProject(ProjectInfo projectInfo) throws PhrescoException;
+	ClientResponse updateProject(ApplicationInfo appInfo) throws PhrescoException;
 	
-	ClientResponse updateDocumentProject(ProjectInfo projectInfo) throws PhrescoException;
+	ClientResponse updateDocumentProject(ApplicationInfo appInfo) throws PhrescoException;
 	
 	List<Environment> getDefaultEnvFromServer() throws PhrescoException;
 	
-	List<GlobalURL> getGlobalUrls(String customerId) throws PhrescoException;
+	List<Property> getGlobalUrls(String customerId) throws PhrescoException;
 	
-	GlobalURL getGlobalUrl(String globalUrlId, String customerId) throws PhrescoException;
+	Property getGlobalUrl(String globalUrlId, String customerId) throws PhrescoException;
 	
-	ClientResponse createGlobalUrl(List<GlobalURL> globalUrl, String customerId) throws PhrescoException;
+	ClientResponse createGlobalUrl(List<Property> globalUrl, String customerId) throws PhrescoException;
 	
 	ClientResponse deleteglobalUrl(String globalurlId, String customerId) throws PhrescoException;
 	
-	void updateGlobalUrl(GlobalURL globalUrl, String globalurlId, String customerId) throws PhrescoException;
+	void updateGlobalUrl(Property globalUrl, String globalurlId, String customerId) throws PhrescoException;
 	
 	List<Permission> getPermissions() throws PhrescoException;
 	
@@ -184,5 +181,5 @@ public interface ServiceManager {
 	
 	ClientResponse getEmailExtPlugin(String customerId) throws PhrescoException;
 	
-	AdminConfigInfo getForumPath(String customerId) throws PhrescoException;
+	Property getForumPath(String customerId) throws PhrescoException;
 }
