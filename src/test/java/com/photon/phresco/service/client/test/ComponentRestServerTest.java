@@ -28,8 +28,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.photon.phresco.commons.model.DownloadInfo;
 import com.photon.phresco.exception.PhrescoException;
-import com.photon.phresco.model.Server;
 import com.photon.phresco.service.client.api.ServiceClientConstant;
 import com.photon.phresco.service.client.api.ServiceContext;
 import com.photon.phresco.service.client.api.ServiceManager;
@@ -37,6 +37,7 @@ import com.photon.phresco.service.client.factory.ServiceClientFactory;
 import com.photon.phresco.service.client.impl.RestClient;
 import com.photon.phresco.service.client.util.RestUtil;
 import com.photon.phresco.util.ServiceConstants;
+import com.sun.corba.se.spi.activation.Server;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.GenericType;
 
@@ -59,15 +60,13 @@ public class ComponentRestServerTest implements ServiceConstants {
 		List<String> technologies=new ArrayList<String>();
 		
 		technologies.add("Html5");
-	    List<Server> server = new ArrayList<Server>();
-	    Server ss = new Server();
+	    List<DownloadInfo> server = new ArrayList<DownloadInfo>();
+	    DownloadInfo ss = new DownloadInfo();
 	    ss.setId("testServer");
 	    ss.setName("TestServer");
 	    ss.setDescription("This is a test server");
-	    ss.setCustomerId("photon");
-	    ss.setTechnologies(technologies);
 	    server.add(ss);
-        RestClient<Server> newApp = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_SERVERS);
+        RestClient<DownloadInfo> newApp = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_SERVERS);
         ClientResponse clientResponse = newApp.create(server);
     }
 	
@@ -82,49 +81,46 @@ public class ComponentRestServerTest implements ServiceConstants {
 
 	@Test
 	public void testUpdateServers() throws PhrescoException{
-		RestClient<Server> webserviceClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_SERVERS);
+		RestClient<DownloadInfo> webserviceClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_SERVERS);
 		List<String> technologies=new ArrayList<String>();
 		technologies.add("Html5");
-	    List<Server> server = new ArrayList<Server>();
-	    Server ss = new Server();
+	    List<DownloadInfo> server = new ArrayList<DownloadInfo>();
+	    DownloadInfo ss = new DownloadInfo();
 	    ss.setId("testServer");
 	    ss.setName("TestServer1");
 	    ss.setDescription("This is a test server update");
-	    ss.setCustomerId("photon");
-	    ss.setTechnologies(technologies);
 	    server.add(ss);
-	    GenericType<List<Server>> genericType = new GenericType<List<Server>>() {};
+	    GenericType<List<DownloadInfo>> genericType = new GenericType<List<DownloadInfo>>() {};
 	   
-	    List<Server> clientResponse = webserviceClient.update(server, genericType);
+	    List<DownloadInfo> clientResponse = webserviceClient.update(server, genericType);
 	    
 	}
 	
 	@Test
     public void testGetServerById() throws PhrescoException {
 		String Id = "testServer";
-    	RestClient<Server> srClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_SERVERS);
+    	RestClient<DownloadInfo> srClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_SERVERS);
     	srClient.setPath(Id);
-		GenericType<Server> genericType = new GenericType<Server>(){};
-		Server server = srClient.getById(genericType);
+		GenericType<DownloadInfo> genericType = new GenericType<DownloadInfo>(){};
+		DownloadInfo server = srClient.getById(genericType);
 		assertNotNull(server);
     }
 	
 	@Test
 	public void testUpdateServerById() throws PhrescoException {
-        RestClient<Server> editServer = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_SERVERS);
-        Server ss = new Server();
+        RestClient<DownloadInfo> editServer = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_SERVERS);
+        DownloadInfo ss = new DownloadInfo();
         ss.setId("testServer");
 	    ss.setName("TestServerUpdate");
 	    ss.setDescription("This is a test Server updateId");
-	    ss.setCustomerId("photon");
 	    editServer.setPath("testServer");
-        GenericType<Server> genericType = new GenericType<Server>() {};
+        GenericType<DownloadInfo> genericType = new GenericType<DownloadInfo>() {};
         editServer.updateById(ss, genericType);
     }
 	
 	@Test
 	public void testDeleteServer() throws PhrescoException {
-        RestClient<Server> deleteServer = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_SERVERS);
+        RestClient<DownloadInfo> deleteServer = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_SERVERS);
         deleteServer.setPath("testServer");
         ClientResponse clientResponse = deleteServer.deleteById();
     }

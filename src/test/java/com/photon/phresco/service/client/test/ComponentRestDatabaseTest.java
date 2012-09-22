@@ -26,11 +26,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
+import com.photon.phresco.commons.model.DownloadInfo;
+import com.photon.phresco.commons.model.Element;
 import com.photon.phresco.exception.PhrescoException;
-import com.photon.phresco.model.Database;
 import com.photon.phresco.service.client.api.ServiceClientConstant;
 import com.photon.phresco.service.client.api.ServiceContext;
 import com.photon.phresco.service.client.api.ServiceManager;
@@ -56,80 +56,80 @@ public class ComponentRestDatabaseTest implements ServiceConstants {
 	}
 	
 	@Test
-	public void testCreateDatabase() throws PhrescoException {
-		List<String> technologies=new ArrayList<String>();
-		
-		technologies.add("Html5");
-	    List<Database> database = new ArrayList<Database>();
-	    Database db = new Database();
-	    db.setId("testDatabase");
-	    db.setName("TestDatabase");
-	    db.setDescription("This is a test database");
-	    db.setCustomerId("photon");
-	    db.setTechnologies(technologies);
-	    database.add(db);
-        RestClient<Database> newApp = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_DATABASES);
-        ClientResponse clientResponse = newApp.create(database);
+	public void testCreateDownloadInfo() throws PhrescoException {
+		List<Element> technologies = new ArrayList<Element>();
+		Element tech = new Element();
+		tech.setId("tech-php");
+		technologies.add(tech);
+	    List<DownloadInfo> DownloadInfo = new ArrayList<DownloadInfo>();
+	    DownloadInfo db = new DownloadInfo();
+	    db.setId("testDownloadInfo");
+	    db.setName("TestDownloadInfo");
+	    db.setDescription("This is a test DownloadInfo");
+	    db.setAppliesToTechs(technologies);
+	    DownloadInfo.add(db);
+        RestClient<DownloadInfo> newApp = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_DATABASES);
+        ClientResponse clientResponse = newApp.create(DownloadInfo);
     }
 	
 	
 	@Test
-    public void testGetDatabases() throws PhrescoException {
+    public void testGetDownloadInfos() throws PhrescoException {
 		String techId="Html5";
-    	RestClient<Database> dbClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_DATABASES);
+    	RestClient<DownloadInfo> dbClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_DATABASES);
     	dbClient.queryString(REST_QUERY_TECHID, techId);
     	dbClient.queryString(REST_QUERY_CUSTOMERID, "photon");
-		GenericType<List<Database>> genericType = new GenericType<List<Database>>(){};
-		List<Database> databases = dbClient.get(genericType);
-		assertNotNull(databases);
+		GenericType<List<DownloadInfo>> genericType = new GenericType<List<DownloadInfo>>(){};
+		List<DownloadInfo> DownloadInfos = dbClient.get(genericType);
+		assertNotNull(DownloadInfos);
     }
 
 	@Test
-	public void testUpdateDatabase() throws PhrescoException{
-		RestClient<Database> databaseClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_DATABASES);
-		List<String> technologies=new ArrayList<String>();
-		technologies.add("Html5");
-	    List<Database> database = new ArrayList<Database>();
-	    Database db = new Database();
-	    db.setId("testDatabase");
-	    db.setName("TestDatabase");
-	    db.setDescription("This is a test database update");
-	    db.setCustomerId("photon");
-	    db.setTechnologies(technologies);
-	    database.add(db);
-	    GenericType<List<Database>> genericType = new GenericType<List<Database>>() {};
+	public void testUpdateDownloadInfo() throws PhrescoException{
+		RestClient<DownloadInfo> DownloadInfoClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_DATABASES);
+		List<Element> technologies = new ArrayList<Element>();
+		Element tech = new Element();
+		tech.setId("tech-php");
+		technologies.add(tech);
+	    List<DownloadInfo> DownloadInfo = new ArrayList<DownloadInfo>();
+	    DownloadInfo db = new DownloadInfo();
+	    db.setId("testDownloadInfo");
+	    db.setName("TestDownloadInfo");
+	    db.setDescription("This is a test DownloadInfo update");
+	    db.setAppliesToTechs(technologies);
+	    DownloadInfo.add(db);
+	    GenericType<List<DownloadInfo>> genericType = new GenericType<List<DownloadInfo>>() {};
 	   
-	    List<Database> clientResponse = databaseClient.update(database, genericType);
+	    List<DownloadInfo> clientResponse = DownloadInfoClient.update(DownloadInfo, genericType);
 	    
 	}
 
 	@Test
-    public void testGetDatabasesById() throws PhrescoException {
-		String Id = "testDatabase";
-    	RestClient<Database> dbClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_DATABASES);
+    public void testGetDownloadInfosById() throws PhrescoException {
+		String Id = "testDownloadInfo";
+    	RestClient<DownloadInfo> dbClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_DATABASES);
     	dbClient.setPath(Id);
-		GenericType<Database> genericType = new GenericType<Database>(){};
-		Database databases=dbClient.getById(genericType);
-		assertNotNull(databases);
+		GenericType<DownloadInfo> genericType = new GenericType<DownloadInfo>(){};
+		DownloadInfo DownloadInfos=dbClient.getById(genericType);
+		assertNotNull(DownloadInfos);
     }
 	
 	@Test
-	public void testUpdateDatabaseById() throws PhrescoException {
-        RestClient<Database> editDB = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_DATABASES);
-        Database db = new Database();
-        db.setId("testDatabase");
-	    db.setName("TestDatabaseUpdateBYId");
-	    db.setDescription("This is a test database updateId");
-	    db.setCustomerId("photon");
-	    editDB.setPath("testDatabase");
-        GenericType<Database> genericType = new GenericType<Database>() {};
+	public void testUpdateDownloadInfoById() throws PhrescoException {
+        RestClient<DownloadInfo> editDB = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_DATABASES);
+        DownloadInfo db = new DownloadInfo();
+        db.setId("testDownloadInfo");
+	    db.setName("TestDownloadInfoUpdateBYId");
+	    db.setDescription("This is a test DownloadInfo updateId");
+	    editDB.setPath("testDownloadInfo");
+        GenericType<DownloadInfo> genericType = new GenericType<DownloadInfo>() {};
         editDB.updateById(db, genericType);
     }
 
 	@Test
-	public void testDeleteDatabase() throws PhrescoException {
-        RestClient<Database> deleteDatabase = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_DATABASES);
-        deleteDatabase.setPath("testDatabase");
-        ClientResponse clientResponse = deleteDatabase.deleteById();
+	public void testDeleteDownloadInfo() throws PhrescoException {
+        RestClient<DownloadInfo> deleteDownloadInfo = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_DATABASES);
+        deleteDownloadInfo.setPath("testDownloadInfo");
+        ClientResponse clientResponse = deleteDownloadInfo.deleteById();
     }
 }

@@ -28,8 +28,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.photon.phresco.commons.model.WebService;
 import com.photon.phresco.exception.PhrescoException;
-import com.photon.phresco.model.WebService;
 import com.photon.phresco.service.client.api.ServiceClientConstant;
 import com.photon.phresco.service.client.api.ServiceContext;
 import com.photon.phresco.service.client.api.ServiceManager;
@@ -64,8 +64,6 @@ public class ComponentRestWebserviceTest implements ServiceConstants {
 	    ws.setId("testws");
 	    ws.setName("TestWebService");
 	    ws.setDescription("This is a test webservice");
-	    ws.setCustomerId("photon");
-	    ws.setTechnologies(technologies);
 	    wss.add(ws);
         RestClient<WebService> newApp = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_WEBSERVICES);
         ClientResponse clientResponse = newApp.create(wss);
@@ -91,8 +89,6 @@ public class ComponentRestWebserviceTest implements ServiceConstants {
 	    ws.setId("testws");
 	    ws.setName("TestWebService");
 	    ws.setDescription("This is a test webservice update");
-	    ws.setCustomerId("photon");
-	    ws.setTechnologies(technologies);
 	    wss.add(ws);
 	    GenericType<List<WebService>> genericType = new GenericType<List<WebService>>() {};
 	   
@@ -117,7 +113,6 @@ public class ComponentRestWebserviceTest implements ServiceConstants {
         ws.setId("testws");
 	    ws.setName("TestWebServiceUpdate");
 	    ws.setDescription("This is a test webservice updateId");
-	    ws.setCustomerId("photon");
 	    editWS.setPath("testws");
         GenericType<WebService> genericType = new GenericType<WebService>() {};
         editWS.updateById(ws, genericType);

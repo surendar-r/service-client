@@ -41,21 +41,29 @@ public class AdminRestCustomersTest implements ServiceConstants {
     @Test
     public void testCreateCustomers() throws PhrescoException, MalformedURLException {
         List<Customer> customers = new ArrayList<Customer>();
-        Customer customer = new Customer("photon", "photon", "photon");
+        Customer customer = createCustomer("photon", "photon", "photon");
         customer.setRepoInfo(createRepoInfo("photon"));
         customers.add(customer);
-        customer = new Customer("macys", "macys", "macys");
+        customer = createCustomer("macys", "macys", "macys");
         customer.setRepoInfo(createRepoInfo("macys"));
         customers.add(customer);
-        customer = new Customer("vwr", "vwr", "vwr");
+        customer = createCustomer("vwr", "vwr", "vwr");
         customer.setRepoInfo(createRepoInfo("vwr"));
         customers.add(customer);
-        customer = new Customer("bestbuy", "bestbuy", "bestbuy");
+        customer = createCustomer("bestbuy", "bestbuy", "bestbuy");
         customer.setRepoInfo(createRepoInfo("bestbuy"));
         customers.add(customer);
         RestClient<Customer> customersClient = serviceManager.getRestClient(REST_API_ADMIN + REST_API_CUSTOMERS);
         ClientResponse clientResponse = customersClient.create(customers);
         assertNotNull(clientResponse);
+    }
+    
+    private Customer createCustomer(String id, String name, String desc) {
+    	Customer customer = new Customer();
+    	customer.setId(id);
+    	customer.setName(name);
+    	customer.setDescription(desc);
+    	return customer;
     }
     
     private RepoInfo createRepoInfo(String customer) throws MalformedURLException {

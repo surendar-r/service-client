@@ -30,8 +30,8 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.photon.phresco.commons.model.ArtifactGroup;
 import com.photon.phresco.exception.PhrescoException;
-import com.photon.phresco.model.ModuleGroup;
 import com.photon.phresco.service.client.api.ServiceClientConstant;
 import com.photon.phresco.service.client.api.ServiceContext;
 import com.photon.phresco.service.client.api.ServiceManager;
@@ -58,77 +58,72 @@ public class ComponentRestjsLibsTest implements ServiceConstants {
 	
 	@Test
 	public void testCreatejsLibs() throws PhrescoException {
-		List<ModuleGroup> modules=new ArrayList<ModuleGroup>();
-		ModuleGroup moduleGroup = new ModuleGroup();
-		moduleGroup.setId("test-jsLibs");
-		moduleGroup.setName("TestjsLibsone");
-		moduleGroup.setCustomerId("photon");
-		moduleGroup.setTechId("php");
-		moduleGroup.setType("js"); 
-		modules.add(moduleGroup);
-        RestClient<ModuleGroup> newApp = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
+		List<ArtifactGroup> modules=new ArrayList<ArtifactGroup>();
+		ArtifactGroup ArtifactGroup = new ArtifactGroup();
+		ArtifactGroup.setId("test-jsLibs");
+		ArtifactGroup.setName("TestjsLibsone");
+		ArtifactGroup.setType("js"); 
+		modules.add(ArtifactGroup);
+        RestClient<ArtifactGroup> newApp = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
         ClientResponse clientResponse = newApp.create(modules);
         assertNotNull(clientResponse);    
 	}
 	
 	@Test
     public void testGetjsLibs() throws PhrescoException {
-		RestClient<ModuleGroup> moduleGroupClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
+		RestClient<ArtifactGroup> ArtifactGroupClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
 		Map<String, String> query = new HashMap<String, String>();
 		query.put(REST_QUERY_TYPE, "js");
 		query.put(REST_QUERY_CUSTOMERID, "photon");
-		moduleGroupClient.queryStrings(query);
-		GenericType<List<ModuleGroup>> genericType = new GenericType<List<ModuleGroup>>(){};
-		List<ModuleGroup> modules = moduleGroupClient.get(genericType);
+		ArtifactGroupClient.queryStrings(query);
+		GenericType<List<ArtifactGroup>> genericType = new GenericType<List<ArtifactGroup>>(){};
+		List<ArtifactGroup> modules = ArtifactGroupClient.get(genericType);
 		assertNotNull(modules);
     }
 	
 	@Test
 	public void testUpdatejsLibs() throws PhrescoException{
-		RestClient<ModuleGroup> moduleGroupClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
-	    List<ModuleGroup> ModuleGroups = new ArrayList<ModuleGroup>();
-	    ModuleGroup moduleGroup = new ModuleGroup();
-	    moduleGroup.setId("test-jsLibs");
-		moduleGroup.setName("TestjsLibsUpdate");
-		moduleGroup.setCustomerId("phresco");
-		moduleGroup.setTechId("php");
-		moduleGroup.setType("Js");
-		ModuleGroups.add(moduleGroup);
-	    GenericType<List<ModuleGroup>> genericType = new GenericType<List<ModuleGroup>>() {};
-	    List<ModuleGroup> modules = moduleGroupClient.update(ModuleGroups, genericType);
+		RestClient<ArtifactGroup> ArtifactGroupClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
+	    List<ArtifactGroup> ArtifactGroups = new ArrayList<ArtifactGroup>();
+	    ArtifactGroup ArtifactGroup = new ArtifactGroup();
+	    ArtifactGroup.setId("test-jsLibs");
+		ArtifactGroup.setName("TestjsLibsUpdate");
+		ArtifactGroup.setType("Js");
+		ArtifactGroups.add(ArtifactGroup);
+	    GenericType<List<ArtifactGroup>> genericType = new GenericType<List<ArtifactGroup>>() {};
+	    List<ArtifactGroup> modules = ArtifactGroupClient.update(ArtifactGroups, genericType);
 	    assertNotNull(modules);
 	}
 	
 	@Test
     public void testGetjsLibsById() throws PhrescoException {
 		String id= "test-jsLibs" ;
-    	RestClient<ModuleGroup> moduleGroupClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
-		GenericType<ModuleGroup> genericType = new GenericType<ModuleGroup>(){};
-		moduleGroupClient.setPath(id);
-		ModuleGroup module = moduleGroupClient.getById(genericType);
+    	RestClient<ArtifactGroup> ArtifactGroupClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
+		GenericType<ArtifactGroup> genericType = new GenericType<ArtifactGroup>(){};
+		ArtifactGroupClient.setPath(id);
+		ArtifactGroup module = ArtifactGroupClient.getById(genericType);
         assertNotNull(module);
 	}
 	
 	@Test
 	public void testUpdatejsLibsById() throws PhrescoException {
 		String moduleId="test-jsLibs";
-        ModuleGroup module = new ModuleGroup();
+        ArtifactGroup module = new ArtifactGroup();
         module.setId("test-module");
         module.setName("Test-moduleUpdateById");
-        module.setCustomerId("photon");
-        RestClient<ModuleGroup> moduleGroupClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
-        moduleGroupClient.setPath(moduleId);
-        GenericType<ModuleGroup> genericType = new GenericType<ModuleGroup>() {};
-        ModuleGroup modules = moduleGroupClient.updateById(module, genericType);
+        RestClient<ArtifactGroup> ArtifactGroupClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
+        ArtifactGroupClient.setPath(moduleId);
+        GenericType<ArtifactGroup> genericType = new GenericType<ArtifactGroup>() {};
+        ArtifactGroup modules = ArtifactGroupClient.updateById(module, genericType);
         assertNotNull(modules);
 	}
 	
 	@Test
 	public void testDeletejsLibsById() throws PhrescoException {
 		String id="test-jsLibs";
-        RestClient<ModuleGroup> moduleGroupClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
-        moduleGroupClient.setPath(id);
-        ClientResponse clientResponse = moduleGroupClient.deleteById();
+        RestClient<ArtifactGroup> ArtifactGroupClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
+        ArtifactGroupClient.setPath(id);
+        ClientResponse clientResponse = ArtifactGroupClient.deleteById();
         assertNotNull(clientResponse);
         
     }

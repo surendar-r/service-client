@@ -29,8 +29,8 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.photon.phresco.commons.model.VideoInfo;
 import com.photon.phresco.exception.PhrescoException;
-import com.photon.phresco.model.VideoInfo;
 import com.photon.phresco.service.client.api.ServiceClientConstant;
 import com.photon.phresco.service.client.api.ServiceContext;
 import com.photon.phresco.service.client.api.ServiceManager;
@@ -58,7 +58,9 @@ public class AdminRestVideosTest implements ServiceConstants {
 	@Test 
 	public void testCreateVideoInfos() throws PhrescoException {
 		List<VideoInfo> videolist = new ArrayList<VideoInfo>();
-		VideoInfo info = new VideoInfo("About phresco", "intro about phresoc", null, null, null, null);
+		VideoInfo info = new VideoInfo();
+		info.setName("About phresco");
+		info.setDescription("intro about phresoco");
 		videolist.add(info);
 		info.setId("TestvideoInfo"); 
 		videolist.indexOf("Testvideo");
@@ -91,7 +93,9 @@ public class AdminRestVideosTest implements ServiceConstants {
 	public void UpdateVideoInfos() throws PhrescoException {
 		String VideoInfoId ="TestvideoInfo";
 		List<VideoInfo> videolist = new ArrayList<VideoInfo>();
-		VideoInfo info = new VideoInfo("About phresco ", "intro about phresco", null, null, null, null);
+		VideoInfo info = new VideoInfo();
+		info.setName("About phresco");
+		info.setDescription("intro about phresoco");
 		info.setId("TestvideoInfo");
 		videolist.add(info);
 		RestClient<VideoInfo> videoInfoclient = serviceManager.getRestClient(REST_API_ADMIN + REST_API_VIDEOS);

@@ -32,8 +32,8 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.photon.phresco.commons.model.Technology;
 import com.photon.phresco.exception.PhrescoException;
-import com.photon.phresco.model.Technology;
 import com.photon.phresco.service.client.api.Content;
 import com.photon.phresco.service.client.api.ServiceClientConstant;
 import com.photon.phresco.service.client.api.ServiceContext;
@@ -71,7 +71,6 @@ public class ComponentRestTechnologiesTest {
     	versions.add("6.18");
     	versions.add("6.19");
     	versions.add("7.0");
-		tech.setVersions(versions);
 		techs.add(tech);
 		
 		Technology tech2 = new Technology();
@@ -79,7 +78,6 @@ public class ComponentRestTechnologiesTest {
     	List<String> versions2 = new ArrayList<String>();
     	versions2.add("4.5");
     	versions2.add("5.0");
-		tech2.setVersions(versions2);
 		techs.add(tech2);
 		
 		Technology tech3 = new Technology();
@@ -87,7 +85,6 @@ public class ComponentRestTechnologiesTest {
     	List<String> versions3 = new ArrayList<String>();
     	versions3.add("4.5");
     	versions3.add("5.0");
-		tech3.setVersions(versions3);
 		techs.add(tech3);
     	
 		serviceManager = ServiceClientFactory.getServiceManager(context);
@@ -126,7 +123,6 @@ public class ComponentRestTechnologiesTest {
     	List<String> versions = new ArrayList<String>();
     	versions.add("1.5");
     	versions.add("1.6");
-		tech.setVersions(versions);
 		techs.add(tech);
     	serviceManager = ServiceClientFactory.getServiceManager(context);
 		RestClient<Technology> techClient = serviceManager.getRestClient("/component/technologies");
@@ -160,7 +156,6 @@ public class ComponentRestTechnologiesTest {
     	List<String> versions = new ArrayList<String>();
     	versions.add("1.0");
     	versions.add("3.0");
-		tech.setVersions(versions);
     	serviceManager = ServiceClientFactory.getServiceManager(context);
 		RestClient<Technology> techClient = serviceManager.getRestClient("/component/technologies");
 		techClient.setPath(id2);
@@ -182,8 +177,9 @@ public class ComponentRestTechnologiesTest {
 	public void createTest() throws FileNotFoundException, PhrescoException {
 	    MultiPart multiPart = new MultiPart();
 	    
-	    Technology technology = new Technology("drup", "sample tech", null, null);
-        technology.setCustomerId("photon");
+	    Technology technology = new Technology();
+	    technology.setId("drup");
+	    technology.setName("Drupal Technology");
         
         BodyPart jsonPart = new BodyPart();
         jsonPart.setMediaType(MediaType.APPLICATION_JSON_TYPE);
