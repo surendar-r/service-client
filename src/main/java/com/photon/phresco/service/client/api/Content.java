@@ -5,12 +5,15 @@ import java.util.Date;
 import com.sun.jersey.core.header.ContentDisposition;
 
 public class Content extends ContentDisposition {
+	
+	public enum Type {
+		JSON, ARCHETYPE, JAR, ZIP
+	}
 
-    public Content(String type, String fileName, Date creationDate,
+    public Content(Type type, String fileName, Date creationDate,
             Date modificationDate, Date readDate, long size) {
-        super(type, fileName, creationDate, modificationDate, readDate, size);
+        super(type.name(), fileName, creationDate, modificationDate, readDate, size);
     }
-
    
     
 //    @Override

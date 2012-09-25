@@ -62,7 +62,7 @@ public class ComponentRestModulesTest implements ServiceConstants{
 		ArtifactGroup moduleGroup = new ArtifactGroup();
 		moduleGroup.setId("test-module");
 		moduleGroup.setName("TestModuleone");
-		moduleGroup.setType("module"); 
+		moduleGroup.setType(ArtifactGroup.Type.FEATURE); 
 		modules.add(moduleGroup);
         RestClient<ArtifactGroup> newApp = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
         ClientResponse clientResponse = newApp.create(modules);
@@ -89,7 +89,7 @@ public class ComponentRestModulesTest implements ServiceConstants{
 	    ArtifactGroup moduleGroup = new ArtifactGroup();
 	    moduleGroup.setId("test-module");
 		moduleGroup.setName("TestModuleGroupUpdate");
-		moduleGroup.setType("testing");
+		moduleGroup.setType(ArtifactGroup.Type.FEATURE);
 		ModuleGroups.add(moduleGroup);
 	    GenericType<List<ArtifactGroup>> genericType = new GenericType<List<ArtifactGroup>>() {};
 	    List<ArtifactGroup> modules = moduleGroupClient.update(ModuleGroups, genericType);

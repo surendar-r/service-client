@@ -196,7 +196,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public BodyPart createBodyPart (String name, String jarType, InputStream jarIs ) throws PhrescoException {
+    public BodyPart createBodyPart (String name, Content.Type jarType, InputStream jarIs ) throws PhrescoException {
     	BodyPart binaryPart = new BodyPart();
 	    binaryPart.setMediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE);
 	    binaryPart.setEntity(jarIs);

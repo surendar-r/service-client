@@ -20,11 +20,10 @@
 
 package com.photon.phresco.service.client.test;
 
-import static org.junit.Assert.assertNotNull;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -40,27 +39,35 @@ import com.photon.phresco.util.ServiceConstants;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.GenericType;
 
-public class ComponentRestAppTypesTest implements ServiceConstants {
-	public ServiceContext context = null;
-	public ServiceManager serviceManager = null;
+public class ComponentRestAppTypesTest extends BaseRestTest {
 	
 	@Before
 	public void Initilaization() throws PhrescoException {
-		context = new ServiceContext();
-        context.put(ServiceClientConstant.SERVICE_URL, RestUtil.getServerPath());
-        context.put(ServiceClientConstant.SERVICE_USERNAME, "demouser");
-        context.put(ServiceClientConstant.SERVICE_PASSWORD, "phresco");
-        serviceManager = ServiceClientFactory.getServiceManager(context);
+		initialize();
 	}
-	
+
 	@Test
 	public void testCreateApplicationTypes() throws PhrescoException {
 	    List<ApplicationType> appTypes = new ArrayList<ApplicationType>();
-	    ApplicationType appType = new ApplicationType();
-	    appType.setId("test-appType");
-	    appType.setName("Test AppType");
-	    appType.setDescription("This is a test application type");
+
+	    List<String> customerIds = new ArrayList<String>();
+	    customerIds.add("photon");
+	    
+	    ApplicationType appType = createAppType(PHOTON_APP_TYPE_ID, "Test Photon Apptype", "This is a test application type", customerIds);
 	    appTypes.add(appType);
+
+	    List<String> customerIds2 = new ArrayList<String>();
+	    customerIds2.add("vwr");
+		
+		ApplicationType appType2 = createAppType("test-appType-vwr", "VWR App Type", "This is a test application type", customerIds2);
+		appTypes.add(appType2);
+		
+	    List<String> customerIds3 = new ArrayList<String>();
+	    customerIds3.add("vwr");
+	    customerIds3.add("macys");
+		ApplicationType appType3 = createAppType("test-appType-vwr-macys", "VWR MACYS", "This is a test application type", customerIds3);
+	    appTypes.add(appType3);
+	    
         RestClient<ApplicationType> newApp = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_APPTYPES);
         ClientResponse clientResponse = newApp.create(appTypes);
     }
@@ -71,39 +78,69 @@ public class ComponentRestAppTypesTest implements ServiceConstants {
         applicationTypeClient.queryString(REST_QUERY_CUSTOMERID, "photon");
         GenericType<List<ApplicationType>> genericType = new GenericType<List<ApplicationType>>(){};
         List<ApplicationType> applicationTypes = applicationTypeClient.get(genericType);
-        assertNotNull(applicationTypes);
+        Assert.assertEquals(1, applicationTypes.size());
+
+        //vwr customer
+        RestClient<ApplicationType> appTypeClientVWR = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_APPTYPES);
+        appTypeClientVWR.queryString(REST_QUERY_CUSTOMERID, "vwr");
+        applicationTypes = appTypeClientVWR.get(genericType);
+        Assert.assertEquals(3, applicationTypes.size());
+        
+        //macys customer
+        RestClient<ApplicationType> appTypeClientMacys = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_APPTYPES);
+        appTypeClientMacys.queryString(REST_QUERY_CUSTOMERID, "macys");
+        applicationTypes = appTypeClientMacys.get(genericType);
+        Assert.assertEquals(2, applicationTypes.size());
+
+        //non-exising customer
+        RestClient<ApplicationType> appTypeClientNonExisting = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_APPTYPES);
+        appTypeClientNonExisting.queryString(REST_QUERY_CUSTOMERID, "non-existing");
+        applicationTypes = appTypeClientNonExisting.get(genericType);
+        //Should throw an error, saying invalid customer
+        Assert.assertEquals(1, applicationTypes.size());
     }
-    
+
     @Test
     public void testGetAppTypesById() throws PhrescoException {
-    	String appId = "test-appType";
     	RestClient<ApplicationType> applicationTypeClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_APPTYPES);
-    	applicationTypeClient.setPath(appId);
+    	applicationTypeClient.setPath(PHOTON_APP_TYPE_ID);
     	GenericType<ApplicationType> genericType = new GenericType<ApplicationType>(){};
     	ApplicationType applicationTypes = applicationTypeClient.getById(genericType);
-    	assertNotNull(applicationTypes);
-
+    	Assert.assertEquals(PHOTON_APP_TYPE_ID, applicationTypes.getId());
     }
 	
 	@Test
 	public void testUpdateApplicationTypesById() throws PhrescoException {
         RestClient<ApplicationType> editApptype = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_APPTYPES);
         ApplicationType appType = new ApplicationType();
-        appType.setId("test-appType");
-        appType.setName("Test AppType");
-        appType.setDescription("This is a test application type update");
-        editApptype.setPath("test-appType");
+        appType.setId(PHOTON_APP_TYPE_ID);
+        appType.setName("Photon App Type - Updated");
+        String description = "This is a test application type update";
+		appType.setDescription(description);
+        editApptype.setPath(PHOTON_APP_TYPE_ID);
+        List<String> customerIds = new ArrayList<String>();
+	    customerIds.add("photon");
+		appType.setCustomerIds(customerIds);
+		
         GenericType<ApplicationType> genericType = new GenericType<ApplicationType>() {};
-        editApptype.updateById(appType, genericType);
+        ApplicationType appTypeUpdated = editApptype.updateById(appType, genericType);
+        
+        Assert.assertEquals(PHOTON_APP_TYPE_ID, appTypeUpdated.getId());
+        Assert.assertEquals(description, appTypeUpdated.getDescription());
     }
 
 	@Test
 	public void testDeleteApplicationType() throws PhrescoException {
-        RestClient<ApplicationType> deleteApptype = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_APPTYPES);
-        deleteApptype.setPath("test-appType");
-        ClientResponse clientResponse = deleteApptype.deleteById();
-        System.out.println("clientResponse in deleteApplicationType()" + clientResponse.getStatus());
+	    List<String> customerIds = new ArrayList<String>();
+	    customerIds.add("vwr");
+	    customerIds.add("macys");
+		ApplicationType appType = createAppType("type-to-delete", "App type to delete", "This is a test application type", customerIds);
+		appType = saveApptype(appType);
+		
+		RestClient<ApplicationType> apptypeRestClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_APPTYPES);
+		apptypeRestClient.setPath(appType.getId());
+        ClientResponse response = apptypeRestClient.deleteById();
+        System.out.println("clientResponse in deleteApplicationType()" +  response.getStatus());
     }
-	
 	
 }

@@ -33,8 +33,8 @@ public class AdminRestCustomersTest implements ServiceConstants {
     public void Initilaization() throws PhrescoException {
         context = new ServiceContext();
         context.put(ServiceClientConstant.SERVICE_URL, RestUtil.getServerPath());
-        context.put(ServiceClientConstant.SERVICE_USERNAME, "demouser");
-        context.put(ServiceClientConstant.SERVICE_PASSWORD, "phresco");
+        context.put(ServiceClientConstant.SERVICE_USERNAME, "bharatkumar_r");
+        context.put(ServiceClientConstant.SERVICE_PASSWORD, "phresco@123");
         serviceManager = ServiceClientFactory.getServiceManager(context);
     }
     

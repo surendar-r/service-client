@@ -59,11 +59,11 @@ public class ComponentRestjsLibsTest implements ServiceConstants {
 	@Test
 	public void testCreatejsLibs() throws PhrescoException {
 		List<ArtifactGroup> modules=new ArrayList<ArtifactGroup>();
-		ArtifactGroup ArtifactGroup = new ArtifactGroup();
-		ArtifactGroup.setId("test-jsLibs");
-		ArtifactGroup.setName("TestjsLibsone");
-		ArtifactGroup.setType("js"); 
-		modules.add(ArtifactGroup);
+		ArtifactGroup artifactGroup = new ArtifactGroup();
+		artifactGroup.setId("test-jsLibs");
+		artifactGroup.setName("TestjsLibsone");
+		artifactGroup.setType(ArtifactGroup.Type.JAVASCRIPT); 
+		modules.add(artifactGroup);
         RestClient<ArtifactGroup> newApp = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
         ClientResponse clientResponse = newApp.create(modules);
         assertNotNull(clientResponse);    
@@ -85,11 +85,11 @@ public class ComponentRestjsLibsTest implements ServiceConstants {
 	public void testUpdatejsLibs() throws PhrescoException{
 		RestClient<ArtifactGroup> ArtifactGroupClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
 	    List<ArtifactGroup> ArtifactGroups = new ArrayList<ArtifactGroup>();
-	    ArtifactGroup ArtifactGroup = new ArtifactGroup();
-	    ArtifactGroup.setId("test-jsLibs");
-		ArtifactGroup.setName("TestjsLibsUpdate");
-		ArtifactGroup.setType("Js");
-		ArtifactGroups.add(ArtifactGroup);
+	    ArtifactGroup artifactGroup = new ArtifactGroup();
+	    artifactGroup.setId("test-jsLibs");
+		artifactGroup.setName("TestjsLibsUpdate");
+		artifactGroup.setType(ArtifactGroup.Type.JAVASCRIPT);
+		ArtifactGroups.add(artifactGroup);
 	    GenericType<List<ArtifactGroup>> genericType = new GenericType<List<ArtifactGroup>>() {};
 	    List<ArtifactGroup> modules = ArtifactGroupClient.update(ArtifactGroups, genericType);
 	    assertNotNull(modules);

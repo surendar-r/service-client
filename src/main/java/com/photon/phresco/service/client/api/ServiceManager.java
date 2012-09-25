@@ -63,7 +63,7 @@ public interface ServiceManager {
 	
 	Technology getArcheType(String archeTypeId, String customerId) throws PhrescoException;
 	
-	BodyPart createBodyPart( String name, String jarType, InputStream jarIs ) throws PhrescoException;
+	BodyPart createBodyPart(String name, Content.Type jarType, InputStream jarIs) throws PhrescoException;
 	
 	ClientResponse createArcheTypes(MultiPart multiPart, String customerId) throws PhrescoException;
 	
