@@ -29,6 +29,7 @@ import java.util.List;
 import javax.ws.rs.core.MediaType;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.photon.phresco.commons.model.ArtifactGroup;
@@ -41,6 +42,7 @@ import com.photon.phresco.service.client.api.Content;
 import com.photon.phresco.service.client.factory.ServiceClientFactory;
 import com.photon.phresco.service.client.impl.RestClient;
 import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.multipart.BodyPart;
 import com.sun.jersey.multipart.MultiPart;
 
@@ -154,65 +156,19 @@ public class ComponentRestTechnologiesTest extends BaseRestTest {
         
 	}
 
-//	public void createTest() throws FileNotFoundException, PhrescoException {
-//		
-//	    MultiPart multiPart = new MultiPart();
-//	    
-//	    Technology technology = new Technology();
-//	    technology.setId("drup");
-//	    technology.setName("Drupal Technology");
+	@Test
+    public void testGetTechnologies() throws PhrescoException {
+        RestClient<Technology> techClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_TECHNOLOGIES);
+        GenericType<List<Technology>> genericType = new GenericType<List<Technology>>(){};
+        techClient.queryString(REST_QUERY_CUSTOMERID, DEFAULT_CUSTOMER_NAME);
+        List<Technology> list = techClient.get(genericType);
         
-//        BodyPart jsonPart = new BodyPart();
-//        jsonPart.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-//        jsonPart.setEntity(technology);
-//        Content content = new Content("plugin", "drup", null, null, null, 0);
-//        jsonPart.setContentDisposition(content);
-//        multiPart.bodyPart(jsonPart);
-               
-       /* BodyPart binaryPart = new BodyPart();
-        binaryPart.setMediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE);
-        InputStream fis  = new FileInputStream(new File("d://Temp/drupal-maven-plugin-2.0.0.6001-SNAPSHOT.jar"));
-        binaryPart.setEntity(fis);
-        content = new Content("plugin", "drup", null, null, null, 0);
-        binaryPart.setContentDisposition(content);
-        multiPart.bodyPart(binaryPart);
-
-        BodyPart binaryPart2 = new BodyPart();
-        binaryPart2.setMediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE);
-        fis  = new FileInputStream(new File("d://Temp/phresco-drupal7-archetype-1.2.0.9000.jar"));
-        binaryPart2.setEntity(fis);
-        content = new Content("appType", "drup", null, null, null, 0);
-        binaryPart2.setContentDisposition(content);
-        multiPart.bodyPart(binaryPart2);*/
-        
-//        serviceManager = ServiceClientFactory.getServiceManager(context);            
-//        RestClient<Technology> techClient = serviceManager.getRestClient("/components/technologies");
-//        techClient.queryString("appId", "web-app");
-//        ClientResponse create = techClient.create(multiPart);
-//        System.out.println(create.getStatus());
-//	}
-	
-
-//	@Ignore
-//    public void testGetTechnologies() {
-//        try {
-//            serviceManager = ServiceClientFactory.getServiceManager(context);            
-//            RestClient<Technology> techClient = serviceManager.getRestClient("/component/technologies");
-//            GenericType<List<Technology>> genericType = new GenericType<List<Technology>>(){};
-//            List<Technology> list = techClient.get(genericType);
-////            id = list.get(0).getId();
-////            id2 = list.get(1).getId();
-////            id3 = list.get(2).getId();
-//            for (Technology tech : list) {
-//                System.out.println("Tech Name == " + tech.getName() + " id " + tech.getId());
-//                System.out.println("tec " + tech);
-//            }
-//            
-//        } catch (PhrescoException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//    
+        for (Technology tech : list) {
+            System.out.println("Tech Name == " + tech.getName() + " id " + tech.getId());
+            System.out.println("tec " + tech);
+        }
+    }
+    
 //	@Ignore
 //    public void testPutTechnologies() throws PhrescoException {
 //    	List<Technology> techs = new ArrayList<Technology>();
