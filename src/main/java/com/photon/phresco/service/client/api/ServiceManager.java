@@ -27,6 +27,7 @@ import com.photon.phresco.commons.model.ApplicationType;
 import com.photon.phresco.commons.model.ArtifactGroup;
 import com.photon.phresco.commons.model.Customer;
 import com.photon.phresco.commons.model.DownloadInfo;
+import com.photon.phresco.commons.model.LogInfo;
 import com.photon.phresco.commons.model.Permission;
 import com.photon.phresco.commons.model.Property;
 import com.photon.phresco.commons.model.Role;
@@ -61,6 +62,8 @@ public interface ServiceManager {
    
 	List<Technology> getArcheTypes(String customerId) throws PhrescoException;
 	
+	List<Technology> getArcheTypes(String customerId, String appTypeId) throws PhrescoException;
+	
 	Technology getArcheType(String archeTypeId, String customerId) throws PhrescoException;
 	
 	BodyPart createBodyPart(String name, Content.Type jarType, InputStream jarIs) throws PhrescoException;
@@ -77,17 +80,19 @@ public interface ServiceManager {
 	
 	List<DownloadInfo> getServers(String customerId) throws PhrescoException;
 	
+	List<DownloadInfo> getServers(String customerId, String techId) throws PhrescoException;
+	
 	List<DownloadInfo> getDatabases(String customerId) throws PhrescoException;
+	
+	List<DownloadInfo> getDatabases(String customerId, String techId) throws PhrescoException;
+	
+	List<WebService> getWebServices(String customerId) throws PhrescoException;
 	
 	List<WebService> getWebServices(String techId, String customerId) throws PhrescoException;
 	
-	List<ArtifactGroup> getModules(String customerId) throws PhrescoException;
+	List<ArtifactGroup> getModules(String customerId, String techId, String type) throws PhrescoException;
 	
-	List<ArtifactGroup> getJsLibs(String customerId) throws PhrescoException;
-	
-	List<ArtifactGroup> getFeatures(String customerId) throws PhrescoException;
-	
-	List<ArtifactGroup> getFeaturesByTech(String customerId, String techId, String type) throws PhrescoException;
+	List<ArtifactGroup> getComponents(String customerId, String techId) throws PhrescoException;
 	
 	ArtifactGroup getFeature(String moduleId, String customerId) throws PhrescoException;
 	
@@ -180,6 +185,8 @@ public interface ServiceManager {
 	InputStream getMailerXml(String customerId) throws PhrescoException;
 	
 	ClientResponse getEmailExtPlugin(String customerId) throws PhrescoException;
+	
+	ClientResponse sendErrorReport(List<LogInfo> loginfo) throws PhrescoException;
 	
 	Property getForumPath(String customerId) throws PhrescoException;
 }
