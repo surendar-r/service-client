@@ -79,6 +79,7 @@ public class AdminRestCustomersTest implements ServiceConstants {
         info.setRepoUserName("admin");
         return info;
     }
+    
     @Ignore
     public void getCustomers() throws PhrescoException {
         RestClient<Customer> customersClient = serviceManager.getRestClient(REST_API_ADMIN + REST_API_CUSTOMERS);
