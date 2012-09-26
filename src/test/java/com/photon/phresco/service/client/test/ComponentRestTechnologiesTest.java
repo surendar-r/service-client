@@ -49,9 +49,6 @@ import com.sun.jersey.multipart.MultiPart;
 
 public class ComponentRestTechnologiesTest extends BaseRestTest {
 
-	private static final String PHRESCO_TEST_ARCHETYPE_JAR = "phresco-test-archetype.jar";
-	private static final String PHRESCO_TEST_ARCHETYPE_PLUGIN_JAR = "phresco-test-archetype-plugin.jar";
-
 	@Before
 	public void Initilaization() throws PhrescoException {
 		initialize();
@@ -138,7 +135,6 @@ public class ComponentRestTechnologiesTest extends BaseRestTest {
 	        multiPart.bodyPart(pluginPart);
 	        
 	        //Send the data to the service
-	        serviceManager = ServiceClientFactory.getServiceManager(context);            
 	        RestClient<Technology> techClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_TECHNOLOGIES);
 	        ClientResponse create = techClient.create(multiPart);
 

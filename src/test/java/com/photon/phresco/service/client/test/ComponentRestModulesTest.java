@@ -22,67 +22,126 @@ package com.photon.phresco.service.client.test;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.ws.rs.core.MediaType;
+
+import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import com.photon.phresco.commons.model.ArtifactGroup;
+import com.photon.phresco.commons.model.ArtifactGroup.Type;
+import com.photon.phresco.commons.model.ArtifactInfo;
 import com.photon.phresco.exception.PhrescoException;
-import com.photon.phresco.service.client.api.ServiceClientConstant;
-import com.photon.phresco.service.client.api.ServiceContext;
-import com.photon.phresco.service.client.api.ServiceManager;
-import com.photon.phresco.service.client.factory.ServiceClientFactory;
+import com.photon.phresco.service.client.api.Content;
 import com.photon.phresco.service.client.impl.RestClient;
-import com.photon.phresco.service.client.util.RestUtil;
-import com.photon.phresco.util.ServiceConstants;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.GenericType;
+import com.sun.jersey.multipart.BodyPart;
+import com.sun.jersey.multipart.MultiPart;
 
-public class ComponentRestModulesTest implements ServiceConstants {
+public class ComponentRestModulesTest extends BaseRestTest {
 
-	public ServiceContext context = null;
-	public ServiceManager serviceManager = null;
-	
 	@Before
-	public void Initilaization() throws PhrescoException {
-		context = new ServiceContext();
-        context.put(ServiceClientConstant.SERVICE_URL, RestUtil.getServerPath());
-        context.put(ServiceClientConstant.SERVICE_USERNAME, "demouser");
-        context.put(ServiceClientConstant.SERVICE_PASSWORD, "phresco");
-        serviceManager = ServiceClientFactory.getServiceManager(context);
+	public void initilaization() throws PhrescoException {
+		initialize();
 	}
 	
 	@Test
-	public void testCreateModules() throws PhrescoException {
-		List<ArtifactGroup> modules=new ArrayList<ArtifactGroup>();
-		ArtifactGroup moduleGroup = new ArtifactGroup();
-		moduleGroup.setId("test-module");
-		moduleGroup.setName("TestModuleone");
-		moduleGroup.setType(ArtifactGroup.Type.FEATURE); 
-		modules.add(moduleGroup);
-        RestClient<ArtifactGroup> newApp = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
-        ClientResponse clientResponse = newApp.create(modules);
-        assertNotNull(clientResponse);    
+	public void testCreateModules() throws PhrescoException, IOException {
+		InputStream is = null, fis = null;
+		
+		try {
+			//Create a multipart
+			MultiPart multiPart = new MultiPart();
+			
+			//Add technology in the body part
+			ArtifactGroup module = createModule();
+	        BodyPart jsonPart = new BodyPart();
+	        jsonPart.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+	        jsonPart.setEntity(module);
+	        Date date = new Date();
+			Content content = new Content(Content.Type.JSON, module.getId(), date, date, date, 0);
+	        jsonPart.setContentDisposition(content);
+	        multiPart.bodyPart(jsonPart);
+	        
+	        //Add the archetype jar into the body
+	        BodyPart archetypePart = new BodyPart();
+	        archetypePart.setMediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE);
+	        fis = this.getClass().getClassLoader().getResourceAsStream(PHRESCO_TEST_ARCHETYPE_JAR);
+	        archetypePart.setEntity(fis);
+	        
+	        content = new Content(Content.Type.ARCHETYPE, module.getId(), date, date, date, fis.available());
+	        archetypePart.setContentDisposition(content);
+	        multiPart.bodyPart(archetypePart);
+	        
+	        RestClient<ArtifactGroup> moduleClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
+	        ClientResponse response = moduleClient.create(multiPart);
+	        
+	        Assert.assertEquals(201, response.getStatus());
+		} finally {
+            if (is != null) {
+            	is.close();
+            }
+
+            if (fis != null) {
+            	fis.close();
+            }
+        }
 	}
 	
+	private ArtifactGroup createModule() {
+		ArtifactGroup group = new ArtifactGroup(TEST_MODULE_ID);
+		group.setGroupId("com.photon.phresco");
+		group.setArtifactId("test-module");
+		group.setHelpText("This is helpText to be shown on tooltip");
+		group.setPackaging("jar");
+		group.setType(Type.FEATURE);
+
+    	List<String> customerIds = new ArrayList<String>();
+    	customerIds.add(DEFAULT_CUSTOMER_NAME);
+		group.setCustomerIds(customerIds);
+
+    	List<ArtifactInfo> artifactInfos = new ArrayList<ArtifactInfo>();
+    	ArtifactInfo artifactInfo = new ArtifactInfo();
+    	artifactInfo.setFileSize(1024 * 1024 * 2);
+
+//    	Plugin and dependencies needs to be uploaded and ids should be provided 
+//		List<String> dependencyIds = new ArrayList<String>();
+//		artifactInfo.setDependencies(dependencyIds);
+		
+		artifactInfos.add(artifactInfo);
+		group.setVersions(artifactInfos);
+
+		return group;
+	}
+
 	@Test
     public void testGetModules() throws PhrescoException {
     	RestClient<ArtifactGroup> moduleGroupClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
     	Map<String, String> query = new HashMap<String, String>();
-    	query.put(REST_QUERY_TYPE, "module");
+    	query.put(REST_QUERY_TYPE, ArtifactGroup.Type.FEATURE.name());
     	query.put(REST_QUERY_TECHID, "drupal");
-    	query.put(REST_QUERY_CUSTOMERID, "photon");
+    	query.put(REST_QUERY_CUSTOMERID, DEFAULT_CUSTOMER_NAME);
     	moduleGroupClient.queryStrings(query);
 		GenericType<List<ArtifactGroup>> genericType = new GenericType<List<ArtifactGroup>>(){};
 		List<ArtifactGroup> modules = moduleGroupClient.get(genericType);
+		int size = modules.size();
+		
+		System.out.println(modules);
+		
 		assertNotNull(modules);
     }
 	
-	@Test
+//	@Test
 	public void testUpdateModules() throws PhrescoException{
 		RestClient<ArtifactGroup> moduleGroupClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
 	    List<ArtifactGroup> ModuleGroups = new ArrayList<ArtifactGroup>();
@@ -98,33 +157,36 @@ public class ComponentRestModulesTest implements ServiceConstants {
 	
 	@Test
     public void testGetModuleById() throws PhrescoException {
-		String id= "test-module" ;
     	RestClient<ArtifactGroup> moduleGroupClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
 		GenericType<ArtifactGroup> genericType = new GenericType<ArtifactGroup>(){};
-		moduleGroupClient.setPath(id);
+		moduleGroupClient.setPath(TEST_MODULE_ID);
 		ArtifactGroup module = moduleGroupClient.getById(genericType);
+		System.out.println(module);
+		
         assertNotNull(module);
+        
+        Assert.assertEquals(TEST_MODULE_ID, module.getId());
 	}
 	
-	@Test
+//	@Test
 	public void testUpdateModuleById() throws PhrescoException {
-		String moduleId="test-module";
-		ArtifactGroup module = new ArtifactGroup();
-        module.setId("test-module");
+		ArtifactGroup module = new ArtifactGroup(TEST_MODULE_ID);
         module.setName("TestmoduleUpdateById");
         RestClient<ArtifactGroup> moduleGroupClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
-        moduleGroupClient.setPath(moduleId);
+        moduleGroupClient.setPath(TEST_MODULE_ID);
         GenericType<ArtifactGroup> genericType = new GenericType<ArtifactGroup>() {};
         ArtifactGroup modules = moduleGroupClient.updateById(module, genericType);
+        
         assertNotNull(modules);
 	}
 	
 	@Test
 	public void testDeleteModuleById() throws PhrescoException {
-		String id="test-module";
         RestClient<ArtifactGroup> moduleGroupClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
-        moduleGroupClient.setPath(id);
+        moduleGroupClient.setPath(TEST_MODULE_ID);
         ClientResponse clientResponse = moduleGroupClient.deleteById();
         
+        Assert.assertEquals(200, clientResponse.getStatus());
     }
+	
 }

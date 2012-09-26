@@ -17,9 +17,13 @@ import com.sun.jersey.api.client.ClientResponse;
 
 public class BaseRestTest implements ServiceConstants {
 
+	public static final String PHRESCO_TEST_ARCHETYPE_JAR = "phresco-test-archetype.jar";
+	public static final String PHRESCO_TEST_ARCHETYPE_PLUGIN_JAR = "phresco-test-archetype-plugin.jar";
+
 	public static final String PHOTON_APP_TYPE_ID = "test-appType-photon";
 	public static final String TEST_TECH_ID = "test-tech-id";
     public static final String TEST_CUSTOMER_ID = "test-cutomer-id";
+    public static final String TEST_MODULE_ID = "test-module-id" ;
 
 	public static final String LOGIN_USER_ID = "jebastin_p";
 	public static final String LOGIN_USER_PASSWORD = "Phresco@123";
