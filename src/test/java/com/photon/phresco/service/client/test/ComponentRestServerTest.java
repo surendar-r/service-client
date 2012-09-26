@@ -37,7 +37,6 @@ import com.photon.phresco.service.client.factory.ServiceClientFactory;
 import com.photon.phresco.service.client.impl.RestClient;
 import com.photon.phresco.service.client.util.RestUtil;
 import com.photon.phresco.util.ServiceConstants;
-import com.sun.corba.se.spi.activation.Server;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.GenericType;
 
@@ -72,10 +71,10 @@ public class ComponentRestServerTest implements ServiceConstants {
 	
 	@Test
     public void testFindServers() throws PhrescoException {
-    	RestClient<Server> serverClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_SERVERS);
+    	RestClient<DownloadInfo> serverClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_SERVERS);
     	serverClient.queryString(REST_QUERY_CUSTOMERID, "photon");
-		GenericType<List<Server>> genericType = new GenericType<List<Server>>(){};
-		List<Server> servers = serverClient.get(genericType);
+		GenericType<List<DownloadInfo>> genericType = new GenericType<List<DownloadInfo>>(){};
+		List<DownloadInfo> servers = serverClient.get(genericType);
 		assertNotNull(servers);
     }
 

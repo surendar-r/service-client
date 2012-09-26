@@ -20,7 +20,6 @@
 package com.photon.phresco.service.client.impl;
 
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +34,7 @@ import com.photon.phresco.commons.model.ApplicationType;
 import com.photon.phresco.commons.model.ArtifactGroup;
 import com.photon.phresco.commons.model.Customer;
 import com.photon.phresco.commons.model.DownloadInfo;
+import com.photon.phresco.commons.model.LogInfo;
 import com.photon.phresco.commons.model.Permission;
 import com.photon.phresco.commons.model.ProjectInfo;
 import com.photon.phresco.commons.model.Property;
@@ -171,6 +171,28 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	
     	return archeTypes;
 	}
+    
+    @Override
+    public List<Technology> getArcheTypes(String customerId, String appTypeId) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getArcheTypes(String customerId, String appTypeId)");
+        }
+
+        CacheKey key = new CacheKey(customerId, Technology.class.getName(), appTypeId);
+        List<Technology> archeTypes = (List<Technology>) manager.get(key);
+        if (CollectionUtils.isEmpty(archeTypes)) {
+            RestClient<Technology> archeTypeClient = getRestClient(REST_API_COMPONENT + REST_API_TECHNOLOGIES);
+            Map<String, String> queryStringsMap = new HashMap<String, String>();
+            queryStringsMap.put(REST_QUERY_CUSTOMERID, customerId);
+            queryStringsMap.put(REST_API_PATH_PARAM_ID, appTypeId);
+            archeTypeClient.queryStrings(queryStringsMap);
+            GenericType<List<Technology>> genericType = new GenericType<List<Technology>>(){};
+            archeTypes = archeTypeClient.get(genericType);
+            manager.add(key, archeTypes);
+        }
+        
+        return archeTypes;
+    }
     
     @Override
     public Technology getArcheType(String archeTypeId, String customerId) throws PhrescoException {
@@ -362,7 +384,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     @Override
     public List<DownloadInfo> getServers(String customerId) throws PhrescoException {
         if (isDebugEnabled) {
-            S_LOGGER.debug("Entered into ServiceManagerImpl.getServers(String techId, String customerId)");
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getServers(String customerId)");
         }
     	
         CacheKey key = new CacheKey(DownloadInfo.class.getName());
@@ -374,6 +396,28 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		
 		return servers;
 	}
+    
+    @Override
+    public List<DownloadInfo> getServers(String customerId, String techId) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getServers(String customerId, String techId)");
+        }
+        
+        CacheKey key = new CacheKey(DownloadInfo.class.getName(), techId);
+        List<DownloadInfo> servers = (List<DownloadInfo>) manager.get(key);
+        if (CollectionUtils.isEmpty(servers)) {
+            RestClient<DownloadInfo> serverClient = getRestClient(REST_API_COMPONENT + REST_API_SERVERS);
+            Map<String, String> queryStringsMap = new HashMap<String, String>();
+            queryStringsMap.put(REST_QUERY_CUSTOMERID, customerId);
+            queryStringsMap.put(REST_QUERY_TECHID, techId);
+            serverClient.queryStrings(queryStringsMap);
+            GenericType<List<DownloadInfo>> genericType = new GenericType<List<DownloadInfo>>(){};
+            servers = serverClient.get(genericType);
+            manager.add(key, servers);
+        }
+        
+        return servers;
+    }
     
     private List<DownloadInfo> getDatabasesFromServer(String customerId) throws PhrescoException {
         if (isDebugEnabled) {
@@ -390,7 +434,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     @Override
     public List<DownloadInfo> getDatabases(String customerId) throws PhrescoException {
         if (isDebugEnabled) {
-            S_LOGGER.debug("Entered into ServiceManagerImpl.getDatabases(String techId, String customerId)");
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getDatabases(String customerId)");
         }
     	
         CacheKey key = new CacheKey(DownloadInfo.class.getName());
@@ -403,7 +447,29 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		return databases;
 	}
     
-    public List<WebService> getWebServicesFromServer(String customerId) throws PhrescoException {
+    @Override
+    public List<DownloadInfo> getDatabases(String customerId, String techId) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getDatabases(String techId, String customerId)");
+        }
+        
+        CacheKey key = new CacheKey(DownloadInfo.class.getName(), techId);
+        List<DownloadInfo> databases = (List<DownloadInfo>) manager.get(key);
+        if (CollectionUtils.isEmpty(databases)) {
+            RestClient<DownloadInfo> dbClient = getRestClient(REST_API_COMPONENT + REST_API_DATABASES);
+            Map<String, String> queryStringsMap = new HashMap<String, String>();
+            queryStringsMap.put(REST_QUERY_CUSTOMERID, customerId);
+            queryStringsMap.put(REST_QUERY_TECHID, techId);
+            dbClient.queryStrings(queryStringsMap);
+            GenericType<List<DownloadInfo>> genericType = new GenericType<List<DownloadInfo>>(){};
+            databases = dbClient.get(genericType);
+            manager.add(key, databases);
+        }
+        
+        return databases;
+    }
+    
+    private List<WebService> getWebServicesFromServer(String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getWebServices(String customerId)");
         }
@@ -416,89 +482,98 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 	}
     
     @Override
-    public List<WebService> getWebServices(String techId, String customerId) throws PhrescoException {
+    public List<WebService> getWebServices(String customerId) throws PhrescoException {
         if (isDebugEnabled) {
-            S_LOGGER.debug("Entered into ServiceManagerImpl.getWebServices(String techId, String customerId)");
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getWebServices(String customerId)");
         }
     	
-        CacheKey key = new CacheKey(WebService.class.getName());
+        CacheKey key = new CacheKey(customerId, WebService.class.getName());
 		List<WebService> webServices = (List<WebService>) manager.get(key);
         if (CollectionUtils.isEmpty(webServices)) {
         	webServices = getWebServicesFromServer(customerId);
         	manager.add(key, webServices);
         }
-        List<WebService> webServiceByTechId = new ArrayList<WebService>();
-        if (CollectionUtils.isNotEmpty(webServices)) {
-        	for (WebService webService : webServices) {
-				if (webService.getAppliesToTechs().contains(techId)) {
-					webServiceByTechId.add(webService);
-				}
-			}
-        }
 		
-		return webServiceByTechId;
+		return webServices;
 	}
     
-    private List<ArtifactGroup> getModulesFromServer(String customerId) throws PhrescoException {
-    	if (isDebugEnabled) {
-    		S_LOGGER.debug("Entered into ServiceManagerImpl.getModulesFromServer(String customerId)");
-    	}
-
-    	RestClient<ArtifactGroup> moduleGroupClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
-    	Map<String, String> headers = new HashMap<String, String>();
-    	headers.put(REST_QUERY_CUSTOMERID, customerId);
-    	headers.put(REST_QUERY_TYPE, REST_QUERY_TYPE_MODULE);
-    	moduleGroupClient.queryStrings(headers);
-    	GenericType<List<ArtifactGroup>> genericType = new GenericType<List<ArtifactGroup>>(){};
-
-    	return moduleGroupClient.get(genericType);
-    }
-    
     @Override
-    public List<ArtifactGroup> getModules(String customerId) throws PhrescoException {
-    	if(isDebugEnabled) {
-    		S_LOGGER.debug("Enetered into ServiceManagerImpl.getModules(String customerId)");
-    	}
-
-    	CacheKey key = new CacheKey(customerId, CACHE_MODULES_KEY);
-    	List<ArtifactGroup> modules = (List<ArtifactGroup>) manager.get(key);
-		if (CollectionUtils.isEmpty(modules)) {
-			modules = getModulesFromServer(customerId);
-			manager.add(key, modules);
-		}
-    	
-    	return modules;
-    }
-    
-    private List<ArtifactGroup> getJSLibsFromServer(String customerId) throws PhrescoException {
+    public List<WebService> getWebServices(String customerId, String techId) throws PhrescoException {
         if (isDebugEnabled) {
-            S_LOGGER.debug("Entered into ServiceManagerImpl.getJSLibsFromServer(String customerId)");
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getWebServices(String techId, String customerId)");
         }
-    	
-    	RestClient<ArtifactGroup> jsLibClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
-    	Map<String, String> headers = new HashMap<String, String>();
-    	headers.put(REST_QUERY_CUSTOMERID, customerId);
-    	headers.put(REST_QUERY_TYPE, REST_QUERY_TYPE_JS);
-    	jsLibClient.queryStrings(headers);
-    	GenericType<List<ArtifactGroup>> genericType = new GenericType<List<ArtifactGroup>>(){};
-    	
-    	return jsLibClient.get(genericType);
+        
+        CacheKey key = new CacheKey(customerId, WebService.class.getName(), techId);
+        List<WebService> webServices = (List<WebService>) manager.get(key);
+        if (CollectionUtils.isEmpty(webServices)) {
+            RestClient<WebService> webServiceClient = getRestClient(REST_API_COMPONENT + REST_API_WEBSERVICES);
+            Map<String, String> queryStringsMap = new HashMap<String, String>();
+            queryStringsMap.put(REST_QUERY_CUSTOMERID, customerId);
+            queryStringsMap.put(REST_QUERY_TECHID, techId);
+            webServiceClient.queryStrings(queryStringsMap);
+            GenericType<List<WebService>> genericType = new GenericType<List<WebService>>(){};
+            webServices = webServiceClient.get(genericType);
+            manager.add(key, webServices);
+        }
+        
+        return webServices;
     }
     
     @Override
-    public List<ArtifactGroup> getJsLibs(String customerId) throws PhrescoException {
-    	if(isDebugEnabled) {
-    		S_LOGGER.debug("Enetered into ServiceManagerImpl.getJsLibs(String customerId)");
-    	}
+    public List<ArtifactGroup> getModules(String customerId, String techId, String type) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getModules(String customerId, String techId)");
+        }
+        
+        CacheKey key = new CacheKey(customerId, REST_QUERY_TYPE_MODULE, techId);
+        List<ArtifactGroup> modules = (List<ArtifactGroup>) manager.get(key);
+        if (CollectionUtils.isEmpty(modules)) {
+            modules = getModulesFromServer(customerId, techId, type);
+        }
+        
+        return modules;
+    }
 
-    	CacheKey key = new CacheKey(customerId, CACHE_JSLIBS_KEY);
-    	List<ArtifactGroup> modules = (List<ArtifactGroup>) manager.get(key);
-		if (CollectionUtils.isEmpty(modules)) {
-			modules = getJSLibsFromServer(customerId);
-			manager.add(key, modules);
-		}
-    	
-    	return modules;
+    private List<ArtifactGroup> getModulesFromServer(String customerId, String techId, String type) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getModules(String customerId, String techId)");
+        }
+        
+        RestClient<ArtifactGroup> moduleGroupClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
+        Map<String, String> queryStringsMap = new HashMap<String, String>();
+        queryStringsMap.put(REST_QUERY_CUSTOMERID, customerId);
+        queryStringsMap.put(REST_QUERY_TYPE, type);
+        queryStringsMap.put(REST_QUERY_TECHID, techId);
+        moduleGroupClient.queryStrings(queryStringsMap);
+        GenericType<List<ArtifactGroup>> genericType = new GenericType<List<ArtifactGroup>>(){};
+        List<ArtifactGroup> modules = moduleGroupClient.get(genericType);
+        CacheKey key = new CacheKey(customerId, CACHE_MODULES_KEY, techId);
+        manager.add(key, modules);
+        
+        return modules;
+    }
+    
+    @Override
+    public List<ArtifactGroup> getComponents(String customerId, String techId) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getJSLibs(String customerId, String techId)");
+        }
+        
+        CacheKey key = new CacheKey(customerId, REST_QUERY_TYPE_COMPONENT, techId);
+        List<ArtifactGroup> components = (List<ArtifactGroup>) manager.get(key);
+        if (CollectionUtils.isEmpty(components)) {
+            RestClient<ArtifactGroup> moduleGroupClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
+            Map<String, String> queryStringsMap = new HashMap<String, String>();
+            queryStringsMap.put(REST_QUERY_CUSTOMERID, customerId);
+            queryStringsMap.put(REST_QUERY_TYPE, REST_QUERY_TYPE_COMPONENT);
+            queryStringsMap.put(REST_QUERY_TECHID, techId);
+            moduleGroupClient.queryStrings(queryStringsMap);
+            GenericType<List<ArtifactGroup>> genericType = new GenericType<List<ArtifactGroup>>(){};
+            components = moduleGroupClient.get(genericType);
+            manager.add(key, components);
+        }
+        
+        return components;
     }
     
     private List<ArtifactGroup> getFeaturesFromServer(String customerId) throws PhrescoException {
@@ -508,39 +583,6 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 
     	RestClient<ArtifactGroup> moduleGroupClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
     	moduleGroupClient.queryString(REST_QUERY_CUSTOMERID, customerId);
-    	GenericType<List<ArtifactGroup>> genericType = new GenericType<List<ArtifactGroup>>(){};
-
-    	return moduleGroupClient.get(genericType);
-    }
-    
-    @Override
-    public List<ArtifactGroup> getFeatures(String customerId) throws PhrescoException {
-    	if(isDebugEnabled) {
-    		S_LOGGER.debug("Enetered into ServiceManagerImpl.getFeatures(String customerId)");
-    	}
-
-    	CacheKey key = new CacheKey(customerId, CACHE_FEATURES_KEY);
-    	List<ArtifactGroup> modules = (List<ArtifactGroup>) manager.get(key);
-		if (CollectionUtils.isEmpty(modules)) {
-			modules = getFeaturesFromServer(customerId);
-			manager.add(key, modules);
-		}
-    	
-    	return modules;
-    }
-     
-    @Override
-    public List<ArtifactGroup> getFeaturesByTech(String customerId, String techId, String type) throws PhrescoException {
-    	if(isDebugEnabled) {
-    		S_LOGGER.debug("Enetered into ServiceManagerImpl.getFeatures(String customerId)");
-    	}
-
-    	RestClient<ArtifactGroup> moduleGroupClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
-    	Map<String, String> queryStringsMap = new HashMap<String, String>();
-    	queryStringsMap.put(REST_QUERY_CUSTOMERID, customerId);
-    	queryStringsMap.put(REST_QUERY_TECHID, techId);
-    	queryStringsMap.put(REST_QUERY_TYPE, type);
-    	moduleGroupClient.queryStrings(queryStringsMap);
     	GenericType<List<ArtifactGroup>> genericType = new GenericType<List<ArtifactGroup>>(){};
 
     	return moduleGroupClient.get(genericType);
@@ -577,8 +619,9 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         
         RestClient<ArtifactGroup> moduleClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
         ClientResponse response = moduleClient.create(multiPart);
-        CacheKey key = new CacheKey(customerId, CACHE_FEATURES_KEY);
-        manager.add(key, getModulesFromServer(customerId));
+        // TODO:Lohes
+//        CacheKey key = new CacheKey(customerId, CACHE_FEATURES_KEY);
+//        manager.add(key, getModulesFromServer(customerId));
         
         return response;
     }
@@ -592,8 +635,9 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	RestClient<ArtifactGroup> editModule = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
      	editModule.setPath(moduleId);
  		ClientResponse response = editModule.create(multiPart);
- 		CacheKey key = new CacheKey(customerId, CACHE_FEATURES_KEY);
- 		manager.add(key, getModulesFromServer(customerId));
+        // TODO:Lohes
+// 		CacheKey key = new CacheKey(customerId, CACHE_FEATURES_KEY);
+// 		manager.add(key, getModulesFromServer(customerId));
  		
  		return response;
     }
@@ -607,8 +651,9 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
      	RestClient<ArtifactGroup> deleteModule = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
      	deleteModule.setPath(moduleId);
      	ClientResponse response = deleteModule.deleteById();
-     	CacheKey key = new CacheKey(customerId, CACHE_FEATURES_KEY);
-     	manager.add(key, getModulesFromServer(customerId));
+        // TODO:Lohes
+//     	CacheKey key = new CacheKey(customerId, CACHE_FEATURES_KEY);
+//     	manager.add(key, getModulesFromServer(customerId));
      	
      	return response;
     }
@@ -1286,7 +1331,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             S_LOGGER.debug("Entered into ServiceManagerImpl.getCiConfigPath(String repoType, String customerId)");
         }
     	
-    	RestClient<String> ciClient = getRestClient(REST_REPO + REST_CI_CONFIG_PATH);
+    	RestClient<String> ciClient = getRestClient(REST_API_REPO + REST_API_CI_CONFIG);
     	Map<String, String> queryStringsMap = new HashMap<String, String>();
     	queryStringsMap.put(REST_QUERY_TYPE, repoType);
     	queryStringsMap.put(REST_QUERY_CUSTOMERID, customerId);
@@ -1299,12 +1344,12 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     @Override
     public InputStream getCredentialXml(String customerId) throws PhrescoException {
     	if (isDebugEnabled) {
-            S_LOGGER.debug("Entered into ServiceManagerImpl.deleteglobalUrl(String globalurlId, String customerId)");
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getJdkHomeXml(String customerId)");
         }
     	
-    	RestClient<String> ciClient = getRestClient(REST_REPO + REST_CI_CREDENTIAL_PATH);
-    	ciClient.queryString(REST_QUERY_CUSTOMERID, customerId);
-    	ClientResponse response = ciClient.get(MediaType.APPLICATION_XML);
+    	RestClient<String> client = getRestClient(REST_API_REPO + REST_API_CI_CREDENTIAL);
+    	client.queryString(REST_QUERY_CUSTOMERID, customerId);
+    	ClientResponse response = client.get(MediaType.APPLICATION_XML);
 
     	return response.getEntityInputStream();
     }
@@ -1312,12 +1357,12 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     @Override
     public InputStream getJdkHomeXml(String customerId) throws PhrescoException {
     	if (isDebugEnabled) {
-            S_LOGGER.debug("Entered into ServiceManagerImpl.deleteglobalUrl(String globalurlId, String customerId)");
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getJdkHomeXml(String customerId)");
         }
     	
-    	RestClient<String> ciClient = getRestClient(REST_REPO + REST_CI_JDK_HOME);
-    	ciClient.queryString(REST_QUERY_CUSTOMERID, customerId);
-    	ClientResponse response = ciClient.get(MediaType.APPLICATION_XML);
+    	RestClient<String> client = getRestClient(REST_API_REPO + REST_API_CI_JDK_HOME);
+    	client.queryString(REST_QUERY_CUSTOMERID, customerId);
+    	ClientResponse response = client.get(MediaType.APPLICATION_XML);
 
     	return response.getEntityInputStream();
     }
@@ -1325,12 +1370,12 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     @Override
     public InputStream getMavenHomeXml(String customerId) throws PhrescoException {
     	if (isDebugEnabled) {
-            S_LOGGER.debug("Entered into ServiceManagerImpl.deleteglobalUrl(String globalurlId, String customerId)");
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getMavenHomeXml(String customerId)");
         }
     	
-    	RestClient<String> ciClient = getRestClient(REST_REPO + REST_CI_MAVEN_HOME);
-    	ciClient.queryString(REST_QUERY_CUSTOMERID, customerId);
-    	ClientResponse response = ciClient.get(MediaType.APPLICATION_XML);
+    	RestClient<String> client = getRestClient(REST_API_REPO + REST_API_CI_MAVEN_HOME);
+    	client.queryString(REST_QUERY_CUSTOMERID, customerId);
+    	ClientResponse response = client.get(MediaType.APPLICATION_XML);
 
     	return response.getEntityInputStream();
     }
@@ -1338,12 +1383,12 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     @Override
     public InputStream getMailerXml(String customerId) throws PhrescoException {
     	if (isDebugEnabled) {
-            S_LOGGER.debug("Entered into ServiceManagerImpl.deleteglobalUrl(String globalurlId, String customerId)");
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getMailerXml(String customerId)");
         }
     	
-    	RestClient<String> ciClient = getRestClient(REST_REPO + REST_CI_MAVEN_HOME);
-    	ciClient.queryString(REST_QUERY_CUSTOMERID, customerId);
-    	ClientResponse response = ciClient.get(MediaType.APPLICATION_XML);
+    	RestClient<String> client = getRestClient(REST_API_REPO + REST_API_CI_MAILER_HOME);
+    	client.queryString(REST_QUERY_CUSTOMERID, customerId);
+    	ClientResponse response = client.get(MediaType.APPLICATION_XML);
 
     	return response.getEntityInputStream();
     }
@@ -1351,13 +1396,25 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     @Override
     public ClientResponse getEmailExtPlugin(String customerId) throws PhrescoException {
     	if (isDebugEnabled) {
-            S_LOGGER.debug("Entered into ServiceManagerImpl.deleteglobalUrl(String globalurlId, String customerId)");
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getEmailExtPlugin(String customerId)");
         }
     	
-    	RestClient<String> ciClient = getRestClient(REST_REPO + REST_CI_MAIL_PLUGIN);
-    	ciClient.queryString(REST_QUERY_CUSTOMERID, customerId);
+    	RestClient<String> client = getRestClient(REST_API_REPO + REST_API_CI_MAIL_PLUGIN);
+    	client.queryString(REST_QUERY_CUSTOMERID, customerId);
     	
-        return ciClient.get(MediaType.APPLICATION_OCTET_STREAM);
+        return client.get(MediaType.APPLICATION_OCTET_STREAM);
+    }
+    
+    @Override
+    public ClientResponse sendErrorReport(List<LogInfo> loginfo) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.sendErrorReport(List<LogInfo> loginfo)");
+        }
+        
+        RestClient<LogInfo> client = getRestClient(REST_API_ADMIN + REST_API_LOG);
+        ClientResponse response = client.create(loginfo);
+        
+        return response;
     }
     
     @Override
