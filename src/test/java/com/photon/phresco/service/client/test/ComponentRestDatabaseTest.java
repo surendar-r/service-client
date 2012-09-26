@@ -66,7 +66,7 @@ public class ComponentRestDatabaseTest implements ServiceConstants {
 	    db.setId("testDownloadInfo");
 	    db.setName("TestDownloadInfo");
 	    db.setDescription("This is a test DownloadInfo");
-	    db.setAppliesToTechs(technologies);
+	    db.setAppliesToTechIds(technologies);
 	    DownloadInfo.add(db);
         RestClient<DownloadInfo> newApp = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_DATABASES);
         ClientResponse clientResponse = newApp.create(DownloadInfo);
@@ -96,7 +96,7 @@ public class ComponentRestDatabaseTest implements ServiceConstants {
 	    db.setId("testDownloadInfo");
 	    db.setName("TestDownloadInfo");
 	    db.setDescription("This is a test DownloadInfo update");
-	    db.setAppliesToTechs(technologies);
+	    db.setAppliesToTechIds(technologies);
 	    DownloadInfo.add(db);
 	    GenericType<List<DownloadInfo>> genericType = new GenericType<List<DownloadInfo>>() {};
 	   

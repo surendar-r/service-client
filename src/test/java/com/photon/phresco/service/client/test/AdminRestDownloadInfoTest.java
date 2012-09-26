@@ -10,78 +10,69 @@ import org.junit.Test;
 
 import com.photon.phresco.commons.model.DownloadInfo;
 import com.photon.phresco.exception.PhrescoException;
-import com.photon.phresco.service.client.api.ServiceClientConstant;
-import com.photon.phresco.service.client.api.ServiceContext;
-import com.photon.phresco.service.client.api.ServiceManager;
-import com.photon.phresco.service.client.factory.ServiceClientFactory;
 import com.photon.phresco.service.client.impl.RestClient;
-import com.photon.phresco.service.client.util.RestUtil;
-import com.photon.phresco.util.ServiceConstants;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.GenericType;
 
- public class AdminRestDownloadInfoTest implements ServiceConstants {
-	 public ServiceContext context = null;
-	 public ServiceManager serviceManager = null;
-	    
-	    @Before
-	    public void Initilaization() throws PhrescoException {
-	        context = new ServiceContext();
-	        context.put(ServiceClientConstant.SERVICE_URL, RestUtil.getServerPath());
-	        context.put(ServiceClientConstant.SERVICE_USERNAME, "demouser");
-	        context.put(ServiceClientConstant.SERVICE_PASSWORD, "phresco");
-	        serviceManager = ServiceClientFactory.getServiceManager(context);
-	    }
-	    
-	    @Test
-	 public void testCreateDownloadInfo() throws PhrescoException {
-        List<DownloadInfo> DownloadInfos = new ArrayList<DownloadInfo>();
+public class AdminRestDownloadInfoTest extends BaseRestTest {
+    private static final String TEST_DOWNLOADINFO_ID = "test-downloadinfo";
+
+	@Before
+    public void initilaization() throws PhrescoException {
+    	initialize();
+    }
+    
+	@Test
+	public void testCreateDownloadInfo() throws PhrescoException {
+		 List<DownloadInfo> downloadInfos = new ArrayList<DownloadInfo>();
+		 DownloadInfo downloadInfo = new DownloadInfo();
+		 downloadInfo.setId(TEST_DOWNLOADINFO_ID);
+		 downloadInfo.setName("Test customer");
+		 downloadInfos.add(downloadInfo);
+		 RestClient<DownloadInfo> downloadInfoClient = serviceManager.getRestClient(REST_API_ADMIN + REST_API_DOWNLOADS);
+		 ClientResponse clientResponse = downloadInfoClient.create(downloadInfos);
+		 assertNotNull(clientResponse);
+	 }
+
+    @Test
+    public void getDownloadInfos() throws PhrescoException {
+        RestClient<DownloadInfo> downloadInfoClient = serviceManager.getRestClient(REST_API_ADMIN + REST_API_DOWNLOADS);
+        GenericType<List<DownloadInfo>> genericType = new GenericType<List<DownloadInfo>>(){};
+        List<DownloadInfo> DownloadInfos = downloadInfoClient.get(genericType);
+        assertNotNull(DownloadInfos);
+    }
+    
+    @Test
+    public void getDownloadInfo() throws PhrescoException {
+        String downloadInfoId = TEST_DOWNLOADINFO_ID;
+        RestClient<DownloadInfo> downloadInfoClient = serviceManager.getRestClient(REST_API_ADMIN + REST_API_DOWNLOADS);
+        downloadInfoClient.setPath(downloadInfoId);
+        GenericType<DownloadInfo> genericType = new GenericType<DownloadInfo>(){};
+        DownloadInfo info = downloadInfoClient.getById(genericType);
+        assertNotNull(info);
+    } 
+    
+    @Test
+    public void updateDownloadInfo() throws PhrescoException {
+        String downloadInfoId = TEST_DOWNLOADINFO_ID;
         DownloadInfo downloadInfo = new DownloadInfo();
-        downloadInfo.setId("test-downloadinfo");
-        downloadInfo.setName("Test customer");
-        DownloadInfos.add(downloadInfo);
-        RestClient<DownloadInfo> DownloadInfoClient = serviceManager.getRestClient(REST_API_ADMIN + REST_API_DOWNLOADS);
-        ClientResponse clientResponse = DownloadInfoClient.create(DownloadInfos);
+        downloadInfo.setId(TEST_DOWNLOADINFO_ID);
+        downloadInfo.setName("Test customer update");
+        RestClient<DownloadInfo> downloadInfoClient = serviceManager.getRestClient(REST_API_ADMIN + REST_API_DOWNLOADS);
+        downloadInfoClient.setPath(downloadInfoId);
+        GenericType<DownloadInfo> genericType = new GenericType<DownloadInfo>() {};
+        DownloadInfo info=downloadInfoClient.updateById(downloadInfo, genericType);
+        assertNotNull(info); 
+    }
+    
+    @Test
+    public void deleteDownloadInfo() throws PhrescoException {
+        String downloadInfoId = TEST_DOWNLOADINFO_ID;
+        RestClient<DownloadInfo> downloadInfoClient = serviceManager.getRestClient(REST_API_ADMIN + REST_API_DOWNLOADS);
+        downloadInfoClient.setPath(downloadInfoId);
+        ClientResponse clientResponse = downloadInfoClient.deleteById();
         assertNotNull(clientResponse);
     }
-	
-	    @Test
-	    public void getDownloadInfos() throws PhrescoException {
-	        RestClient<DownloadInfo> DownloadInfoClient = serviceManager.getRestClient(REST_API_ADMIN + REST_API_DOWNLOADS);
-	        GenericType<List<DownloadInfo>> genericType = new GenericType<List<DownloadInfo>>(){};
-	        List<DownloadInfo> DownloadInfos = DownloadInfoClient.get(genericType);
-	        assertNotNull(DownloadInfos);
-	    }
-	    
-	    @Test
-	    public void getDownloadInfo() throws PhrescoException {
-	        String downloadInfoId = "test-downloadinfo";
-	        RestClient<DownloadInfo> DownloadInfoClient = serviceManager.getRestClient(REST_API_ADMIN + REST_API_DOWNLOADS);
-	        DownloadInfoClient.setPath(downloadInfoId);
-	        GenericType<DownloadInfo> genericType = new GenericType<DownloadInfo>(){};
-	        DownloadInfo info = DownloadInfoClient.getById(genericType);
-	        assertNotNull(info);
-	    } 
-	    
-	    @Test
-	    public void updateDownloadInfo() throws PhrescoException {
-	        String downloadInfoId = "test-downloadinfo";
-	        DownloadInfo downloadInfo = new DownloadInfo();
-	        downloadInfo.setId("test-downloadinfo");
-	        downloadInfo.setName("Test customer update");
-	        RestClient<DownloadInfo> DownloadInfoClient = serviceManager.getRestClient(REST_API_ADMIN + REST_API_DOWNLOADS);
-	        DownloadInfoClient.setPath(downloadInfoId);
-	        GenericType<DownloadInfo> genericType = new GenericType<DownloadInfo>() {};
-	        DownloadInfo info=DownloadInfoClient.updateById(downloadInfo, genericType);
-	        assertNotNull(info); 
-	    }
-	    
-	    @Test
-	    public void deleteDownloadInfo() throws PhrescoException {
-	        String downloadInfoId = "test-downloadinfo";
-	        RestClient<DownloadInfo> DownloadInfoClient = serviceManager.getRestClient(REST_API_ADMIN + REST_API_DOWNLOADS);
-	        DownloadInfoClient.setPath(downloadInfoId);
-	        ClientResponse clientResponse = DownloadInfoClient.deleteById();
-	        assertNotNull(clientResponse);
-	    }
-	}
+
+	 
+}

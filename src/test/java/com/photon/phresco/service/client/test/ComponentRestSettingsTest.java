@@ -19,32 +19,23 @@ import com.photon.phresco.util.ServiceConstants;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.GenericType;
 
-public class ComponentRestSettingsTest implements ServiceConstants {
-	
-	public ServiceContext context = null;
-	public ServiceManager serviceManager = null;
+public class ComponentRestSettingsTest extends BaseRestTest {
 	
 	@Before
-	public void Initilaization() throws PhrescoException {
-		context = new ServiceContext();
-        context.put(ServiceClientConstant.SERVICE_URL, RestUtil.getServerPath());
-        context.put(ServiceClientConstant.SERVICE_USERNAME, "demouser");
-        context.put(ServiceClientConstant.SERVICE_PASSWORD, "phresco");
-        serviceManager = ServiceClientFactory.getServiceManager(context);
+	public void initilaization() throws PhrescoException {
+		initialize();
 	}
-	
 
 	@Test
 	public void testCreateSettings() throws PhrescoException {
 		List<SettingsTemplate> settingTemplate=new ArrayList<SettingsTemplate>();
-		SettingsTemplate st=new SettingsTemplate();
+		SettingsTemplate st = new SettingsTemplate();
 		st.setId("testSetting");
 		st.setType("server");
 		settingTemplate.add(st);
         RestClient<SettingsTemplate> newSetting = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_SETTINGS);
         ClientResponse clientResponse = newSetting.create(settingTemplate);
     }
-	
 
 	@Test
     public void testGetSettings() throws PhrescoException {
@@ -54,7 +45,6 @@ public class ComponentRestSettingsTest implements ServiceConstants {
 		List<SettingsTemplate> settingTemplate = stClient.get(genericType);
 		assertNotNull(settingTemplate);
     }
-	
 
 	@Test
 	public void testUpdateSettingTemplate() throws PhrescoException{
