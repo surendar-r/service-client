@@ -28,8 +28,9 @@ import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 
+import junit.framework.Assert;
+
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.photon.phresco.commons.model.ArtifactGroup;
@@ -47,7 +48,7 @@ import com.sun.jersey.multipart.BodyPart;
 import com.sun.jersey.multipart.MultiPart;
 
 public class ComponentRestTechnologiesTest extends BaseRestTest {
-	
+
 	private static final String PHRESCO_TEST_ARCHETYPE_JAR = "phresco-test-archetype.jar";
 	private static final String PHRESCO_TEST_ARCHETYPE_PLUGIN_JAR = "phresco-test-archetype-plugin.jar";
 
@@ -57,7 +58,7 @@ public class ComponentRestTechnologiesTest extends BaseRestTest {
 	}
 
     public Technology createTechnology() throws PhrescoException {
-    	Technology tech = new Technology();
+    	Technology tech = new Technology(TEST_TECH_ID);
     	tech.setAppTypeId(PHOTON_APP_TYPE_ID);
     	List<String> customerIds = new ArrayList<String>();
     	customerIds.add(DEFAULT_CUSTOMER_NAME);
@@ -143,7 +144,7 @@ public class ComponentRestTechnologiesTest extends BaseRestTest {
 
 	        multiPart.close();
 
-	        System.out.println(create.getStatus());
+	        Assert.assertEquals(200, create.getStatus());
 		} finally {
             if (is != null) {
             	is.close();
@@ -167,6 +168,29 @@ public class ComponentRestTechnologiesTest extends BaseRestTest {
             System.out.println("Tech Name == " + tech.getName() + " id " + tech.getId());
             System.out.println("tec " + tech);
         }
+        
+        Assert.assertEquals(1, list.size());
+    }
+
+	@Test
+    public void testGetTechnologyById() throws PhrescoException {
+        RestClient<Technology> techClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_TECHNOLOGIES);
+        techClient.setPath(TEST_TECH_ID);
+        GenericType<Technology> genericType = new GenericType<Technology>(){};
+        Technology tech = techClient.getById(genericType);
+
+        System.out.println("techId " + tech.getId());
+        Assert.assertEquals(tech.getId(), TEST_TECH_ID);
+    }
+
+	@Test
+    public void testDeleteTechnologyById() throws PhrescoException {
+    	serviceManager = ServiceClientFactory.getServiceManager(context);            
+    	RestClient<Technology> techClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_TECHNOLOGIES);
+    	techClient.setPath(TEST_TECH_ID);
+    	ClientResponse response = techClient.deleteById();
+    	System.out.println(response.getStatus());
+    	Assert.assertEquals(response.getStatus(), 200);
     }
     
 //	@Ignore
@@ -220,14 +244,6 @@ public class ComponentRestTechnologiesTest extends BaseRestTest {
 //		System.out.println(technology);
 //    }
 //
-//	@Ignore
-//    public void testDeleteTechnologyById() throws PhrescoException {
-//    	serviceManager = ServiceClientFactory.getServiceManager(context);            
-//    	RestClient<Technology> techClient = serviceManager.getRestClient("/component/technologies");
-//    	techClient.setPath(id3);
-//    	ClientResponse response = techClient.deleteById();
-//    	System.out.println(response.getStatus());
-//    }
 //	
 //	@Test
 //	public void createTest() throws FileNotFoundException, PhrescoException {

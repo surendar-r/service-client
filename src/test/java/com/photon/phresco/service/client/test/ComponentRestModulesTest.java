@@ -42,7 +42,7 @@ import com.photon.phresco.util.ServiceConstants;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.GenericType;
 
-public class ComponentRestModulesTest implements ServiceConstants{
+public class ComponentRestModulesTest implements ServiceConstants {
 
 	public ServiceContext context = null;
 	public ServiceManager serviceManager = null;
