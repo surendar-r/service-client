@@ -128,7 +128,7 @@ public interface ServiceManager {
 	
 	ClientResponse createPilotProjects(MultiPart multiPart, String customerId) throws PhrescoException;
 	
-	void updatePilotProject(ApplicationInfo appInfo, String projectId, String customerId) throws PhrescoException;
+	void updatePilotProject(MultiPart multiPart, String projectId, String customerId) throws PhrescoException;
 	
 	ClientResponse deletePilotProject(String projectId, String customerId) throws PhrescoException;
 	
@@ -146,9 +146,9 @@ public interface ServiceManager {
 	
 	DownloadInfo getDownload(String id, String customerId) throws PhrescoException;
 	
-	ClientResponse createDownloads(List<DownloadInfo> downloadInfo, String customerId) throws PhrescoException;
+	ClientResponse createDownloads(MultiPart multiPart, String customerId) throws PhrescoException;
 	
-	void updateDownload(DownloadInfo downloadInfo, String id, String customerId) throws PhrescoException;
+	void updateDownload(MultiPart multiPart, String id, String customerId) throws PhrescoException;
 	
 	ClientResponse deleteDownloadInfo(String id, String customerId) throws PhrescoException;
 	
