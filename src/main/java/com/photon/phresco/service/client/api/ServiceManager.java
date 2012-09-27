@@ -44,116 +44,472 @@ import com.sun.jersey.multipart.BodyPart;
 import com.sun.jersey.multipart.MultiPart;
 
 /**
- * Interface for making service calls to Phresco Framework
+ * Interface for making service calls to Phresco Framework and Admin Console
  */
 public interface ServiceManager {
 	
+	/**
+	 * To get the rest client for all given object 
+	 * @param <E>
+	 * @param contextPath
+	 * @return
+	 * @throws PhrescoException
+	 */
 	<E> RestClient<E> getRestClient(String contextPath) throws PhrescoException;
 	
+	/**
+	 * To get the userinfo
+	 * @return
+	 * @throws PhrescoException
+	 */
 	User getUserInfo() throws PhrescoException;
 	
+	/**
+	 * To get the video info
+	 * @return List<VideoInfo>
+	 * @throws PhrescoException
+	 */
 	List<VideoInfo> getVideoInfos() throws PhrescoException;
 	
+	/**
+	 * To create the application type for the given customer
+	 * @param appTypes
+	 * @param customerId
+	 * @return ClientResponse
+	 * @throws PhrescoException
+	 */
 	ClientResponse createApplicationTypes(List<ApplicationType> appTypes, String customerId) throws PhrescoException;
 	
+	/**
+	 * To update the details of the given application type
+	 * @param appType
+	 * @param appTypeId
+	 * @param customerId
+	 * @throws PhrescoException
+	 */
 	void updateApplicationType(ApplicationType appType, String appTypeId, String customerId) throws PhrescoException;
 	
+	/**
+	 * To delete the given application type
+	 * @param appTypeId
+	 * @param customerId
+	 * @return ClientResponse
+	 * @throws PhrescoException
+	 */
 	ClientResponse deleteApplicationType(String appTypeId, String customerId) throws PhrescoException;
    
+	/**
+	 * To get all the technologies of the given customer
+	 * @param customerId
+	 * @return List<Technology>
+	 * @throws PhrescoException
+	 */
 	List<Technology> getArcheTypes(String customerId) throws PhrescoException;
 	
+	/**
+	 * To get all the technologies of the given customer and the apptype
+	 * @param customerId
+	 * @param appTypeId
+	 * @return List<Technology>
+	 * @throws PhrescoException
+	 */
 	List<Technology> getArcheTypes(String customerId, String appTypeId) throws PhrescoException;
 	
+	/**
+	 * To get the details of the given technology
+	 * @param archeTypeId
+	 * @param customerId
+	 * @return Technology
+	 * @throws PhrescoException
+	 */
 	Technology getArcheType(String archeTypeId, String customerId) throws PhrescoException;
 	
+	/**
+	 * To create the bodypart
+	 * @param name
+	 * @param jarType
+	 * @param jarIs
+	 * @return BodyPart
+	 * @throws PhrescoException
+	 */
 	BodyPart createBodyPart(String name, Content.Type jarType, InputStream jarIs) throws PhrescoException;
 	
+	/**
+	 * To create the technology for the given customer
+	 * @param multiPart
+	 * @param customerId
+	 * @return ClientResponse
+	 * @throws PhrescoException
+	 */
 	ClientResponse createArcheTypes(MultiPart multiPart, String customerId) throws PhrescoException;
 	
+	/**
+	 * To update the details of the given technology
+	 * @param technology
+	 * @param archeTypeId
+	 * @param customerId
+	 * @throws PhrescoException
+	 */
 	void updateArcheType(Technology technology, String archeTypeId, String customerId) throws PhrescoException;
 	
+	/**
+	 * To delete the given technology
+	 * @param archeTypeId
+	 * @param customerId
+	 * @return ClientResponse
+	 * @throws PhrescoException
+	 */
 	ClientResponse deleteArcheType(String archeTypeId, String customerId) throws PhrescoException;
 	
+	/**
+	 * To get all the application types of the given customer
+	 * @param customerId
+	 * @return List<ApplicationType>
+	 * @throws PhrescoException
+	 */
 	List<ApplicationType> getApplicationTypes(String customerId) throws PhrescoException;
 	
+	/**
+	 * To get the details of the given application type
+	 * @param appTypeId
+	 * @param customerId
+	 * @return ApplicationType
+	 * @throws PhrescoException
+	 */
 	ApplicationType getApplicationType(String appTypeId, String customerId) throws PhrescoException;
 	
+	/**
+	 * To get all the servers of the given customer
+	 * @param customerId
+	 * @return List<DownloadInfo>
+	 * @throws PhrescoException
+	 */
 	List<DownloadInfo> getServers(String customerId) throws PhrescoException;
 	
+	/**
+	 * To get the servers of the given customer and the technology
+	 * @param customerId
+	 * @param techId
+	 * @return List<DownloadInfo>
+	 * @throws PhrescoException
+	 */
 	List<DownloadInfo> getServers(String customerId, String techId) throws PhrescoException;
 	
+	/**
+	 * To get all the databases of the given customer
+	 * @param customerId
+	 * @return List<DownloadInfo>
+	 * @throws PhrescoException
+	 */
 	List<DownloadInfo> getDatabases(String customerId) throws PhrescoException;
 	
+	/**
+	 * To get the databases of the given customer and the technology
+	 * @param customerId
+	 * @param techId
+	 * @return List<DownloadInfo>
+	 * @throws PhrescoException
+	 */
 	List<DownloadInfo> getDatabases(String customerId, String techId) throws PhrescoException;
 	
+	/**
+	 * To get all the webservices of the given customer
+	 * @param customerId
+	 * @return List<WebService>
+	 * @throws PhrescoException
+	 */
 	List<WebService> getWebServices(String customerId) throws PhrescoException;
 	
+	/**
+	 * To get the webservices of the given customer and the technology
+	 * @param techId
+	 * @param customerId
+	 * @return List<WebService>
+	 * @throws PhrescoException
+	 */
 	List<WebService> getWebServices(String techId, String customerId) throws PhrescoException;
 	
+	/**
+	 * To get the features of the the of the specified type(module/js) for the given customer and techid
+	 * @param customerId
+	 * @param techId
+	 * @param type
+	 * @return List<ArtifactGroup>
+	 * @throws PhrescoException
+	 */
 	List<ArtifactGroup> getModules(String customerId, String techId, String type) throws PhrescoException;
 	
+	/**
+	 * To get all the components of the given customer and the techId
+	 * @param customerId
+	 * @param techId
+	 * @return List<ArtifactGroup>
+	 * @throws PhrescoException
+	 */
 	List<ArtifactGroup> getComponents(String customerId, String techId) throws PhrescoException;
 	
+	/**
+	 * To get the details of the given feature
+	 * @param moduleId
+	 * @param customerId
+	 * @return ArtifactGroup
+	 * @throws PhrescoException
+	 */
 	ArtifactGroup getFeature(String moduleId, String customerId) throws PhrescoException;
 	
+	/**
+	 * To create feature for the given customer
+	 * @param multiPart
+	 * @param customerId
+	 * @return ClientResponse
+	 * @throws PhrescoException
+	 */
 	ClientResponse createFeatures(MultiPart multiPart, String customerId) throws PhrescoException;
 	
+	/**
+	 * To update the details of the given feature
+	 * @param multiPart
+	 * @param moduleId
+	 * @param customerId
+	 * @return ClientResponse
+	 * @throws PhrescoException
+	 */
 	ClientResponse updateFeature(MultiPart multiPart, String moduleId, String customerId) throws PhrescoException;
 	
+	/**
+	 * To delete the given feature
+	 * @param moduleId
+	 * @param customerId
+	 * @return ClientResponse
+	 * @throws PhrescoException
+	 */
 	ClientResponse deleteFeature(String moduleId, String customerId) throws PhrescoException;
 	
+	/**
+	 * To get all the customers
+	 * @return List<Customer>
+	 * @throws PhrescoException
+	 */
 	List<Customer> getCustomers() throws PhrescoException;
 	
+	/**
+	 * To get the details of the given customer
+	 * @param customerId
+	 * @return Customer
+	 * @throws PhrescoException
+	 */
 	Customer getCustomer(String customerId) throws PhrescoException;
 	
+	/**
+	 * To create a list of customers
+	 * @param customers
+	 * @return ClientResponse
+	 * @throws PhrescoException
+	 */
 	ClientResponse createCustomers(List<Customer> customers) throws PhrescoException;
 	
+	
+	/**
+	 * To update the details of the given customer
+	 * @param customer
+	 * @param customerId
+	 * @throws PhrescoException
+	 */
 	void updateCustomer(Customer customer, String customerId) throws PhrescoException;
 	
+	/**
+	 * To delete the given customer
+	 * @param customerId
+	 * @return ClientResponse
+	 * @throws PhrescoException
+	 */
 	ClientResponse deleteCustomer(String customerId) throws PhrescoException;
 	
+	/**
+	 * To get the config templates of the given customer
+	 * @param customerId
+	 * @return List<SettingsTemplate>
+	 * @throws PhrescoException
+	 */
 	List<SettingsTemplate> getconfigTemplates(String customerId) throws PhrescoException;
 	
+	/**
+	 * To get the details of the given config template
+	 * @param configId
+	 * @param customerId
+	 * @return SettingsTemplate
+	 * @throws PhrescoException
+	 */
 	SettingsTemplate getConfigTemplate(String configId, String customerId) throws PhrescoException;
 	
+	/**
+	 * To create config templates
+	 * @param settings
+	 * @param customerId
+	 * @return ClientResponse
+	 * @throws PhrescoException
+	 */
 	ClientResponse createConfigTemplates(List<SettingsTemplate> settings, String customerId) throws PhrescoException;
 	
+	/**
+	 * To update the details of the given config template
+	 * @param settingTemp
+	 * @param configId
+	 * @param customerId
+	 * @throws PhrescoException
+	 */
 	void updateConfigTemp(SettingsTemplate settingTemp, String configId, String customerId) throws PhrescoException;
 	
+	/**
+	 * To delete the given config template
+	 * @param id
+	 * @param customerId
+	 * @return ClientResponse
+	 * @throws PhrescoException
+	 */
 	ClientResponse deleteConfigTemp(String id, String customerId) throws PhrescoException;
 	
-	List<ApplicationInfo> getPilotProjects(String techId) throws PhrescoException;
+	/**
+	 * To get all the pilot projects of the given customer
+	 * @param techId
+	 * @return List<ApplicationInfo>
+	 * @throws PhrescoException
+	 */
+	List<ApplicationInfo> getPilotProjects(String customerId) throws PhrescoException;
 	
+	/**
+	 * To get the details of the given pilot project
+	 * @param projectId
+	 * @param customerId
+	 * @return ApplicationInfo
+	 * @throws PhrescoException
+	 */
 	ApplicationInfo getPilotProject(String projectId, String customerId) throws PhrescoException;
 	
+	/**
+	 * To create pilot project for the given customer
+	 * @param multiPart
+	 * @param customerId
+	 * @return ClientResponse
+	 * @throws PhrescoException
+	 */
 	ClientResponse createPilotProjects(MultiPart multiPart, String customerId) throws PhrescoException;
 	
+	/**
+	 * To update the details of the given pilot project
+	 * @param multiPart
+	 * @param projectId
+	 * @param customerId
+	 * @throws PhrescoException
+	 */
 	void updatePilotProject(MultiPart multiPart, String projectId, String customerId) throws PhrescoException;
 	
+	/**
+	 * To delete the given pilot project
+	 * @param projectId
+	 * @param customerId
+	 * @return ClientResponse
+	 * @throws PhrescoException
+	 */
 	ClientResponse deletePilotProject(String projectId, String customerId) throws PhrescoException;
 	
+	/**
+	 * To get all the roles
+	 * @return List<Role>
+	 * @throws PhrescoException
+	 */
 	List<Role> getRoles() throws PhrescoException;
 	
+	/**
+	 * To get the details of the given role
+	 * @param roleId
+	 * @return Role
+	 * @throws PhrescoException
+	 */
 	Role getRole(String roleId) throws PhrescoException;
 
+	/**
+	 * To create the given roles
+	 * @param role
+	 * @return ClientResponse
+	 * @throws PhrescoException
+	 */
 	ClientResponse createRoles(List<Role> role) throws PhrescoException;
 	
+	/**
+	 * To update the details of the given role
+	 * @param role
+	 * @param id
+	 * @throws PhrescoException
+	 */
 	void updateRole(Role role, String id) throws PhrescoException;
 	
+	/**
+	 * To delete the given role
+	 * @param id
+	 * @return ClientResponse
+	 * @throws PhrescoException
+	 */
 	ClientResponse deleteRole(String id) throws PhrescoException;
 	
+	/**
+	 * To get the downloads of the given customer
+	 * @param customerId
+	 * @return List<DownloadInfo>
+	 * @throws PhrescoException
+	 */
 	List<DownloadInfo> getDownloads(String customerId) throws PhrescoException;
 	
+	/**
+	 * To get the details of the given download id
+	 * @param id
+	 * @param customerId
+	 * @return DownloadInfo
+	 * @throws PhrescoException
+	 */
 	DownloadInfo getDownload(String id, String customerId) throws PhrescoException;
 	
+	/**
+	 * To create download for the given customer
+	 * @param multiPart
+	 * @param customerId
+	 * @return ClientResponse
+	 * @throws PhrescoException
+	 */
 	ClientResponse createDownloads(MultiPart multiPart, String customerId) throws PhrescoException;
 	
+	/**
+	 * To update the details of the given download
+	 * @param multiPart
+	 * @param id
+	 * @param customerId
+	 * @throws PhrescoException
+	 */
 	void updateDownload(MultiPart multiPart, String id, String customerId) throws PhrescoException;
 	
+	/**
+	 * To delete the given download info
+	 * @param id
+	 * @param customerId
+	 * @return ClientResponse
+	 * @throws PhrescoException
+	 */
 	ClientResponse deleteDownloadInfo(String id, String customerId) throws PhrescoException;
 	
+	/**
+	 * To create project
+	 * @param appInfo
+	 * @return ClientResponse
+	 * @throws PhrescoException
+	 */
 	ClientResponse createProject(ApplicationInfo appInfo) throws PhrescoException;
 	
+	/**
+     * To update the details of the given project
+     * @param appInfo
+     * @return ClientResponse
+     * @throws PhrescoException
+     */
 	ClientResponse updateProject(ApplicationInfo appInfo) throws PhrescoException;
 	
 	ClientResponse updateDocumentProject(ApplicationInfo appInfo) throws PhrescoException;
