@@ -918,15 +918,14 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public void updatePilotProject(ApplicationInfo appInfo, String projectId, String customerId) throws PhrescoException {
+    public void updatePilotProject(MultiPart multiPart, String projectId, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.updatePilotProject(ProjectInfo projectInfo, String projectId)" + projectId);
         }
         
         RestClient<ApplicationInfo> pilotproClient = getRestClient(REST_API_COMPONENT + REST_API_PILOTS);
         pilotproClient.setPath(projectId);
-        GenericType<ApplicationInfo> genericType = new GenericType<ApplicationInfo>() {};
-        pilotproClient.updateById(appInfo, genericType);
+        pilotproClient.create(multiPart);
         CacheKey key = new CacheKey(customerId, ProjectInfo.class.getName());
         manager.add(key, getPilotProjectsFromServer(customerId));
     }
@@ -1098,13 +1097,13 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public ClientResponse createDownloads(List<DownloadInfo> downloadInfo, String customerId) throws PhrescoException {
+    public ClientResponse createDownloads(MultiPart multiPart, String customerId) throws PhrescoException {
     	if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.createDownloadInfo(List<DownloadInfo> downloadInfo)");
         }
     	
     	RestClient<DownloadInfo> downloadClient = getRestClient(REST_API_COMPONENT + REST_API_DOWNLOADS);
-    	ClientResponse response = downloadClient.create(downloadInfo);
+    	ClientResponse response = downloadClient.create(multiPart);
     	CacheKey key = new CacheKey(DownloadInfo.class.getName());
     	manager.add(key, getDownloadsFromServer());
     	
@@ -1112,15 +1111,14 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
 
     @Override
-    public void updateDownload(DownloadInfo downloadInfo, String downloadId, String customerId) throws PhrescoException {
+    public void updateDownload(MultiPart multiPart, String downloadId, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.updateDownload(DownloadInfo downloadInfo, String downloadId)");
         }
         
         RestClient<DownloadInfo> downloadClient = getRestClient(REST_API_COMPONENT + REST_API_DOWNLOADS);
         downloadClient.setPath(downloadId);
-        GenericType<DownloadInfo> genericType = new GenericType<DownloadInfo>() {};
-        downloadClient.updateById(downloadInfo, genericType);
+        downloadClient.create(multiPart);
         CacheKey key = new CacheKey(DownloadInfo.class.getName());
         manager.add(key, getDownloadsFromServer());
     }
