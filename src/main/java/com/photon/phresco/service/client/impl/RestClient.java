@@ -264,6 +264,33 @@ public class RestClient<E> {
         return clientResponse;
     }
     
+    /**
+     * @param multiPart
+     * @return
+     * @throws PhrescoException
+     */
+    public ClientResponse update(MultiPart multiPart) throws PhrescoException {
+    	if (isDebugEnabled) {
+    		S_LOGGER.debug("Entered into RestClient.update(MultiPart multiPart)");
+    	}
+    	return update(multiPart, MultiPartMediaTypes.MULTIPART_MIXED_TYPE, MultiPartMediaTypes.MULTIPART_MIXED_TYPE);
+    }
+    
+	/**
+	 * @param multiPart
+	 * @param accept
+	 * @param type
+	 * @return
+	 * @throws PhrescoException
+	 */
+	private ClientResponse update(MultiPart multiPart, MediaType accept, MediaType type) throws PhrescoException {
+	    updateBuilder();
+	    builder = builder.accept(accept).type(type);
+	    ClientResponse clientResponse = builder.put(ClientResponse.class, multiPart);
+        isErrorThrow(clientResponse);
+        return clientResponse;
+    }
+    
 	/**
 	 * Updates List of objects for the given type 
 	 * @param infos
@@ -358,6 +385,7 @@ public class RestClient<E> {
 	    }
 		
 		int status = clientResponse.getStatus();
+		System.out.println("Get status " +status);
 		if (status == ClientResponse.Status.ACCEPTED.getStatusCode() || 
 				status == ClientResponse.Status.OK.getStatusCode() || status == ClientResponse.Status.CREATED.getStatusCode()) {
 		    System.out.println(status);

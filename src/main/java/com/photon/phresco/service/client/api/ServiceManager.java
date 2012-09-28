@@ -150,7 +150,7 @@ public interface ServiceManager {
 	 * @param customerId
 	 * @throws PhrescoException
 	 */
-	void updateArcheType(Technology technology, String archeTypeId, String customerId) throws PhrescoException;
+	ClientResponse updateArcheType(MultiPart multiPart, String archeTypeId, String customerId) throws PhrescoException;
 	
 	/**
 	 * To delete the given technology

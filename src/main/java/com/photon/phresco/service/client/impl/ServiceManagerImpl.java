@@ -243,17 +243,20 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public void updateArcheType(Technology technology, String archeTypeId, String customerId) throws PhrescoException {
+    public ClientResponse updateArcheType(MultiPart multiPart, String archeTypeId, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.updateArcheTypes(Technology technology, String archeTypeId, String customerId)");
         }
     	
     	RestClient<Technology> editArchetype = getRestClient(REST_API_COMPONENT + REST_API_TECHNOLOGIES);
     	editArchetype.setPath(archeTypeId);
-		GenericType<Technology> genericType = new GenericType<Technology>() {};
+    	ClientResponse response = editArchetype.update(multiPart);
+    	System.out.println("updaeArcheType " +response.getStatus());
+    	return response;
+		/*GenericType<Technology> genericType = new GenericType<Technology>() {};
 		editArchetype.updateById(technology, genericType);
 		CacheKey key = new CacheKey(customerId, Technology.class.getName());
-		manager.add(key, getArcheTypesFromServer(customerId));
+		manager.add(key, getArcheTypesFromServer(customerId));*/
     }
     
     @Override
