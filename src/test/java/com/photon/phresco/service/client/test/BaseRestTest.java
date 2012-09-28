@@ -36,8 +36,8 @@ public class BaseRestTest implements ServiceConstants {
 		System.out.println("Server Path " + RestUtil.getServerPath());
 		
         context.put(ServiceClientConstant.SERVICE_URL, RestUtil.getServerPath());
-        context.put(ServiceClientConstant.SERVICE_USERNAME, LOGIN_USER_ID);
-        context.put(ServiceClientConstant.SERVICE_PASSWORD, LOGIN_USER_PASSWORD);
+        context.put(ServiceClientConstant.SERVICE_USERNAME, RestUtil.getUserName());
+        context.put(ServiceClientConstant.SERVICE_PASSWORD, RestUtil.getPassword());
         serviceManager = ServiceClientFactory.getServiceManager(context);
 	}
 

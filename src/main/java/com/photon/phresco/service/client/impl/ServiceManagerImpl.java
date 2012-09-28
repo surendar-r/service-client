@@ -1267,7 +1267,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public ClientResponse deleteglobalUrl(String globalurlId, String customerId) throws PhrescoException {
+    public ClientResponse deleteGlobalUrl(String globalurlId, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.deleteglobalUrl(String globalurlId, String customerId)");
         }

@@ -11,12 +11,14 @@ public final class RestUtil {
 
     private static final String CONFIG_FILE = "phresco-env-config.xml";
     
+    private static String userName="";
+    private static String password="";
+    
     private RestUtil() {
     }
-    
-    public static String getServerPath() throws PhrescoException {
-        String phrescoServerUrl = "";
-        try {
+
+	private static List<Configuration> configList(String configType) throws PhrescoException {
+		try {
             InputStream stream = null;
             stream = RestUtil.class.getClassLoader()
                     .getResourceAsStream(CONFIG_FILE);
@@ -25,8 +27,15 @@ public final class RestUtil {
             if (environment == null || environment.isEmpty()) {
                 environment = configReader.getDefaultEnvName();
             }
-            List<Configuration> configurations = configReader
-                    .getConfigurations(environment, "WebService");
+			return configReader.getConfigurations(environment, configType);
+		} catch (Exception e) {
+		    throw new PhrescoException(e);
+		}
+	}
+	
+    public static String getServerPath() throws PhrescoException {
+        String phrescoServerUrl = "";
+        List<Configuration> configurations = configList("WebService");
             for (Configuration configuration : configurations) {
                 String protocol = configuration.getProperties().getProperty(
                         "protocol");
@@ -39,9 +48,22 @@ public final class RestUtil {
                 phrescoServerUrl = protocol + "://" + host + ":" + port + "/"
                         + context + additionalContext;
             }
-        } catch (Exception e) {
-            throw new PhrescoException(e);
-        }
         return phrescoServerUrl;
     }
+    
+    public static String getUserName() throws PhrescoException{
+    	List<Configuration> configurations = configList("WebService");
+             for(Configuration configuration:configurations){
+            	 userName=configuration.getProperties().getProperty("username");
+             }
+		return userName;
+    }
+    
+    public static String getPassword() throws PhrescoException{
+    	List<Configuration> configurations = configList("WebService");
+            for(Configuration configuration:configurations){
+            	password=configuration.getProperties().getProperty("password");
+            }
+		return password;
+   }
 }

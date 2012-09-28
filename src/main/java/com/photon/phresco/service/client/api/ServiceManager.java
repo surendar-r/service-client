@@ -522,7 +522,7 @@ public interface ServiceManager {
 	
 	ClientResponse createGlobalUrl(List<Property> globalUrl, String customerId) throws PhrescoException;
 	
-	ClientResponse deleteglobalUrl(String globalurlId, String customerId) throws PhrescoException;
+	ClientResponse deleteGlobalUrl(String globalurlId, String customerId) throws PhrescoException;
 	
 	void updateGlobalUrl(Property globalUrl, String globalurlId, String customerId) throws PhrescoException;
 	
