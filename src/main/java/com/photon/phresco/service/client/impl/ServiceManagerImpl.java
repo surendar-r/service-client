@@ -20,6 +20,7 @@
 package com.photon.phresco.service.client.impl;
 
 import java.io.InputStream;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -215,17 +216,6 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         }
         
         return null;
-    }
-    
-    @Override
-    public BodyPart createBodyPart(String name, Content.Type jarType, InputStream jarIs ) throws PhrescoException {
-    	BodyPart binaryPart = new BodyPart();
-	    binaryPart.setMediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE);
-	    binaryPart.setEntity(jarIs);
-	    Content content = new Content(jarType, name, null, null, null, 0);
-		binaryPart.setContentDisposition(content);
-
-		return binaryPart;
     }
     
     @Override
@@ -614,12 +604,22 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         return null;
     }
     
+    /**
+     * To create features
+     * @param moduleGroup
+     * @param inputStream
+     * @param customerId
+     * @return MultiPart
+     * @throws PhrescoException
+     */
     @Override
-    public ClientResponse createFeatures(MultiPart multiPart, String customerId) throws PhrescoException {
+    public ClientResponse createFeatures(ArtifactGroup moduleGroup,
+                InputStream inputStream, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
-            S_LOGGER.debug("Entered into ServiceManagerImpl.createFeatures(MultiPart multiPart, String customerId)");
+            S_LOGGER.debug("Entered into ServiceManagerImpl.createFeatures(ArtifactGroup moduleGroup, InputStream inputStream, String customerId)");
         }
         
+        MultiPart multiPart = createMultiPart(moduleGroup, inputStream, moduleGroup.getName());
         RestClient<ArtifactGroup> moduleClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
         ClientResponse response = moduleClient.create(multiPart);
         // TODO:Lohes
@@ -629,20 +629,87 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         return response;
     }
     
+    /**
+     * To create multipart for feature
+     * @param moduleGroup
+     * @param inputStream
+     * @return MultiPart
+     * @throws PhrescoException
+     */
     @Override
-    public ClientResponse updateFeature(MultiPart multiPart, String moduleId, String customerId) throws PhrescoException {
+    public ClientResponse updateFeature(ArtifactGroup moduleGroup, InputStream inputStream, String customerId) throws PhrescoException {
     	if (isDebugEnabled) {
-    		S_LOGGER.debug("Entered into ServiceManagerImpl.updateFeature(MultiPart multiPart, String moduleId, String customerId)");
+    		S_LOGGER.debug("Entered into ServiceManagerImpl.updateFeature(ArtifactGroup moduleGroup, InputStream inputStream, String customerId)");
     	}
-     	
-    	RestClient<ArtifactGroup> editModule = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
-     	editModule.setPath(moduleId);
- 		ClientResponse response = editModule.create(multiPart);
+    	
+    	MultiPart multiPart = createMultiPart(moduleGroup, inputStream, moduleGroup.getName());
+    	RestClient<ArtifactGroup> moduleClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
+     	moduleClient.setPath(moduleGroup.getId());
+ 		ClientResponse response = moduleClient.create(multiPart);
         // TODO:Lohes
 // 		CacheKey key = new CacheKey(customerId, CACHE_FEATURES_KEY);
 // 		manager.add(key, getModulesFromServer(customerId));
  		
  		return response;
+    }
+    
+    /**
+     * To create multipart
+     * @param object
+     * @param inputStream
+     * @param name
+     * @return
+     * @throws PhrescoException
+     */
+    private MultiPart createMultiPart(Object object,
+            InputStream inputStream, String name) throws PhrescoException {
+        MultiPart multiPart = new MultiPart();
+        BodyPart jsonBodyPart = createJSONBodyPart(Content.Type.JSON, name, object);
+        multiPart.bodyPart(jsonBodyPart);
+        if (inputStream != null) {
+            BodyPart binaryBodyPart = createBinaryBodyPart(Content.Type.ARCHETYPE, name, inputStream);
+            multiPart.bodyPart(binaryBodyPart);
+        }
+        
+        return multiPart;
+    }
+    
+    /**
+     * To create binary BodyPart
+     * @param type
+     * @param name
+     * @param inputStream
+     * @return BodyPart
+     * @throws PhrescoException
+     */
+    private BodyPart createBinaryBodyPart(Content.Type type, String name, InputStream inputStream) throws PhrescoException {
+        BodyPart binaryBodyPart = new BodyPart();
+        binaryBodyPart.setMediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE);
+        binaryBodyPart.setEntity(inputStream);
+        Date date = new Date();
+        Content content = new Content(type, name, date, date, date, 0);
+        binaryBodyPart.setContentDisposition(content);
+
+        return binaryBodyPart;
+    }
+    
+    /**
+     * To create JSON BodyPart
+     * @param type
+     * @param name
+     * @param obj
+     * @return BodyPart
+     * @throws PhrescoException
+     */
+    private BodyPart createJSONBodyPart(Content.Type type, String name, Object obj) throws PhrescoException {
+        BodyPart jsonBodyPart = new BodyPart();
+        jsonBodyPart.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+        jsonBodyPart.setEntity(obj);
+        Date date = new Date();
+        Content content = new Content(type, name, date, date, date, 0);
+        jsonBodyPart.setContentDisposition(content);
+
+        return jsonBodyPart;
     }
 
     @Override
