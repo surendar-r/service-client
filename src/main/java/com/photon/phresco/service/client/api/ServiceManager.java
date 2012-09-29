@@ -19,6 +19,7 @@
  */
 package com.photon.phresco.service.client.api;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -40,7 +41,6 @@ import com.photon.phresco.configuration.Environment;
 import com.photon.phresco.exception.PhrescoException;
 import com.photon.phresco.service.client.impl.RestClient;
 import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.multipart.BodyPart;
 import com.sun.jersey.multipart.MultiPart;
 
 /**
@@ -123,16 +123,6 @@ public interface ServiceManager {
 	 * @throws PhrescoException
 	 */
 	Technology getArcheType(String archeTypeId, String customerId) throws PhrescoException;
-	
-	/**
-	 * To create the bodypart
-	 * @param name
-	 * @param jarType
-	 * @param jarIs
-	 * @return BodyPart
-	 * @throws PhrescoException
-	 */
-	BodyPart createBodyPart(String name, Content.Type jarType, InputStream jarIs) throws PhrescoException;
 	
 	/**
 	 * To create the technology for the given customer
@@ -264,7 +254,7 @@ public interface ServiceManager {
 	 * @return ClientResponse
 	 * @throws PhrescoException
 	 */
-	ClientResponse createFeatures(MultiPart multiPart, String customerId) throws PhrescoException;
+	ClientResponse createFeatures(ArtifactGroup moduleGroup, InputStream inputStream, String customerId) throws PhrescoException, IOException;
 	
 	/**
 	 * To update the details of the given feature
@@ -274,7 +264,7 @@ public interface ServiceManager {
 	 * @return ClientResponse
 	 * @throws PhrescoException
 	 */
-	ClientResponse updateFeature(MultiPart multiPart, String moduleId, String customerId) throws PhrescoException;
+	ClientResponse updateFeature(ArtifactGroup moduleGroup, InputStream inputStream, String customerId) throws PhrescoException, IOException;
 	
 	/**
 	 * To delete the given feature
