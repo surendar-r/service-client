@@ -57,10 +57,8 @@ public class ComponentRestDatabaseTest implements ServiceConstants {
 	
 	@Test
 	public void testCreateDownloadInfo() throws PhrescoException {
-		List<Element> technologies = new ArrayList<Element>();
-		Element tech = new Element();
-		tech.setId("tech-php");
-		technologies.add(tech);
+		List<String> technologies = new ArrayList<String>();
+		technologies.add("tech-php");
 	    List<DownloadInfo> DownloadInfo = new ArrayList<DownloadInfo>();
 	    DownloadInfo db = new DownloadInfo();
 	    db.setId("testDownloadInfo");
@@ -87,10 +85,8 @@ public class ComponentRestDatabaseTest implements ServiceConstants {
 	@Test
 	public void testUpdateDownloadInfo() throws PhrescoException{
 		RestClient<DownloadInfo> DownloadInfoClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_DATABASES);
-		List<Element> technologies = new ArrayList<Element>();
-		Element tech = new Element();
-		tech.setId("tech-php");
-		technologies.add(tech);
+		List<String> technologies = new ArrayList<String>();
+		technologies.add("tech-php");
 	    List<DownloadInfo> DownloadInfo = new ArrayList<DownloadInfo>();
 	    DownloadInfo db = new DownloadInfo();
 	    db.setId("testDownloadInfo");
