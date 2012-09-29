@@ -212,7 +212,7 @@ public class RestClient<E> {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into RestClient.create(List<E> infos)");
         }
-        return create(multiPart, MultiPartMediaTypes.MULTIPART_MIXED_TYPE, MultiPartMediaTypes.MULTIPART_MIXED_TYPE);
+        return create(multiPart, MediaType.APPLICATION_JSON_TYPE, MultiPartMediaTypes.MULTIPART_MIXED_TYPE);
     }
     
 	/**
@@ -273,7 +273,7 @@ public class RestClient<E> {
     	if (isDebugEnabled) {
     		S_LOGGER.debug("Entered into RestClient.update(MultiPart multiPart)");
     	}
-    	return update(multiPart, MultiPartMediaTypes.MULTIPART_MIXED_TYPE, MultiPartMediaTypes.MULTIPART_MIXED_TYPE);
+    	return update(multiPart, MediaType.APPLICATION_JSON_TYPE, MultiPartMediaTypes.MULTIPART_MIXED_TYPE);
     }
     
 	/**
