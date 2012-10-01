@@ -227,7 +227,7 @@ public interface ServiceManager {
 	 * @return List<ArtifactGroup>
 	 * @throws PhrescoException
 	 */
-	List<ArtifactGroup> getModules(String customerId, String techId, String type) throws PhrescoException;
+	List<ArtifactGroup> getFeatures(String customerId, String techId, String type) throws PhrescoException;
 	
 	/**
 	 * To get all the components of the given customer and the techId
@@ -245,7 +245,7 @@ public interface ServiceManager {
 	 * @return ArtifactGroup
 	 * @throws PhrescoException
 	 */
-	ArtifactGroup getFeature(String moduleId, String customerId) throws PhrescoException;
+	ArtifactGroup getFeature(String moduleId, String customerId, String techId, String type) throws PhrescoException;
 	
 	/**
 	 * To create feature for the given customer
