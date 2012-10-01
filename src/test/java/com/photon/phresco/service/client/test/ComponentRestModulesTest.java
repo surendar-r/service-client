@@ -101,6 +101,7 @@ public class ComponentRestModulesTest extends BaseRestTest {
 	private ArtifactGroup createModule() {
 		ArtifactGroup group = new ArtifactGroup(TEST_MODULE_ID);
 		group.setGroupId("com.photon.phresco");
+		group.setName("sampleUpdate");
 		group.setArtifactId("test-module");
 		group.setHelpText("This is helpText to be shown on tooltip");
 		group.setPackaging("jar");
@@ -113,6 +114,7 @@ public class ComponentRestModulesTest extends BaseRestTest {
     	List<ArtifactInfo> artifactInfos = new ArrayList<ArtifactInfo>();
     	ArtifactInfo artifactInfo = new ArtifactInfo();
     	artifactInfo.setFileSize(1024 * 1024 * 2);
+    	artifactInfo.setVersion("1.3");
 
 //    	Plugin and dependencies needs to be uploaded and ids should be provided 
 //		List<String> dependencyIds = new ArrayList<String>();
@@ -124,7 +126,7 @@ public class ComponentRestModulesTest extends BaseRestTest {
 		return group;
 	}
 
-	@Test
+//	@Test
     public void testGetModules() throws PhrescoException {
     	RestClient<ArtifactGroup> moduleGroupClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
     	Map<String, String> query = new HashMap<String, String>();
@@ -141,21 +143,44 @@ public class ComponentRestModulesTest extends BaseRestTest {
 		assertNotNull(modules);
     }
 	
-//	@Test
-	public void testUpdateModules() throws PhrescoException{
-		RestClient<ArtifactGroup> moduleGroupClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
-	    List<ArtifactGroup> ModuleGroups = new ArrayList<ArtifactGroup>();
-	    ArtifactGroup moduleGroup = new ArtifactGroup();
-	    moduleGroup.setId("test-module");
-		moduleGroup.setName("TestModuleGroupUpdate");
-		moduleGroup.setType(ArtifactGroup.Type.FEATURE);
-		ModuleGroups.add(moduleGroup);
-	    GenericType<List<ArtifactGroup>> genericType = new GenericType<List<ArtifactGroup>>() {};
-	    List<ArtifactGroup> modules = moduleGroupClient.update(ModuleGroups, genericType);
-	    assertNotNull(modules);
+	@Test
+	public void testUpdateModules() throws PhrescoException, IOException{
+		InputStream is = null, fis = null;
+		try {
+			MultiPart multiPart = new MultiPart();
+			
+			ArtifactGroup module = createModule();
+	        BodyPart jsonPart = new BodyPart();
+	        jsonPart.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+	        jsonPart.setEntity(module);
+	        Date date = new Date();
+			Content content = new Content(Content.Type.JSON, module.getId(), date, date, date, 0);
+	        jsonPart.setContentDisposition(content);
+	        multiPart.bodyPart(jsonPart);
+	        
+	        BodyPart archetypePart = new BodyPart();
+	        archetypePart.setMediaType(MediaType.APPLICATION_OCTET_STREAM_TYPE);
+	        fis = this.getClass().getClassLoader().getResourceAsStream(PHRESCO_TEST_ARCHETYPE_JAR);
+	        archetypePart.setEntity(fis);
+	        
+	        content = new Content(Content.Type.ARCHETYPE, module.getId(), date, date, date, fis.available());
+	        archetypePart.setContentDisposition(content);
+	        multiPart.bodyPart(archetypePart);
+		
+	        RestClient<ArtifactGroup> moduleGroupClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
+		    ClientResponse modules = moduleGroupClient.update(multiPart);
+		} finally {
+            if (is != null) {
+            	is.close();
+            }
+
+            if (fis != null) {
+            	fis.close();
+            }
+        }
 	}
 	
-	@Test
+//	@Test
     public void testGetModuleById() throws PhrescoException {
     	RestClient<ArtifactGroup> moduleGroupClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
 		GenericType<ArtifactGroup> genericType = new GenericType<ArtifactGroup>(){};
@@ -180,7 +205,7 @@ public class ComponentRestModulesTest extends BaseRestTest {
         assertNotNull(modules);
 	}
 	
-	@Test
+//	@Test
 	public void testDeleteModuleById() throws PhrescoException {
         RestClient<ArtifactGroup> moduleGroupClient = serviceManager.getRestClient(REST_API_COMPONENT + REST_API_MODULES);
         moduleGroupClient.setPath(TEST_MODULE_ID);
