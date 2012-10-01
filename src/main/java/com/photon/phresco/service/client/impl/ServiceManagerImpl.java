@@ -220,11 +220,12 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public ClientResponse createArcheTypes(MultiPart multiPart, String customerId) throws PhrescoException {
+    public ClientResponse createArcheTypes(Technology technology, InputStream inputStream, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.createArcheTypes(List<Technology> archeTypes, String customerId)");
         }
         
+        MultiPart multiPart = createMultiPart(technology, inputStream, technology.getName());
     	RestClient<Technology> newApp = getRestClient(REST_API_COMPONENT + REST_API_TECHNOLOGIES);
 		ClientResponse clientResponse = newApp.create(multiPart);
 		CacheKey key = new CacheKey(customerId, Technology.class.getName());
@@ -234,13 +235,15 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public ClientResponse updateArcheType(MultiPart multiPart, String archeTypeId, String customerId) throws PhrescoException {
+    public ClientResponse updateArcheType(Technology technology, InputStream inputStream, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
-            S_LOGGER.debug("Entered into ServiceManagerImpl.updateArcheTypes(Technology technology, String archeTypeId, String customerId)");
+            S_LOGGER.debug("Entered into ServiceManagerImpl.updateArcheTypes(Technology technology, InputStream inputStream, String customerId)");
         }
     	
+        MultiPart multiPart = createMultiPart(technology, inputStream, technology.getName());
     	RestClient<Technology> editArchetype = getRestClient(REST_API_COMPONENT + REST_API_TECHNOLOGIES);
-    	editArchetype.setPath(archeTypeId);
+    	//editArchetype.setPath(archeTypeId);
+    	editArchetype.setPath(technology.getId());
     	ClientResponse response = editArchetype.update(multiPart);
     	return response;
 		/*GenericType<Technology> genericType = new GenericType<Technology>() {};
@@ -1348,6 +1351,32 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         cacheManager.add(key, getGlobalUrlFromServer(customerId));
 
         return response;
+    }
+    
+    private List<User> getUsersFromServer() throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getUsersFromServer()");
+        }
+    	
+    	RestClient<User> userClient = getRestClient(REST_API_ADMIN + REST_API_USERS);
+		GenericType<List<User>> genericType = new GenericType<List<User>>(){};
+		
+		return userClient.get(genericType);
+    }
+    
+    public List<User> getUsers() throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getUsers()");
+        }
+        
+        CacheKey key = new CacheKey(User.class.getName());
+		List<User> users = (List<User>) manager.get(key);
+        if (CollectionUtils.isEmpty(users)) {
+        	users = getUsersFromServer();
+        	manager.add(key, users);
+        }
+        
+        return users;
     }
    
     private List<Permission> getPermissionsFromServer() throws PhrescoException {

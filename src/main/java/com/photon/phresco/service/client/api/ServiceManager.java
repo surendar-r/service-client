@@ -131,7 +131,7 @@ public interface ServiceManager {
 	 * @return ClientResponse
 	 * @throws PhrescoException
 	 */
-	ClientResponse createArcheTypes(MultiPart multiPart, String customerId) throws PhrescoException;
+	ClientResponse createArcheTypes(Technology technology, InputStream inputStream, String customerId) throws PhrescoException;
 	
 	/**
 	 * To update the details of the given technology
@@ -140,7 +140,7 @@ public interface ServiceManager {
 	 * @param customerId
 	 * @throws PhrescoException
 	 */
-	ClientResponse updateArcheType(MultiPart multiPart, String archeTypeId, String customerId) throws PhrescoException;
+	ClientResponse updateArcheType(Technology technology, InputStream inputStream, String customerId) throws PhrescoException;
 	
 	/**
 	 * To delete the given technology
@@ -314,6 +314,12 @@ public interface ServiceManager {
 	 * @throws PhrescoException
 	 */
 	ClientResponse deleteCustomer(String customerId) throws PhrescoException;
+	
+	/**
+	 * TO get Users List
+	 * @throws PhrescoException
+	 */
+	List<User> getUsers() throws PhrescoException;
 	
 	/**
 	 * To get the config templates of the given customer
