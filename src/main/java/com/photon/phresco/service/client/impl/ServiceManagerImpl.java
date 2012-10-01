@@ -66,7 +66,8 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 
     private static final Logger S_LOGGER = Logger.getLogger(ServiceManagerImpl.class);
     private static Boolean isDebugEnabled = S_LOGGER.isDebugEnabled();
-    private EhCacheManager manager;
+    
+    private EhCacheManager cacheManager;
     
     private String serverPath = null;
     private static User userInfo = null;
@@ -83,7 +84,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     public ServiceManagerImpl(ServiceContext context) throws PhrescoException {
     	super();
     	init(context);
-    	manager = new EhCacheManager();
+    	cacheManager = new EhCacheManager();
     }
     
     public <E> RestClient<E> getRestClient(String contextPath) throws PhrescoException {
@@ -164,10 +165,10 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         }
 
         CacheKey key = new CacheKey(customerId, Technology.class.getName());
-    	List<Technology> archeTypes = (List<Technology>) manager.get(key);
+    	List<Technology> archeTypes = (List<Technology>) cacheManager.get(key);
 		if (CollectionUtils.isEmpty(archeTypes)) {
 			archeTypes = getArcheTypesFromServer(customerId);
-			manager.add(key, archeTypes);
+			cacheManager.add(key, archeTypes);
 		}
     	
     	return archeTypes;
@@ -180,7 +181,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         }
 
         CacheKey key = new CacheKey(customerId, Technology.class.getName(), appTypeId);
-        List<Technology> archeTypes = (List<Technology>) manager.get(key);
+        List<Technology> archeTypes = (List<Technology>) cacheManager.get(key);
         if (CollectionUtils.isEmpty(archeTypes)) {
             RestClient<Technology> archeTypeClient = getRestClient(REST_API_COMPONENT + REST_API_TECHNOLOGIES);
             Map<String, String> queryStringsMap = new HashMap<String, String>();
@@ -189,7 +190,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             archeTypeClient.queryStrings(queryStringsMap);
             GenericType<List<Technology>> genericType = new GenericType<List<Technology>>(){};
             archeTypes = archeTypeClient.get(genericType);
-            manager.add(key, archeTypes);
+            cacheManager.add(key, archeTypes);
         }
         
         return archeTypes;
@@ -202,10 +203,10 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         }
         
         CacheKey key = new CacheKey(customerId, Technology.class.getName());
-        List<Technology> archeTypes = (List<Technology>) manager.get(key);
+        List<Technology> archeTypes = (List<Technology>) cacheManager.get(key);
         if (CollectionUtils.isEmpty(archeTypes)) {
     		archeTypes = getArcheTypesFromServer(customerId);
-			manager.add(key, archeTypes);
+			cacheManager.add(key, archeTypes);
     	}
         if (CollectionUtils.isNotEmpty(archeTypes)) {
         	for (Technology archeType : archeTypes) {
@@ -227,7 +228,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	RestClient<Technology> newApp = getRestClient(REST_API_COMPONENT + REST_API_TECHNOLOGIES);
 		ClientResponse clientResponse = newApp.create(multiPart);
 		CacheKey key = new CacheKey(customerId, Technology.class.getName());
-		manager.add(key, getArcheTypesFromServer(customerId));
+		cacheManager.add(key, getArcheTypesFromServer(customerId));
 		
 		return clientResponse;
     }
@@ -258,7 +259,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	deleteArchetype.setPath(archeTypeId);
     	ClientResponse clientResponse = deleteArchetype.deleteById();
     	CacheKey key = new CacheKey(customerId, Technology.class.getName());
-    	manager.add(key, getArcheTypesFromServer(customerId));
+    	cacheManager.add(key, getArcheTypesFromServer(customerId));
 
     	return clientResponse;
     }
@@ -282,11 +283,11 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         }
         
         CacheKey key = new CacheKey(customerId, ApplicationType.class.getName());
-    	List<ApplicationType> appTypes = (List<ApplicationType>) manager.get(key);
+    	List<ApplicationType> appTypes = (List<ApplicationType>) cacheManager.get(key);
     	try {
     		if (CollectionUtils.isEmpty(appTypes)) {
     			appTypes = getApplicationTypesFromServer(customerId);
-    			manager.add(key, appTypes);
+    			cacheManager.add(key, appTypes);
     		}
     	} catch(Exception e) {
     		throw new PhrescoException(e);
@@ -302,10 +303,10 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         }
 
         CacheKey key = new CacheKey(customerId, ApplicationType.class.getName());
-    	List<ApplicationType> appTypes = (List<ApplicationType>) manager.get(key);
+    	List<ApplicationType> appTypes = (List<ApplicationType>) cacheManager.get(key);
     	if (CollectionUtils.isEmpty(appTypes)) {
 			appTypes = getApplicationTypesFromServer(customerId);
-			manager.add(key, appTypes);
+			cacheManager.add(key, appTypes);
 		}
         if (CollectionUtils.isNotEmpty(appTypes)) {
         	for (ApplicationType appType : appTypes) {
@@ -327,7 +328,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	RestClient<ApplicationType> newApp = getRestClient(REST_API_COMPONENT + REST_API_APPTYPES);
 		ClientResponse clientResponse = newApp.create(appTypes);
 		CacheKey key = new CacheKey(customerId, ApplicationType.class.getName());
-		manager.add(key, getApplicationTypesFromServer(customerId));
+		cacheManager.add(key, getApplicationTypesFromServer(customerId));
 		
 		return clientResponse;
     }
@@ -343,7 +344,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		GenericType<ApplicationType> genericType = new GenericType<ApplicationType>() {};
 		editApptype.updateById(appType, genericType);
 		CacheKey key = new CacheKey(customerId, ApplicationType.class.getName());
-		manager.add(key, getApplicationTypesFromServer(customerId));
+		cacheManager.add(key, getApplicationTypesFromServer(customerId));
     }
     
     @Override
@@ -356,7 +357,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 	    deleteApptype.setPath(appTypeId);
 	    ClientResponse clientResponse = deleteApptype.deleteById();
 	    CacheKey key = new CacheKey(customerId, ApplicationType.class.getName());
-	    manager.add(key, getApplicationTypesFromServer(customerId));
+	    cacheManager.add(key, getApplicationTypesFromServer(customerId));
 	    
 	    return clientResponse;
     }
@@ -380,10 +381,10 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         }
     	
         CacheKey key = new CacheKey(DownloadInfo.class.getName());
-		List<DownloadInfo> servers = (List<DownloadInfo>) manager.get(key);
+		List<DownloadInfo> servers = (List<DownloadInfo>) cacheManager.get(key);
         if (CollectionUtils.isEmpty(servers)) {
         	servers = getServersFromServer(customerId);
-        	manager.add(key, servers);
+        	cacheManager.add(key, servers);
         }
 		
 		return servers;
@@ -396,7 +397,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         }
         
         CacheKey key = new CacheKey(DownloadInfo.class.getName(), techId);
-        List<DownloadInfo> servers = (List<DownloadInfo>) manager.get(key);
+        List<DownloadInfo> servers = (List<DownloadInfo>) cacheManager.get(key);
         if (CollectionUtils.isEmpty(servers)) {
             RestClient<DownloadInfo> serverClient = getRestClient(REST_API_COMPONENT + REST_API_SERVERS);
             Map<String, String> queryStringsMap = new HashMap<String, String>();
@@ -405,7 +406,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             serverClient.queryStrings(queryStringsMap);
             GenericType<List<DownloadInfo>> genericType = new GenericType<List<DownloadInfo>>(){};
             servers = serverClient.get(genericType);
-            manager.add(key, servers);
+            cacheManager.add(key, servers);
         }
         
         return servers;
@@ -430,10 +431,10 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         }
     	
         CacheKey key = new CacheKey(DownloadInfo.class.getName());
-		List<DownloadInfo> databases = (List<DownloadInfo>) manager.get(key);
+		List<DownloadInfo> databases = (List<DownloadInfo>) cacheManager.get(key);
         if (CollectionUtils.isEmpty(databases)) {
         	databases = getDatabasesFromServer(customerId);
-        	manager.add(key, databases);
+        	cacheManager.add(key, databases);
         }
 		
 		return databases;
@@ -446,7 +447,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         }
         
         CacheKey key = new CacheKey(DownloadInfo.class.getName(), techId);
-        List<DownloadInfo> databases = (List<DownloadInfo>) manager.get(key);
+        List<DownloadInfo> databases = (List<DownloadInfo>) cacheManager.get(key);
         if (CollectionUtils.isEmpty(databases)) {
             RestClient<DownloadInfo> dbClient = getRestClient(REST_API_COMPONENT + REST_API_DATABASES);
             Map<String, String> queryStringsMap = new HashMap<String, String>();
@@ -455,7 +456,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             dbClient.queryStrings(queryStringsMap);
             GenericType<List<DownloadInfo>> genericType = new GenericType<List<DownloadInfo>>(){};
             databases = dbClient.get(genericType);
-            manager.add(key, databases);
+            cacheManager.add(key, databases);
         }
         
         return databases;
@@ -480,10 +481,10 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         }
     	
         CacheKey key = new CacheKey(customerId, WebService.class.getName());
-		List<WebService> webServices = (List<WebService>) manager.get(key);
+		List<WebService> webServices = (List<WebService>) cacheManager.get(key);
         if (CollectionUtils.isEmpty(webServices)) {
         	webServices = getWebServicesFromServer(customerId);
-        	manager.add(key, webServices);
+        	cacheManager.add(key, webServices);
         }
 		
 		return webServices;
@@ -496,7 +497,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         }
         
         CacheKey key = new CacheKey(customerId, WebService.class.getName(), techId);
-        List<WebService> webServices = (List<WebService>) manager.get(key);
+        List<WebService> webServices = (List<WebService>) cacheManager.get(key);
         if (CollectionUtils.isEmpty(webServices)) {
             RestClient<WebService> webServiceClient = getRestClient(REST_API_COMPONENT + REST_API_WEBSERVICES);
             Map<String, String> queryStringsMap = new HashMap<String, String>();
@@ -505,28 +506,28 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             webServiceClient.queryStrings(queryStringsMap);
             GenericType<List<WebService>> genericType = new GenericType<List<WebService>>(){};
             webServices = webServiceClient.get(genericType);
-            manager.add(key, webServices);
+            cacheManager.add(key, webServices);
         }
         
         return webServices;
     }
     
     @Override
-    public List<ArtifactGroup> getModules(String customerId, String techId, String type) throws PhrescoException {
+    public List<ArtifactGroup> getFeatures(String customerId, String techId, String type) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getModules(String customerId, String techId)");
         }
         
-        CacheKey key = new CacheKey(customerId, REST_QUERY_TYPE_MODULE, techId);
-        List<ArtifactGroup> modules = (List<ArtifactGroup>) manager.get(key);
+        CacheKey key = new CacheKey(customerId, type, techId);
+        List<ArtifactGroup> modules = (List<ArtifactGroup>) cacheManager.get(key);
         if (CollectionUtils.isEmpty(modules)) {
-            modules = getModulesFromServer(customerId, techId, type);
+            modules = getFeaturesFromServer(customerId, techId, type);
         }
         
         return modules;
     }
 
-    private List<ArtifactGroup> getModulesFromServer(String customerId, String techId, String type) throws PhrescoException {
+    private List<ArtifactGroup> getFeaturesFromServer(String customerId, String techId, String type) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getModules(String customerId, String techId)");
         }
@@ -540,7 +541,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         GenericType<List<ArtifactGroup>> genericType = new GenericType<List<ArtifactGroup>>(){};
         List<ArtifactGroup> modules = moduleGroupClient.get(genericType);
         CacheKey key = new CacheKey(customerId, CACHE_MODULES_KEY, techId);
-        manager.add(key, modules);
+        cacheManager.add(key, modules);
         
         return modules;
     }
@@ -552,7 +553,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         }
         
         CacheKey key = new CacheKey(customerId, REST_QUERY_TYPE_COMPONENT, techId);
-        List<ArtifactGroup> components = (List<ArtifactGroup>) manager.get(key);
+        List<ArtifactGroup> components = (List<ArtifactGroup>) cacheManager.get(key);
         if (CollectionUtils.isEmpty(components)) {
             RestClient<ArtifactGroup> moduleGroupClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
             Map<String, String> queryStringsMap = new HashMap<String, String>();
@@ -562,45 +563,34 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             moduleGroupClient.queryStrings(queryStringsMap);
             GenericType<List<ArtifactGroup>> genericType = new GenericType<List<ArtifactGroup>>(){};
             components = moduleGroupClient.get(genericType);
-            manager.add(key, components);
+            cacheManager.add(key, components);
         }
         
         return components;
     }
     
-    private List<ArtifactGroup> getFeaturesFromServer(String customerId) throws PhrescoException {
-    	if (isDebugEnabled) {
-    		S_LOGGER.debug("Entered into ServiceManagerImpl.getFeaturesFromServer(String customerId)");
-    	}
-
-    	RestClient<ArtifactGroup> moduleGroupClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
-    	moduleGroupClient.queryString(REST_QUERY_CUSTOMERID, customerId);
-    	GenericType<List<ArtifactGroup>> genericType = new GenericType<List<ArtifactGroup>>(){};
-
-    	return moduleGroupClient.get(genericType);
-    }
-    
     @Override
-    public ArtifactGroup getFeature(String moduleId, String customerId) throws PhrescoException {
+    public ArtifactGroup getFeature(String moduleGroupId, String customerId, String techId, String type) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getFeature(String moduleId, String customerId)");
         }
-
-        CacheKey key = new CacheKey(customerId, CACHE_FEATURES_KEY);
-        List<ArtifactGroup> modules = (List<ArtifactGroup>) manager.get(key);
-        if (CollectionUtils.isEmpty(modules)) {
-        	modules = getFeaturesFromServer(customerId);
-			manager.add(key, modules);
-        }
-        if (CollectionUtils.isNotEmpty(modules)) {
-        	for (ArtifactGroup ArtifactGroup : modules) {
-				if (ArtifactGroup.getId().equals(moduleId)) {
-					return ArtifactGroup;
-				}
-			}
+        
+        CacheKey key = new CacheKey(moduleGroupId);
+        ArtifactGroup moduleGroup = (ArtifactGroup) cacheManager.get(key);
+        if (moduleGroup == null) {
+            List<ArtifactGroup> features = getFeatures(customerId, techId, type);
+            if (CollectionUtils.isNotEmpty(features)) {
+                for (ArtifactGroup artifactGroup : features) {
+                    if (artifactGroup.getId().equals(moduleGroupId)) {
+                        moduleGroup = artifactGroup;
+                        cacheManager.add(key, artifactGroup);
+                        break;
+                    }
+                }
+            }
         }
         
-        return null;
+        return moduleGroup;
     }
     
     /**
@@ -621,9 +611,17 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         MultiPart multiPart = createMultiPart(moduleGroup, inputStream, moduleGroup.getName());
         RestClient<ArtifactGroup> moduleClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
         ClientResponse response = moduleClient.create(multiPart);
-        // TODO:Lohes
-//        CacheKey key = new CacheKey(customerId, CACHE_FEATURES_KEY);
-//        manager.add(key, getModulesFromServer(customerId));
+
+        //To set all the features
+        String type = moduleGroup.getType().name();
+        String techId = moduleGroup.getAppliesTo().get(0).getTechId();
+        CacheKey featuresKey = new CacheKey(customerId, type, techId);
+        cacheManager.add(featuresKey, getFeaturesFromServer(customerId, techId, type));
+        
+        //To set the artifactGroup against its Id
+        ArtifactGroup artifactGroup = response.getEntity(ArtifactGroup.class);
+        CacheKey key = new CacheKey(artifactGroup.getId());
+        cacheManager.add(key, artifactGroup);
         
         return response;
     }
@@ -644,7 +642,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	MultiPart multiPart = createMultiPart(moduleGroup, inputStream, moduleGroup.getName());
     	RestClient<ArtifactGroup> moduleClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
      	moduleClient.setPath(moduleGroup.getId());
- 		ClientResponse response = moduleClient.create(multiPart);
+ 		ClientResponse response = moduleClient.update(multiPart);
         // TODO:Lohes
 // 		CacheKey key = new CacheKey(customerId, CACHE_FEATURES_KEY);
 // 		manager.add(key, getModulesFromServer(customerId));
@@ -745,10 +743,10 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         }
         
         CacheKey key = new CacheKey(Customer.class.getName());
-		List<Customer> customers = (List<Customer>) manager.get(key);
+		List<Customer> customers = (List<Customer>) cacheManager.get(key);
         if (CollectionUtils.isEmpty(customers)) {
         	customers = getCustomersFromServer();
-        	manager.add(key, customers);
+        	cacheManager.add(key, customers);
         }
         
         return customers;
@@ -761,10 +759,10 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         }
         
         CacheKey key = new CacheKey(Customer.class.getName());
-        List<Customer> customers = (List<Customer>) manager.get(key);
+        List<Customer> customers = (List<Customer>) cacheManager.get(key);
         if (CollectionUtils.isEmpty(customers)) {
         	customers = getCustomersFromServer();
-        	manager.add(key, customers);
+        	cacheManager.add(key, customers);
         }
         if (CollectionUtils.isNotEmpty(customers)) {
         	for (Customer customer : customers) {
@@ -786,7 +784,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         RestClient<Customer> customersClient = getRestClient(REST_API_ADMIN + REST_API_CUSTOMERS);
         ClientResponse response = customersClient.create(customers);
         CacheKey key = new CacheKey(Customer.class.getName());
-        manager.add(key, getCustomersFromServer());
+        cacheManager.add(key, getCustomersFromServer());
         
         return response;
     }
@@ -802,7 +800,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         GenericType<Customer> genericType = new GenericType<Customer>() {};
         customersClient.updateById(customer, genericType);
         CacheKey key = new CacheKey(Customer.class.getName());
-        manager.add(key, getCustomersFromServer());
+        cacheManager.add(key, getCustomersFromServer());
     }
     
     @Override
@@ -815,7 +813,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         customersClient.setPath(customerId);
         ClientResponse response = customersClient.deleteById();
         CacheKey key = new CacheKey(Customer.class.getName());
-        manager.add(key, getCustomersFromServer());
+        cacheManager.add(key, getCustomersFromServer());
         
         return response;
     }
@@ -840,10 +838,10 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	}
 
     	CacheKey key = new CacheKey(customerId, SettingsTemplate.class.getName());
-    	List<SettingsTemplate> configTemplates = (List<SettingsTemplate>) manager.get(key);
+    	List<SettingsTemplate> configTemplates = (List<SettingsTemplate>) cacheManager.get(key);
 		if (CollectionUtils.isEmpty(configTemplates)) {
 			configTemplates = getConfigTemplatesFromServer(customerId);
-			manager.add(key, configTemplates);
+			cacheManager.add(key, configTemplates);
 		}
     	
     	return configTemplates;
@@ -858,7 +856,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         RestClient<SettingsTemplate> settingsClient = getRestClient(REST_API_COMPONENT + REST_API_SETTINGS);
         ClientResponse clientResponse = settingsClient.create(settings);
         CacheKey key = new CacheKey(customerId, SettingsTemplate.class.getName());
-    	manager.add(key, getConfigTemplatesFromServer(customerId));
+    	cacheManager.add(key, getConfigTemplatesFromServer(customerId));
         
         return clientResponse ;
     }
@@ -870,10 +868,10 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	}
     	
     	CacheKey key = new CacheKey(customerId, SettingsTemplate.class.getName());
-    	List<SettingsTemplate> configTemps = (List<SettingsTemplate>) manager.get(key);
+    	List<SettingsTemplate> configTemps = (List<SettingsTemplate>) cacheManager.get(key);
     	if (CollectionUtils.isEmpty(configTemps)) {
     		configTemps = getConfigTemplatesFromServer(customerId);
-			manager.add(key, configTemps);
+			cacheManager.add(key, configTemps);
     	}
     	if (CollectionUtils.isNotEmpty(configTemps)) {
     		for (SettingsTemplate configTemp : configTemps) {
@@ -896,7 +894,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		GenericType<SettingsTemplate> genericType = new GenericType<SettingsTemplate>() {};
 		editConfigTemp.updateById(settingTemp, genericType);
 		CacheKey key = new CacheKey(customerId, SettingsTemplate.class.getName());
-		manager.add(key, getConfigTemplatesFromServer(customerId));
+		cacheManager.add(key, getConfigTemplatesFromServer(customerId));
     }
     
     @Override
@@ -909,7 +907,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	configTempClient.setPath(id);
     	ClientResponse response = configTempClient.deleteById();
     	CacheKey key = new CacheKey(customerId, SettingsTemplate.class.getName());
-    	manager.add(key, getConfigTemplatesFromServer(customerId));
+    	cacheManager.add(key, getConfigTemplatesFromServer(customerId));
     	
     	return response;
     }
@@ -935,11 +933,11 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         }
         
         CacheKey key = new CacheKey(customerId, ProjectInfo.class.getName());
-        List<ApplicationInfo> pilotProjects = (List<ApplicationInfo>) manager.get(key);
+        List<ApplicationInfo> pilotProjects = (List<ApplicationInfo>) cacheManager.get(key);
         try {	
     		if (CollectionUtils.isEmpty(pilotProjects)) {
     			pilotProjects = getPilotProjectsFromServer(customerId);
-    			manager.add(key, pilotProjects);
+    			cacheManager.add(key, pilotProjects);
     		}
     	} catch(Exception e){
     		throw new PhrescoException(e);
@@ -955,10 +953,10 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	}
     	
     	CacheKey key = new CacheKey(customerId, ApplicationInfo.class.getName());
-    	List<ApplicationInfo> pilotProjects = (List<ApplicationInfo>) manager.get(key);
+    	List<ApplicationInfo> pilotProjects = (List<ApplicationInfo>) cacheManager.get(key);
     	if (CollectionUtils.isEmpty(pilotProjects)) {
 			pilotProjects = getPilotProjectsFromServer(customerId);
-			manager.add(key, pilotProjects);
+			cacheManager.add(key, pilotProjects);
 		}
     	if (CollectionUtils.isNotEmpty(pilotProjects)) {
     		for (ApplicationInfo pilotProject : pilotProjects) {
@@ -981,7 +979,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         RestClient<ProjectInfo> pilotClient = getRestClient(REST_API_COMPONENT + REST_API_PILOTS);
         ClientResponse response = pilotClient.create(multiPart);
         CacheKey key = new CacheKey(customerId, ProjectInfo.class.getName());
-        manager.add(key, getPilotProjectsFromServer(customerId));
+        cacheManager.add(key, getPilotProjectsFromServer(customerId));
         
         return response;
     }
@@ -998,7 +996,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 //        GenericType<ApplicationInfo> genericType = new GenericType<ApplicationInfo>() {};
        // pilotproClient.updateById(pilotProjInfo, genericType);
         CacheKey key = new CacheKey(customerId, ProjectInfo.class.getName());
-        manager.add(key, getPilotProjectsFromServer(customerId));
+        cacheManager.add(key, getPilotProjectsFromServer(customerId));
     }
     
     @Override
@@ -1011,7 +1009,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         pilotproClient.setPath(projectId);
         ClientResponse response = pilotproClient.deleteById();
         CacheKey key = new CacheKey(customerId, ProjectInfo.class.getName());
-        manager.add(key, getPilotProjectsFromServer(customerId));
+        cacheManager.add(key, getPilotProjectsFromServer(customerId));
         
         return response;
     }
@@ -1034,13 +1032,13 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         }
         
         CacheKey key = new CacheKey(Role.class.getName());
-        List<Role> roles = (List<Role>) manager.get(key);
-        try {	
+        List<Role> roles = (List<Role>) cacheManager.get(key);
+        try {
     		if (CollectionUtils.isEmpty(roles)) {
     			roles = getRolesFromServer();
-    			manager.add(key, roles);
+    			cacheManager.add(key, roles);
     		}
-    	} catch(Exception e){
+    	} catch(Exception e) {
     		throw new PhrescoException(e);
     	}
     	
@@ -1054,10 +1052,10 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	}
     	
     	CacheKey key = new CacheKey(Role.class.getName());
-    	List<Role> roles = (List<Role>) manager.get(key);
+    	List<Role> roles = (List<Role>) cacheManager.get(key);
     	if (CollectionUtils.isEmpty(roles)) {
     		roles = getRolesFromServer();
-			manager.add(key, roles);
+			cacheManager.add(key, roles);
     	}
     	if (CollectionUtils.isNotEmpty(roles)) {
     		for (Role role : roles) {
@@ -1079,7 +1077,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	RestClient<Role> roleClient = getRestClient(REST_API_ADMIN + REST_API_ROLES);
     	ClientResponse response = roleClient.create(role);
     	CacheKey key = new CacheKey(Role.class.getName());
-    	manager.add(key, getRolesFromServer());
+    	cacheManager.add(key, getRolesFromServer());
     	
     	return response;
     }
@@ -1094,7 +1092,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	roleClient.setPath(id);
     	ClientResponse response = roleClient.deleteById();
     	CacheKey key = new CacheKey(Role.class.getName());
-    	manager.add(key, getRolesFromServer());
+    	cacheManager.add(key, getRolesFromServer());
     	
     	return response;
     }
@@ -1110,7 +1108,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	GenericType<Role> genericType = new GenericType<Role>() {};
     	roleClient.updateById(role, genericType);
     	CacheKey key = new CacheKey(Role.class.getName());
-    	manager.add(key, getRolesFromServer());
+    	cacheManager.add(key, getRolesFromServer());
     }
     
     @Override
@@ -1120,11 +1118,11 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         }
         
         CacheKey key = new CacheKey(DownloadInfo.class.getName());
-        List<DownloadInfo> downloadInfos = (List<DownloadInfo>) manager.get(key);
+        List<DownloadInfo> downloadInfos = (List<DownloadInfo>) cacheManager.get(key);
         try {   
             if (CollectionUtils.isEmpty(downloadInfos)) {
                 downloadInfos = getDownloadsFromServer();
-                manager.add(key, downloadInfos);
+                cacheManager.add(key, downloadInfos);
             }
         } catch(Exception e){
             throw new PhrescoException(e);
@@ -1151,10 +1149,10 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	}
     	
     	CacheKey key = new CacheKey(DownloadInfo.class.getName());
-    	List<DownloadInfo> downloadInfos = (List<DownloadInfo>) manager.get(key);
+    	List<DownloadInfo> downloadInfos = (List<DownloadInfo>) cacheManager.get(key);
     	if (CollectionUtils.isEmpty(downloadInfos)) {
     		downloadInfos = getDownloadsFromServer();
-			manager.add(key, downloadInfos);
+			cacheManager.add(key, downloadInfos);
     	}
     	if (CollectionUtils.isNotEmpty(downloadInfos)) {
     		for (DownloadInfo downloadInfo : downloadInfos) {
@@ -1176,7 +1174,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	RestClient<DownloadInfo> downloadClient = getRestClient(REST_API_COMPONENT + REST_API_DOWNLOADS);
     	ClientResponse response = downloadClient.create(multiPart);
     	CacheKey key = new CacheKey(DownloadInfo.class.getName());
-    	manager.add(key, getDownloadsFromServer());
+    	cacheManager.add(key, getDownloadsFromServer());
     	
     	return response;
     }
@@ -1191,7 +1189,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         downloadClient.setPath(downloadId);
         downloadClient.create(multiPart);
         CacheKey key = new CacheKey(DownloadInfo.class.getName());
-        manager.add(key, getDownloadsFromServer());
+        cacheManager.add(key, getDownloadsFromServer());
     }
 
     @Override
@@ -1204,7 +1202,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         downloadClient.setPath(downloadId);
         ClientResponse response = downloadClient.deleteById();
         CacheKey key = new CacheKey(DownloadInfo.class.getName());
-        manager.add(key, getDownloadsFromServer());
+        cacheManager.add(key, getDownloadsFromServer());
 
         return response;
     }
@@ -1273,11 +1271,11 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         }
     	
     	CacheKey key = new CacheKey(Property.class.getName());
-     	List<Property> globalUrls = (List<Property>) manager.get(key);
+     	List<Property> globalUrls = (List<Property>) cacheManager.get(key);
     	try {	
     		if (CollectionUtils.isEmpty(globalUrls)) {
     			globalUrls = getGlobalUrlFromServer(customerId);
-    			manager.add(key, globalUrls);
+    			cacheManager.add(key, globalUrls);
     		}
     	} catch(Exception e){
     		throw new PhrescoException(e);
@@ -1293,10 +1291,10 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	}
     	
     	CacheKey key = new CacheKey(Property.class.getName());
-    	List<Property> globalUrls = (List<Property>) manager.get(key);
+    	List<Property> globalUrls = (List<Property>) cacheManager.get(key);
     	if (CollectionUtils.isEmpty(globalUrls)) {
     		globalUrls = getGlobalUrlFromServer(customerId);
-			manager.add(key, globalUrls);
+			cacheManager.add(key, globalUrls);
     	}
     	if (CollectionUtils.isNotEmpty(globalUrls)) {
     		for (Property globalUrl : globalUrls) {
@@ -1318,7 +1316,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	RestClient<Property> globalClient = getRestClient(REST_API_ADMIN + REST_API_GLOBALURL);
     	ClientResponse response = globalClient.create(globalUrl);
     	CacheKey key = new CacheKey(Property.class.getName());
-    	manager.add(key, getGlobalUrlFromServer(customerId));
+    	cacheManager.add(key, getGlobalUrlFromServer(customerId));
     	
     	return response;
     }
@@ -1334,7 +1332,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		GenericType<Property> genericType = new GenericType<Property>() {};
 		editGlobalUrl.updateById(globalUrl, genericType);
 		CacheKey key = new CacheKey(customerId, Property.class.getName());
-		manager.add(key, getGlobalUrlFromServer(customerId));
+		cacheManager.add(key, getGlobalUrlFromServer(customerId));
     }
     
     @Override
@@ -1347,7 +1345,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         globalUrlClient.setPath(globalurlId);
         ClientResponse response = globalUrlClient.deleteById();
         CacheKey key = new CacheKey(Property.class.getName());
-        manager.add(key, getGlobalUrlFromServer(customerId));
+        cacheManager.add(key, getGlobalUrlFromServer(customerId));
 
         return response;
     }
@@ -1370,10 +1368,10 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         }
         
         CacheKey key = new CacheKey(Permission.class.getName());
-		List<Permission> permissions = (List<Permission>) manager.get(key);
+		List<Permission> permissions = (List<Permission>) cacheManager.get(key);
         if (CollectionUtils.isEmpty(permissions)) {
         	permissions = getPermissionsFromServer();
-        	manager.add(key, permissions);
+        	cacheManager.add(key, permissions);
         }
         
         return permissions;
@@ -1389,7 +1387,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         permissionClient.setPath(permissionId);
         ClientResponse response = permissionClient.deleteById();
         CacheKey key = new CacheKey(Permission.class.getName());
-        manager.add(key, getPermissionsFromServer());
+        cacheManager.add(key, getPermissionsFromServer());
         
         return response;
     }
