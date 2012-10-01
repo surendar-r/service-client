@@ -1370,10 +1370,10 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         }
         
         CacheKey key = new CacheKey(User.class.getName());
-		List<User> users = (List<User>) manager.get(key);
+		List<User> users = (List<User>) cacheManager.get(key);
         if (CollectionUtils.isEmpty(users)) {
         	users = getUsersFromServer();
-        	manager.add(key, users);
+        	cacheManager.add(key, users);
         }
         
         return users;
