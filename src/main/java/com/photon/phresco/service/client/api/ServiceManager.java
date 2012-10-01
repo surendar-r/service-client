@@ -383,7 +383,7 @@ public interface ServiceManager {
 	 * @return ClientResponse
 	 * @throws PhrescoException
 	 */
-	ClientResponse createPilotProjects(MultiPart multiPart, String customerId) throws PhrescoException;
+	ClientResponse createPilotProjects(ApplicationInfo pilotProj, InputStream inputStream, String customerId) throws PhrescoException;
 	
 	/**
 	 * To update the details of the given pilot project
@@ -392,7 +392,7 @@ public interface ServiceManager {
 	 * @param customerId
 	 * @throws PhrescoException
 	 */
-	void updatePilotProject(MultiPart multiPart, String projectId, String customerId) throws PhrescoException;
+	void updatePilotProject(ApplicationInfo pilotProj, InputStream inputStream, String projectId, String customerId) throws PhrescoException;
 	
 	/**
 	 * To delete the given pilot project

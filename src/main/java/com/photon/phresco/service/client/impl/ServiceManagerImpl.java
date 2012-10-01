@@ -241,7 +241,6 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	RestClient<Technology> editArchetype = getRestClient(REST_API_COMPONENT + REST_API_TECHNOLOGIES);
     	editArchetype.setPath(archeTypeId);
     	ClientResponse response = editArchetype.update(multiPart);
-    	System.out.println("updaeArcheType " +response.getStatus());
     	return response;
 		/*GenericType<Technology> genericType = new GenericType<Technology>() {};
 		editArchetype.updateById(technology, genericType);
@@ -892,7 +891,6 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.updateConfigTemp(String configId, String customerId)");
         }
-    	
     	RestClient<SettingsTemplate> editConfigTemp = getRestClient(REST_API_COMPONENT + REST_API_SETTINGS);
     	editConfigTemp.setPath(configId);
 		GenericType<SettingsTemplate> genericType = new GenericType<SettingsTemplate>() {};
@@ -974,11 +972,12 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public ClientResponse createPilotProjects(MultiPart multiPart, String customerId) throws PhrescoException {
+    public ClientResponse createPilotProjects(ApplicationInfo pilotProjInfo, InputStream inputStream, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.createPilotProjects(List<ProjectInfo> proInfo, String customerId)");
         }
         
+        MultiPart multiPart = createMultiPart(pilotProjInfo, inputStream, pilotProjInfo.getName());
         RestClient<ProjectInfo> pilotClient = getRestClient(REST_API_COMPONENT + REST_API_PILOTS);
         ClientResponse response = pilotClient.create(multiPart);
         CacheKey key = new CacheKey(customerId, ProjectInfo.class.getName());
@@ -988,14 +987,16 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public void updatePilotProject(MultiPart multiPart, String projectId, String customerId) throws PhrescoException {
+    public void updatePilotProject(ApplicationInfo pilotProjInfo, InputStream inputStream, String projectId, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.updatePilotProject(ProjectInfo projectInfo, String projectId)" + projectId);
         }
-        
+        MultiPart multiPart = createMultiPart(pilotProjInfo, inputStream, pilotProjInfo.getName());
         RestClient<ApplicationInfo> pilotproClient = getRestClient(REST_API_COMPONENT + REST_API_PILOTS);
         pilotproClient.setPath(projectId);
-        pilotproClient.create(multiPart);
+        pilotproClient.update(multiPart);
+//        GenericType<ApplicationInfo> genericType = new GenericType<ApplicationInfo>() {};
+       // pilotproClient.updateById(pilotProjInfo, genericType);
         CacheKey key = new CacheKey(customerId, ProjectInfo.class.getName());
         manager.add(key, getPilotProjectsFromServer(customerId));
     }
