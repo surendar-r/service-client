@@ -23,14 +23,21 @@ package com.photon.phresco.service.client.test;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import javax.ws.rs.core.MediaType;
 
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.photon.phresco.commons.model.ArtifactGroup;
+import com.photon.phresco.commons.model.ArtifactInfo;
 import com.photon.phresco.commons.model.VideoInfo;
+import com.photon.phresco.commons.model.VideoType;
 import com.photon.phresco.exception.PhrescoException;
+import com.photon.phresco.service.client.api.Content;
 import com.photon.phresco.service.client.api.ServiceClientConstant;
 import com.photon.phresco.service.client.api.ServiceContext;
 import com.photon.phresco.service.client.api.ServiceManager;
@@ -40,37 +47,62 @@ import com.photon.phresco.service.client.util.RestUtil;
 import com.photon.phresco.util.ServiceConstants;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.GenericType;
+import com.sun.jersey.multipart.BodyPart;
+import com.sun.jersey.multipart.MultiPart;
 
-public class AdminRestVideosTest implements ServiceConstants {
+public class AdminRestVideosTest extends BaseRestTest {
 
-	public ServiceContext context = null;
-	public ServiceManager serviceManager = null;
 	
 	@Before
 	public void Initilaization() throws PhrescoException {
-		context = new ServiceContext();
-        context.put(ServiceClientConstant.SERVICE_URL, RestUtil.getServerPath());
-        context.put(ServiceClientConstant.SERVICE_USERNAME, "demouser");
-        context.put(ServiceClientConstant.SERVICE_PASSWORD, "phresco");
-        serviceManager = ServiceClientFactory.getServiceManager(context);
+		initialize();
 	}
 	
 	@Test 
 	public void testCreateVideoInfos() throws PhrescoException {
-		List<VideoInfo> videolist = new ArrayList<VideoInfo>();
-		VideoInfo info = new VideoInfo();
-		info.setName("About phresco");
-		info.setDescription("intro about phresoco");
-		videolist.add(info);
-		info.setId("TestvideoInfo"); 
-		videolist.indexOf("Testvideo");
+		
+		MultiPart multiPart = new MultiPart();
+		
+		VideoInfo video = createVideo();
+        BodyPart jsonPart = new BodyPart();
+        jsonPart.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+        jsonPart.setEntity(video);
+        Date date = new Date();
+		Content content = new Content(Content.Type.JSON, video.getId(), date, date, date, 0);
+        jsonPart.setContentDisposition(content);
+        multiPart.bodyPart(jsonPart);
 		RestClient<VideoInfo> videoInfoclient = serviceManager.getRestClient(REST_API_ADMIN + REST_API_VIDEOS);
-		 ClientResponse clientResponse = videoInfoclient.create(videolist);
-		 assertNotNull(clientResponse);
+		 ClientResponse clientResponse = videoInfoclient.create(multiPart);
 		
 	}
     
-	@Test
+private VideoInfo createVideo() {
+	VideoInfo info = new VideoInfo();
+	info.setId("vedioId");
+	info.setName("About phrescoUpdate");
+	info.setDescription("intro about phresoco");
+	
+	List<VideoType> videoList =new ArrayList<VideoType>();
+	VideoType vType=new VideoType();
+	
+	ArtifactGroup artifactGroup = new ArtifactGroup();
+	List<ArtifactInfo> artifactInfos =new ArrayList<ArtifactInfo>();
+	ArtifactInfo artiInfo=new ArtifactInfo();
+	artiInfo.setVersion("1.8");
+	artiInfo.setName("artiNameUpdate");
+	long fileSize=8;
+	artiInfo.setFileSize(fileSize);
+	artifactInfos.add(artiInfo);
+	artifactGroup.setVersions(artifactInfos);
+	vType.setArtifactGroup(artifactGroup);
+	videoList.add(vType);
+	
+	info.setVideoList(videoList);
+		
+	return info;
+	}
+
+//	@Test
     public void getVideoInfo() throws PhrescoException {
         String VideoInfoId = "TestvideoInfo";
         RestClient<VideoInfo> videoInfoclient = serviceManager.getRestClient(REST_API_ADMIN + REST_API_VIDEOS);
@@ -80,7 +112,7 @@ public class AdminRestVideosTest implements ServiceConstants {
         assertNotNull(Info);
     }
 	
-	@Test
+//	@Test
 	public void FindVideoInfos() throws PhrescoException {
 		RestClient<VideoInfo> videoInfoclient = serviceManager.getRestClient(REST_API_ADMIN + REST_API_VIDEOS);
 		GenericType<List<VideoInfo>> genericType = new GenericType<List<VideoInfo>>(){};
@@ -89,19 +121,21 @@ public class AdminRestVideosTest implements ServiceConstants {
 	}
 	
 	
-	@Test
+//	@Test
 	public void UpdateVideoInfos() throws PhrescoException {
-		String VideoInfoId ="TestvideoInfo";
-		List<VideoInfo> videolist = new ArrayList<VideoInfo>();
-		VideoInfo info = new VideoInfo();
-		info.setName("About phresco");
-		info.setDescription("intro about phresoco");
-		info.setId("TestvideoInfo");
-		videolist.add(info);
+		
+		MultiPart multiPart = new MultiPart();
+		
+		VideoInfo video = createVideo();
+        BodyPart jsonPart = new BodyPart();
+        jsonPart.setMediaType(MediaType.APPLICATION_JSON_TYPE);
+        jsonPart.setEntity(video);
+        Date date = new Date();
+		Content content = new Content(Content.Type.JSON, video.getId(), date, date, date, 0);
+        jsonPart.setContentDisposition(content);
+        multiPart.bodyPart(jsonPart);
 		RestClient<VideoInfo> videoInfoclient = serviceManager.getRestClient(REST_API_ADMIN + REST_API_VIDEOS);
-		videoInfoclient.setPath(VideoInfoId); 
-        GenericType<VideoInfo> genericType = new GenericType<VideoInfo>() {};
-        videoInfoclient.updateById(info, genericType);
+        videoInfoclient.update(multiPart);
 	}
 
 	@Ignore
@@ -112,7 +146,7 @@ public class AdminRestVideosTest implements ServiceConstants {
 
 	
 	
-	@Test
+//	@Test
 	public void getVideoInfos() throws PhrescoException  {
     	RestClient<VideoInfo> videoInfosClient = serviceManager.getRestClient(REST_API_ADMIN + REST_API_VIDEOS);
     	GenericType<List<VideoInfo>> genericType = new GenericType<List<VideoInfo>>(){};
@@ -120,7 +154,7 @@ public class AdminRestVideosTest implements ServiceConstants {
     	assertNotNull(videoInfos);
 	
 	}	
-	@Test
+//	@Test
 	public void DeleteVideoInfo() throws PhrescoException  {
 	String VideoInfoId = "TestvideoInfo";
 	RestClient<VideoInfo> videoInfosClient = serviceManager.getRestClient(REST_API_ADMIN + REST_API_VIDEOS);
