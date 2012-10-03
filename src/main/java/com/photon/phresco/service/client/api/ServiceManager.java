@@ -131,7 +131,7 @@ public interface ServiceManager {
 	 * @return ClientResponse
 	 * @throws PhrescoException
 	 */
-	ClientResponse createArcheTypes(Technology technology, InputStream inputStream, String customerId) throws PhrescoException;
+	ClientResponse createArcheTypes(Technology technology,  List<InputStream> inputStreams, String customerId) throws PhrescoException;
 	
 	/**
 	 * To update the details of the given technology
@@ -140,7 +140,7 @@ public interface ServiceManager {
 	 * @param customerId
 	 * @throws PhrescoException
 	 */
-	ClientResponse updateArcheType(Technology technology, InputStream inputStream, String customerId) throws PhrescoException;
+	ClientResponse updateArcheType(Technology technology, List<InputStream> inputStreams, String customerId) throws PhrescoException;
 	
 	/**
 	 * To delete the given technology
@@ -254,7 +254,7 @@ public interface ServiceManager {
 	 * @return ClientResponse
 	 * @throws PhrescoException
 	 */
-	ClientResponse createFeatures(ArtifactGroup moduleGroup, InputStream inputStream, String customerId) throws PhrescoException, IOException;
+	ClientResponse createFeatures(ArtifactGroup moduleGroup, List<InputStream> inputStreams, String customerId) throws PhrescoException, IOException;
 	
 	/**
 	 * To update the details of the given feature
@@ -264,7 +264,7 @@ public interface ServiceManager {
 	 * @return ClientResponse
 	 * @throws PhrescoException
 	 */
-	ClientResponse updateFeature(ArtifactGroup moduleGroup, InputStream inputStream, String customerId) throws PhrescoException, IOException;
+	ClientResponse updateFeature(ArtifactGroup moduleGroup, List<InputStream> inputStreams, String customerId) throws PhrescoException, IOException;
 	
 	/**
 	 * To delete the given feature
@@ -389,7 +389,7 @@ public interface ServiceManager {
 	 * @return ClientResponse
 	 * @throws PhrescoException
 	 */
-	ClientResponse createPilotProjects(ApplicationInfo pilotProj, InputStream inputStream, String customerId) throws PhrescoException;
+	ClientResponse createPilotProjects(ApplicationInfo pilotProj, List<InputStream> inputStreams, String customerId) throws PhrescoException;
 	
 	/**
 	 * To update the details of the given pilot project
@@ -398,7 +398,7 @@ public interface ServiceManager {
 	 * @param customerId
 	 * @throws PhrescoException
 	 */
-	void updatePilotProject(ApplicationInfo pilotProj, InputStream inputStream, String projectId, String customerId) throws PhrescoException;
+	void updatePilotProject(ApplicationInfo pilotProj, List<InputStream> inputStreams, String projectId, String customerId) throws PhrescoException;
 	
 	/**
 	 * To delete the given pilot project
@@ -447,6 +447,46 @@ public interface ServiceManager {
 	 * @throws PhrescoException
 	 */
 	ClientResponse deleteRole(String id) throws PhrescoException;
+	
+	/**
+	 * To create the  video
+	 * @param video
+	 * @return ClientResponse
+	 * @throws PhrescoException
+	 */
+	ClientResponse createVideos(VideoInfo videoInfo, List<InputStream> inputStreams) throws PhrescoException;
+	
+	/**
+	 * To update the  video
+	 * @param multiPart
+	 * @param projectId
+	 * @return 
+	 * @throws PhrescoException
+	 */
+	void updateVideo(VideoInfo videoInfo,List<InputStream> inputStreams, String videoId) throws PhrescoException;
+	
+	/**
+	 * To delete the given video
+	 * @param id
+	 * @return ClientResponse
+	 * @throws PhrescoException
+	 */
+	ClientResponse deleteVideo(String id) throws PhrescoException;
+	
+	/**
+	 * To get all the videos
+	 * @return List<VideoInfo>
+	 * @throws PhrescoException
+	 */
+	List<VideoInfo> getVideos() throws PhrescoException;
+	
+	/**
+	 * To get the details of the given video
+	 * @param videoId
+	 * @return video
+	 * @throws PhrescoException
+	 */
+	VideoInfo getVideo(String videoId) throws PhrescoException;
 	
 	/**
 	 * To get the downloads of the given customer

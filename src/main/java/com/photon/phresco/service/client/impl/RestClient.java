@@ -385,7 +385,6 @@ public class RestClient<E> {
 	    }
 		
 		int status = clientResponse.getStatus();
-		System.out.println("Get status " +status);
 		if (status == ClientResponse.Status.ACCEPTED.getStatusCode() || 
 				status == ClientResponse.Status.OK.getStatusCode() || status == ClientResponse.Status.CREATED.getStatusCode()) {
 		    System.out.println(status);
