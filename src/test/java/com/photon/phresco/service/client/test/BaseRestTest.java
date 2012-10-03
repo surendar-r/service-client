@@ -25,9 +25,6 @@ public class BaseRestTest implements ServiceConstants {
     public static final String TEST_CUSTOMER_ID = "test-cutomer-id";
     public static final String TEST_MODULE_ID = "test-module-id" ;
 
-	public static final String LOGIN_USER_ID = "jebastin_p";
-	public static final String LOGIN_USER_PASSWORD = "Phresco@123";
-	
 	protected ServiceContext context = null;
 	protected ServiceManager serviceManager = null;
 
