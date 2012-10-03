@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,7 +32,6 @@ public class AdminRestRoleTest extends BaseRestTest {
 	        roles.add(role);
 	        RestClient<Role> roleClient = serviceManager.getRestClient(REST_API_ADMIN + REST_API_ROLES);
 	        ClientResponse clientResponse = roleClient.create(roles);
-	        assertNotNull(clientResponse);
 	    }
 	    
 	    @Test
@@ -39,7 +39,7 @@ public class AdminRestRoleTest extends BaseRestTest {
 	        RestClient<Role> roleClient = serviceManager.getRestClient(REST_API_ADMIN + REST_API_ROLES);
 	        GenericType<List<Role>> genericType = new GenericType<List<Role>>(){};
 	        List<Role> role = roleClient.get(genericType);
-	        assertNotNull(role);
+	        Assert.assertEquals(1, role.size());
 	    }
 	    
 	    
@@ -50,7 +50,7 @@ public class AdminRestRoleTest extends BaseRestTest {
 	        roleClient.setPath(roleId);
 	        GenericType<Role> genericType = new GenericType<Role>(){};
 	        Role role = roleClient.getById(genericType);
-	        assertNotNull(role);
+	        Assert.assertEquals("Test role", role.getName());
 	    }
 	    
 	    @Test
@@ -58,7 +58,7 @@ public class AdminRestRoleTest extends BaseRestTest {
 	        String roleId = "test-role";
 	        Role role = new Role();
 	        role.setId("test-role");
-	        role.setName("Test role update");
+	        role.setName("Test role");
 	        role.setDescription("updated roles");
 	        RestClient<Role> roleClient = serviceManager.getRestClient(REST_API_ADMIN + REST_API_ROLES);
 	        roleClient.setPath(roleId);
@@ -72,6 +72,5 @@ public class AdminRestRoleTest extends BaseRestTest {
 	        RestClient<Role> roleClient = serviceManager.getRestClient(REST_API_ADMIN + REST_API_ROLES);
 	        roleClient.setPath(roleId);
 	        ClientResponse clientResponse = roleClient.deleteById();
-	        assertNotNull(clientResponse);
 	    }
 	}
