@@ -316,10 +316,16 @@ public interface ServiceManager {
 	ClientResponse deleteCustomer(String customerId) throws PhrescoException;
 	
 	/**
-	 * TO get Users List
+	 * TO get Users List from LDAP
 	 * @throws PhrescoException
 	 */
 	List<User> getUsers() throws PhrescoException;
+	
+	/**
+	 * TO get Users List from DB
+	 * @throws PhrescoException
+	 */
+	List<User> getUser() throws PhrescoException;
 	
 	/**
 	 * To get the config templates of the given customer
