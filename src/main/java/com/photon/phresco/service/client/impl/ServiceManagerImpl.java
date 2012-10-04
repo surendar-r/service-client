@@ -1597,7 +1597,41 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 
 	@Override
 	public List<User> getUsers() throws PhrescoException {
-		// TODO Auto-generated method stub
-		return null;
+		if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getUsers()");
+        }
+		
+		RestClient<User> syncUsers = getRestClient(REST_API_ADMIN + REST_API_USERS_IMPORT);
+		GenericType<List<User>> genericType = new GenericType<List<User>>() {};
+		ClientResponse response = syncUsers.create(userInfo, MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON);
+		List<User> users = response.getEntity(genericType);
+		
+		return users;
 	}
+	
+	private List<User> getUsersFromServer() throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getUsersFromServer()");
+        }
+        
+    	RestClient<User> userClient = getRestClient(REST_API_ADMIN + REST_API_USERS);
+		GenericType<List<User>> genericType = new GenericType<List<User>>(){};
+		
+		return userClient.get(genericType);
+    }
+    
+    public List<User> getUser() throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getUsers()");
+        }
+        
+        CacheKey key = new CacheKey(User.class.getName());
+		List<User> users = (List<User>) cacheManager.get(key);
+        if (CollectionUtils.isEmpty(users)) {
+        	users = getUsersFromServer();
+        	cacheManager.add(key, users);
+        }
+        
+        return users;
+    }
 }
