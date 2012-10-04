@@ -30,6 +30,7 @@ import com.photon.phresco.commons.model.Customer;
 import com.photon.phresco.commons.model.DownloadInfo;
 import com.photon.phresco.commons.model.LogInfo;
 import com.photon.phresco.commons.model.Permission;
+import com.photon.phresco.commons.model.PlatformType;
 import com.photon.phresco.commons.model.Property;
 import com.photon.phresco.commons.model.Role;
 import com.photon.phresco.commons.model.SettingsTemplate;
@@ -518,7 +519,7 @@ public interface ServiceManager {
 	 * @return ClientResponse
 	 * @throws PhrescoException
 	 */
-	ClientResponse createDownloads(MultiPart multiPart, String customerId) throws PhrescoException;
+	ClientResponse createDownloads(DownloadInfo downloadInfo, List<InputStream> inputStreams, String customerId) throws PhrescoException;
 	
 	/**
 	 * To update the details of the given download
@@ -527,7 +528,7 @@ public interface ServiceManager {
 	 * @param customerId
 	 * @throws PhrescoException
 	 */
-	void updateDownload(MultiPart multiPart, String id, String customerId) throws PhrescoException;
+	void updateDownload(DownloadInfo downloadInfo, List<InputStream> inputStreams, String customerId) throws PhrescoException;
 	
 	/**
 	 * To delete the given download info
@@ -587,4 +588,11 @@ public interface ServiceManager {
 	ClientResponse sendErrorReport(List<LogInfo> loginfo) throws PhrescoException;
 	
 	Property getForumPath(String customerId) throws PhrescoException;
+	
+	/**
+	 * To get all the platforms
+	 * @return
+	 * @throws PhrescoException
+	 */
+	List<PlatformType> getPlatforms() throws PhrescoException;
 }

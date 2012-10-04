@@ -37,6 +37,7 @@ import com.photon.phresco.commons.model.Customer;
 import com.photon.phresco.commons.model.DownloadInfo;
 import com.photon.phresco.commons.model.LogInfo;
 import com.photon.phresco.commons.model.Permission;
+import com.photon.phresco.commons.model.PlatformType;
 import com.photon.phresco.commons.model.ProjectInfo;
 import com.photon.phresco.commons.model.Property;
 import com.photon.phresco.commons.model.Role;
@@ -1214,11 +1215,11 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             S_LOGGER.debug("Entered into ServiceManagerImpl.getDownloadInfo(List<DownloadInfo> downloadInfo)");
         }
         
-        CacheKey key = new CacheKey(DownloadInfo.class.getName());
+        CacheKey key = new CacheKey(customerId, DownloadInfo.class.getName());
         List<DownloadInfo> downloadInfos = (List<DownloadInfo>) cacheManager.get(key);
-        try {   
+        try {
             if (CollectionUtils.isEmpty(downloadInfos)) {
-                downloadInfos = getDownloadsFromServer();
+                downloadInfos = getDownloadsFromServer(customerId);
                 cacheManager.add(key, downloadInfos);
             }
         } catch(Exception e){
@@ -1228,12 +1229,13 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         return downloadInfos;
     }
     
-    private List<DownloadInfo> getDownloadsFromServer() throws PhrescoException {
+    private List<DownloadInfo> getDownloadsFromServer(String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getDownloadInfosFromServer()");
         }
     	
     	RestClient<DownloadInfo> downloadClient = getRestClient(REST_API_COMPONENT + REST_API_DOWNLOADS);
+    	downloadClient.queryString(REST_QUERY_CUSTOMERID, customerId);
 		GenericType<List<DownloadInfo>> genericType = new GenericType<List<DownloadInfo>>(){};
 		
 		return downloadClient.get(genericType);
@@ -1248,7 +1250,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	CacheKey key = new CacheKey(DownloadInfo.class.getName());
     	List<DownloadInfo> downloadInfos = (List<DownloadInfo>) cacheManager.get(key);
     	if (CollectionUtils.isEmpty(downloadInfos)) {
-    		downloadInfos = getDownloadsFromServer();
+    		downloadInfos = getDownloadsFromServer(customerId);
 			cacheManager.add(key, downloadInfos);
     	}
     	if (CollectionUtils.isNotEmpty(downloadInfos)) {
@@ -1263,30 +1265,32 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public ClientResponse createDownloads(MultiPart multiPart, String customerId) throws PhrescoException {
+    public ClientResponse createDownloads(DownloadInfo downloadInfo, List<InputStream> inputStreams, String customerId) throws PhrescoException {
     	if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.createDownloadInfo(List<DownloadInfo> downloadInfo)");
         }
     	
+    	MultiPart multiPart = createMultiPart(downloadInfo, inputStreams, downloadInfo.getName());
     	RestClient<DownloadInfo> downloadClient = getRestClient(REST_API_COMPONENT + REST_API_DOWNLOADS);
     	ClientResponse response = downloadClient.create(multiPart);
-    	CacheKey key = new CacheKey(DownloadInfo.class.getName());
-    	cacheManager.add(key, getDownloadsFromServer());
+    	CacheKey key = new CacheKey(customerId, DownloadInfo.class.getName());
+    	cacheManager.add(key, getDownloadsFromServer(customerId));
     	
     	return response;
     }
 
     @Override
-    public void updateDownload(MultiPart multiPart, String downloadId, String customerId) throws PhrescoException {
+    public void updateDownload(DownloadInfo downloadInfo, List<InputStream> inputStreams, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.updateDownload(DownloadInfo downloadInfo, String downloadId)");
         }
         
+        MultiPart multiPart = createMultiPart(downloadInfo, inputStreams, downloadInfo.getName());
         RestClient<DownloadInfo> downloadClient = getRestClient(REST_API_COMPONENT + REST_API_DOWNLOADS);
-        downloadClient.setPath(downloadId);
-        downloadClient.create(multiPart);
-        CacheKey key = new CacheKey(DownloadInfo.class.getName());
-        cacheManager.add(key, getDownloadsFromServer());
+        downloadClient.setPath(downloadInfo.getId());
+        downloadClient.update(multiPart);
+        CacheKey key = new CacheKey(customerId, DownloadInfo.class.getName());
+        cacheManager.add(key, getDownloadsFromServer(customerId));
     }
 
     @Override
@@ -1298,8 +1302,8 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         RestClient<DownloadInfo> downloadClient = getRestClient(REST_API_COMPONENT + REST_API_DOWNLOADS);
         downloadClient.setPath(downloadId);
         ClientResponse response = downloadClient.deleteById();
-        CacheKey key = new CacheKey(DownloadInfo.class.getName());
-        cacheManager.add(key, getDownloadsFromServer());
+        CacheKey key = new CacheKey(customerId, DownloadInfo.class.getName());
+        cacheManager.add(key, getDownloadsFromServer(customerId));
 
         return response;
     }
@@ -1633,5 +1637,18 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         }
         
         return users;
+    }
+
+	@Override
+    public List<PlatformType> getPlatforms() throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getPlatforms()");
+        }
+        
+        RestClient<PlatformType> client = getRestClient(REST_API_COMPONENT + REST_API_PLATFORMS);
+        GenericType<List<PlatformType>> genericType = new GenericType<List<PlatformType>>(){};
+        List<PlatformType> platforms = client.get(genericType);
+        
+        return platforms;
     }
 }
