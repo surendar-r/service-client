@@ -76,31 +76,34 @@ public class AdminRestVideosTest extends BaseRestTest {
 		
 	}
     
-private VideoInfo createVideo() {
-	VideoInfo info = new VideoInfo();
-	info.setId("vedioId");
-	info.setName("About phrescoUpdate");
-	info.setDescription("intro about phresoco");
-	
-	List<VideoType> videoList =new ArrayList<VideoType>();
-	VideoType vType=new VideoType();
-	
-	ArtifactGroup artifactGroup = new ArtifactGroup();
-	List<ArtifactInfo> artifactInfos =new ArrayList<ArtifactInfo>();
-	ArtifactInfo artiInfo=new ArtifactInfo();
-	artiInfo.setVersion("1.8");
-	artiInfo.setName("artiNameUpdate");
-	long fileSize=8;
-	artiInfo.setFileSize(fileSize);
-	artifactInfos.add(artiInfo);
-	artifactGroup.setVersions(artifactInfos);
-	vType.setArtifactGroup(artifactGroup);
-	videoList.add(vType);
-	
-	info.setVideoList(videoList);
+	private VideoInfo createVideo() {
+		VideoInfo info = new VideoInfo();
+		info.setId("vedioId");
+		info.setName("About phrescoupdate");
+		info.setDescription("intro about phresoco");
 		
-	return info;
-	}
+		List<VideoType> videoList =new ArrayList<VideoType>();
+		VideoType vType=new VideoType();
+		
+		ArtifactGroup artifactGroup = new ArtifactGroup();
+		List<ArtifactInfo> artifactInfos =new ArrayList<ArtifactInfo>();
+		ArtifactInfo artiInfo=new ArtifactInfo();
+		artiInfo.setVersion("1.2");
+		artiInfo.setName("artiName");
+		long fileSize=15;
+		artiInfo.setFileSize(fileSize);
+		artifactInfos.add(artiInfo);
+		artifactGroup.setVersions(artifactInfos);
+		artifactGroup.setName("testArtifact");
+		vType.setArtifactGroup(artifactGroup);
+		vType.setName("videoType");
+		vType.setVideoInfoId("testVideoId");
+		videoList.add(vType);
+		
+		info.setVideoList(videoList);
+			
+		return info;
+		}
 
 //	@Test
     public void getVideoInfo() throws PhrescoException {
@@ -154,13 +157,13 @@ private VideoInfo createVideo() {
     	assertNotNull(videoInfos);
 	
 	}	
-//	@Test
+	
+	@Test
 	public void DeleteVideoInfo() throws PhrescoException  {
-	String VideoInfoId = "TestvideoInfo";
+	String VideoInfoId = "vedioId";
 	RestClient<VideoInfo> videoInfosClient = serviceManager.getRestClient(REST_API_ADMIN + REST_API_VIDEOS);
 	videoInfosClient.setPath(VideoInfoId);
 	ClientResponse clientResponse = videoInfosClient.deleteById();
-	assertNotNull(clientResponse);
 	   }    	
 	    	
     	
