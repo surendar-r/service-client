@@ -320,13 +320,13 @@ public interface ServiceManager {
 	 * TO get Users List from LDAP
 	 * @throws PhrescoException
 	 */
-	List<User> getUsers() throws PhrescoException;
+	List<User> getSyncUsers() throws PhrescoException;
 	
 	/**
 	 * TO get Users List from DB
 	 * @throws PhrescoException
 	 */
-	List<User> getUser() throws PhrescoException;
+	List<User> getUsersFromDB() throws PhrescoException;
 	
 	/**
 	 * To get the config templates of the given customer

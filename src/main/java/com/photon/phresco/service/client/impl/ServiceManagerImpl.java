@@ -1600,7 +1600,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
 
 	@Override
-	public List<User> getUsers() throws PhrescoException {
+	public List<User> getSyncUsers() throws PhrescoException {
 		if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getUsers()");
         }
@@ -1624,7 +1624,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		return userClient.get(genericType);
     }
     
-    public List<User> getUser() throws PhrescoException {
+    public List<User> getUsersFromDB() throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getUsers()");
         }
