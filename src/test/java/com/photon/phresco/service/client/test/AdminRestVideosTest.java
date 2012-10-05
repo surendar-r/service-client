@@ -28,6 +28,7 @@ import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -95,9 +96,10 @@ public class AdminRestVideosTest extends BaseRestTest {
 		artifactInfos.add(artiInfo);
 		artifactGroup.setVersions(artifactInfos);
 		artifactGroup.setName("testArtifact");
+		vType.setId("testVideoType");
 		vType.setArtifactGroup(artifactGroup);
 		vType.setName("videoType");
-		vType.setVideoInfoId("testVideoId");
+		vType.setVideoInfoId(info.getId());
 		videoList.add(vType);
 		
 		info.setVideoList(videoList);
@@ -105,24 +107,23 @@ public class AdminRestVideosTest extends BaseRestTest {
 		return info;
 		}
 
-//	@Test
+	@Test
     public void getVideoInfo() throws PhrescoException {
-        String VideoInfoId = "TestvideoInfo";
+        String VideoInfoId = "vedioId";
         RestClient<VideoInfo> videoInfoclient = serviceManager.getRestClient(REST_API_ADMIN + REST_API_VIDEOS);
         videoInfoclient.setPath(VideoInfoId);
         GenericType<VideoInfo> genericType = new GenericType<VideoInfo>(){};
-        VideoInfo Info = videoInfoclient.getById(genericType);
-        assertNotNull(Info);
+        VideoInfo info = videoInfoclient.getById(genericType);
+        Assert.assertEquals("vedioId", info.getId());
     }
 	
-//	@Test
+	@Test
 	public void FindVideoInfos() throws PhrescoException {
 		RestClient<VideoInfo> videoInfoclient = serviceManager.getRestClient(REST_API_ADMIN + REST_API_VIDEOS);
 		GenericType<List<VideoInfo>> genericType = new GenericType<List<VideoInfo>>(){};
-        List<VideoInfo> VideoInfos = videoInfoclient.get(genericType);
-		assertNotNull(VideoInfos);
+        List<VideoInfo> videoInfos = videoInfoclient.get(genericType);
+		Assert.assertEquals(1, videoInfos.size());
 	}
-	
 	
 //	@Test
 	public void UpdateVideoInfos() throws PhrescoException {
@@ -146,25 +147,13 @@ public class AdminRestVideosTest extends BaseRestTest {
 		throw new PhrescoException(EX_PHEX00001);
 	}
 
-
-	
-	
-//	@Test
-	public void getVideoInfos() throws PhrescoException  {
-    	RestClient<VideoInfo> videoInfosClient = serviceManager.getRestClient(REST_API_ADMIN + REST_API_VIDEOS);
-    	GenericType<List<VideoInfo>> genericType = new GenericType<List<VideoInfo>>(){};
-    	List<VideoInfo> videoInfos = videoInfosClient.get(genericType);
-    	assertNotNull(videoInfos);
-	
-	}	
-	
 	@Test
 	public void DeleteVideoInfo() throws PhrescoException  {
-	String VideoInfoId = "vedioId";
-	RestClient<VideoInfo> videoInfosClient = serviceManager.getRestClient(REST_API_ADMIN + REST_API_VIDEOS);
-	videoInfosClient.setPath(VideoInfoId);
-	ClientResponse clientResponse = videoInfosClient.deleteById();
-	   }    	
+		String VideoInfoId = "vedioId";
+		RestClient<VideoInfo> videoInfosClient = serviceManager.getRestClient(REST_API_ADMIN + REST_API_VIDEOS);
+		videoInfosClient.setPath(VideoInfoId);
+		ClientResponse clientResponse = videoInfosClient.deleteById();
+   }    	
 	    	
     	
 }
