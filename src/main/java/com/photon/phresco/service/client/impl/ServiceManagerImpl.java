@@ -1190,7 +1190,6 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	
     	MultiPart multiPart = createMultiPart(videoInfo, inputStreams, videoInfo.getName());
     	RestClient<VideoInfo> videoInfoClient = getRestClient(REST_API_ADMIN + REST_API_VIDEOS);
-    	videoInfoClient.setPath(id);
     	videoInfoClient.update(multiPart);
     	CacheKey key = new CacheKey(VideoInfo.class.getName());
     	cacheManager.add(key, getVideosFromServer());
@@ -1354,7 +1353,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		return envClient.get(genericType);
     }
     
-    private List<Property> getGlobalUrlFromServer(String customerId) throws PhrescoException {
+    private List<Property> getGlobalUrlFromServer() throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getGlobalUrlFromServer(String customerId)");
         }
@@ -1375,10 +1374,11 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
      	List<Property> globalUrls = (List<Property>) cacheManager.get(key);
     	try {	
     		if (CollectionUtils.isEmpty(globalUrls)) {
-    			globalUrls = getGlobalUrlFromServer(customerId);
+    			globalUrls = getGlobalUrlFromServer();
     			cacheManager.add(key, globalUrls);
     		}
     	} catch(Exception e){
+    		e.printStackTrace();
     		throw new PhrescoException(e);
     	}
     	
@@ -1394,7 +1394,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	CacheKey key = new CacheKey(Property.class.getName());
     	List<Property> globalUrls = (List<Property>) cacheManager.get(key);
     	if (CollectionUtils.isEmpty(globalUrls)) {
-    		globalUrls = getGlobalUrlFromServer(customerId);
+    		globalUrls = getGlobalUrlFromServer();
 			cacheManager.add(key, globalUrls);
     	}
     	if (CollectionUtils.isNotEmpty(globalUrls)) {
@@ -1417,7 +1417,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	RestClient<Property> globalClient = getRestClient(REST_API_ADMIN + REST_API_GLOBALURL);
     	ClientResponse response = globalClient.create(globalUrl);
     	CacheKey key = new CacheKey(Property.class.getName());
-    	cacheManager.add(key, getGlobalUrlFromServer(customerId));
+    	cacheManager.add(key, getGlobalUrlFromServer());
     	
     	return response;
     }
@@ -1433,7 +1433,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		GenericType<Property> genericType = new GenericType<Property>() {};
 		editGlobalUrl.updateById(globalUrl, genericType);
 		CacheKey key = new CacheKey(customerId, Property.class.getName());
-		cacheManager.add(key, getGlobalUrlFromServer(customerId));
+		cacheManager.add(key, getGlobalUrlFromServer());
     }
     
     @Override
@@ -1446,7 +1446,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         globalUrlClient.setPath(globalurlId);
         ClientResponse response = globalUrlClient.deleteById();
         CacheKey key = new CacheKey(Property.class.getName());
-        cacheManager.add(key, getGlobalUrlFromServer(customerId));
+        cacheManager.add(key, getGlobalUrlFromServer());
 
         return response;
     }
