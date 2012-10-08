@@ -187,7 +187,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             RestClient<Technology> archeTypeClient = getRestClient(REST_API_COMPONENT + REST_API_TECHNOLOGIES);
             Map<String, String> queryStringsMap = new HashMap<String, String>();
             queryStringsMap.put(REST_QUERY_CUSTOMERID, customerId);
-            queryStringsMap.put(REST_API_PATH_PARAM_ID, appTypeId);
+            queryStringsMap.put(REST_QUERY_APPTYPEID, appTypeId);
             archeTypeClient.queryStrings(queryStringsMap);
             GenericType<List<Technology>> genericType = new GenericType<List<Technology>>(){};
             archeTypes = archeTypeClient.get(genericType);
@@ -476,35 +476,15 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 	}
     
     @Override
-    public List<WebService> getWebServices(String customerId) throws PhrescoException {
-        if (isDebugEnabled) {
-            S_LOGGER.debug("Entered into ServiceManagerImpl.getWebServices(String customerId)");
-        }
-    	
-        CacheKey key = new CacheKey(customerId, WebService.class.getName());
-		List<WebService> webServices = (List<WebService>) cacheManager.get(key);
-        if (CollectionUtils.isEmpty(webServices)) {
-        	webServices = getWebServicesFromServer(customerId);
-        	cacheManager.add(key, webServices);
-        }
-		
-		return webServices;
-	}
-    
-    @Override
-    public List<WebService> getWebServices(String customerId, String techId) throws PhrescoException {
+    public List<WebService> getWebServices() throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getWebServices(String techId, String customerId)");
         }
         
-        CacheKey key = new CacheKey(customerId, WebService.class.getName(), techId);
+        CacheKey key = new CacheKey(WebService.class.getName());
         List<WebService> webServices = (List<WebService>) cacheManager.get(key);
         if (CollectionUtils.isEmpty(webServices)) {
             RestClient<WebService> webServiceClient = getRestClient(REST_API_COMPONENT + REST_API_WEBSERVICES);
-            Map<String, String> queryStringsMap = new HashMap<String, String>();
-            queryStringsMap.put(REST_QUERY_CUSTOMERID, customerId);
-            queryStringsMap.put(REST_QUERY_TECHID, techId);
-            webServiceClient.queryStrings(queryStringsMap);
             GenericType<List<WebService>> genericType = new GenericType<List<WebService>>(){};
             webServices = webServiceClient.get(genericType);
             cacheManager.add(key, webServices);
@@ -928,6 +908,24 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		return pilotClient.get(genericType);
     }
     
+    private List<ApplicationInfo> getPilotProjectsFromServer(String customerId, String techId) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getPilotProjectFromServer(String customerId)");
+        }
+        
+        System.out.println("................getPilotProjectsFromServer................");
+        System.out.println("customerId:::" + customerId + "::techId::" + techId);
+        System.out.println("..................................................");
+        RestClient<ApplicationInfo> pilotClient = getRestClient(REST_API_COMPONENT + REST_API_PILOTS);
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put(REST_QUERY_CUSTOMERID, customerId);
+        headers.put(REST_QUERY_TECHID, techId);
+        pilotClient.queryStrings(headers);
+        GenericType<List<ApplicationInfo>> genericType = new GenericType<List<ApplicationInfo>>(){};
+        
+        return pilotClient.get(genericType);
+    }
+    
     @Override
     public List<ApplicationInfo> getPilotProjects(String customerId) throws PhrescoException {
         if (isDebugEnabled) {
@@ -945,6 +943,29 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     		throw new PhrescoException(e);
     	}
     	
+        return pilotProjects;
+    }
+    
+    @Override
+    public List<ApplicationInfo> getPilotProjects(String customerId, String techId) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getPilotProjects(String customerId)" + customerId);
+        }
+        
+        System.out.println("................getPilotProjects................");
+        System.out.println("customerId:::" + customerId + "::techId::" + techId);
+        System.out.println("..................................................");
+        CacheKey key = new CacheKey(customerId, ProjectInfo.class.getName(), techId);
+        List<ApplicationInfo> pilotProjects = (List<ApplicationInfo>) cacheManager.get(key);
+        try {
+            if (CollectionUtils.isEmpty(pilotProjects)) {
+                pilotProjects = getPilotProjectsFromServer(customerId, techId);
+                cacheManager.add(key, pilotProjects);
+            }
+        } catch(Exception e) {
+            throw new PhrescoException(e);
+        }
+        
         return pilotProjects;
     }
     
@@ -1224,9 +1245,29 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         return downloadInfos;
     }
     
+    @Override
+    public List<DownloadInfo> getDownloads(String customerId, String techId) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getDownloadInfo(List<DownloadInfo> downloadInfo)");
+        }
+        
+        CacheKey key = new CacheKey(customerId, DownloadInfo.class.getName(), techId);
+        List<DownloadInfo> downloadInfos = (List<DownloadInfo>) cacheManager.get(key);
+        try {
+            if (CollectionUtils.isEmpty(downloadInfos)) {
+                downloadInfos = getDownloadsFromServer(customerId, techId);
+                cacheManager.add(key, downloadInfos);
+            }
+        } catch(Exception e){
+            throw new PhrescoException(e);
+        }
+        
+        return downloadInfos;
+    }
+    
     private List<DownloadInfo> getDownloadsFromServer(String customerId) throws PhrescoException {
         if (isDebugEnabled) {
-            S_LOGGER.debug("Entered into ServiceManagerImpl.getDownloadInfosFromServer()");
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getDownloadsFromServer(String customerId)");
         }
     	
     	RestClient<DownloadInfo> downloadClient = getRestClient(REST_API_COMPONENT + REST_API_DOWNLOADS);
@@ -1235,14 +1276,29 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		
 		return downloadClient.get(genericType);
     }
+    
+    private List<DownloadInfo> getDownloadsFromServer(String customerId, String techId) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getDownloadsFromServer(String customerId, String techId)");
+        }
+        
+        RestClient<DownloadInfo> downloadClient = getRestClient(REST_API_COMPONENT + REST_API_DOWNLOADS);
+        Map<String, String> queryStringsMap = new HashMap<String, String>();
+        queryStringsMap.put(REST_QUERY_CUSTOMERID, customerId);
+        queryStringsMap.put(REST_QUERY_TECHID, techId);
+        downloadClient.queryStrings(queryStringsMap);
+        GenericType<List<DownloadInfo>> genericType = new GenericType<List<DownloadInfo>>(){};
+        
+        return downloadClient.get(genericType);
+    }
 
     @Override
     public DownloadInfo getDownload(String downloadId, String customerId) throws PhrescoException {
-    	if(isDebugEnabled){
+    	if (isDebugEnabled) {
     		S_LOGGER.debug("Entered into Restclient.getDownload(String downloadId, String customerId)");
     	}
     	
-    	CacheKey key = new CacheKey(customerId, DownloadInfo.class.getName());
+    	CacheKey key = new CacheKey(DownloadInfo.class.getName());
     	List<DownloadInfo> downloadInfos = (List<DownloadInfo>) cacheManager.get(key);
     	if (CollectionUtils.isEmpty(downloadInfos)) {
     		downloadInfos = getDownloadsFromServer(customerId);
@@ -1373,7 +1429,6 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     			cacheManager.add(key, globalUrls);
     		}
     	} catch(Exception e){
-    		e.printStackTrace();
     		throw new PhrescoException(e);
     	}
     	

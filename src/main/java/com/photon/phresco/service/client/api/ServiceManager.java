@@ -42,7 +42,6 @@ import com.photon.phresco.configuration.Environment;
 import com.photon.phresco.exception.PhrescoException;
 import com.photon.phresco.service.client.impl.RestClient;
 import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.multipart.MultiPart;
 
 /**
  * Interface for making service calls to Phresco Framework and Admin Console
@@ -204,21 +203,11 @@ public interface ServiceManager {
 	List<DownloadInfo> getDatabases(String customerId, String techId) throws PhrescoException;
 	
 	/**
-	 * To get all the webservices of the given customer
-	 * @param customerId
-	 * @return List<WebService>
+	 * To get the Webservices
+	 * @return
 	 * @throws PhrescoException
 	 */
-	List<WebService> getWebServices(String customerId) throws PhrescoException;
-	
-	/**
-	 * To get the webservices of the given customer and the technology
-	 * @param techId
-	 * @param customerId
-	 * @return List<WebService>
-	 * @throws PhrescoException
-	 */
-	List<WebService> getWebServices(String techId, String customerId) throws PhrescoException;
+	List<WebService> getWebServices() throws PhrescoException;
 	
 	/**
 	 * To get the features of the the of the specified type(module/js) for the given customer and techid
@@ -373,6 +362,15 @@ public interface ServiceManager {
 	ClientResponse deleteConfigTemp(String id, String customerId) throws PhrescoException;
 	
 	/**
+	 * To get the pilot projects based on the given customer and the techId
+	 * @param customerId
+	 * @param techId
+	 * @return
+	 * @throws PhrescoException
+	 */
+    List<ApplicationInfo> getPilotProjects(String customerId, String techId) throws PhrescoException;
+	
+	/**
 	 * To get all the pilot projects of the given customer
 	 * @param techId
 	 * @return List<ApplicationInfo>
@@ -502,6 +500,15 @@ public interface ServiceManager {
 	 * @throws PhrescoException
 	 */
 	List<DownloadInfo> getDownloads(String customerId) throws PhrescoException;
+	
+	/**
+	 * To get the download infos for the given customer and techid
+	 * @param customerId
+	 * @param techId
+	 * @return
+	 * @throws PhrescoException
+	 */
+	List<DownloadInfo> getDownloads(String customerId, String techId) throws PhrescoException;
 	
 	/**
 	 * To get the details of the given download id
