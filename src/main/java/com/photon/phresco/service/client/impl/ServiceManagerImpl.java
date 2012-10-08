@@ -243,14 +243,11 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	
         MultiPart multiPart = createMultiPart(technology, inputStreams, technology.getName());
     	RestClient<Technology> editArchetype = getRestClient(REST_API_COMPONENT + REST_API_TECHNOLOGIES);
-    	//editArchetype.setPath(archeTypeId);
-    	editArchetype.setPath(technology.getId());
-    	ClientResponse response = editArchetype.update(multiPart);
-    	return response;
-		/*GenericType<Technology> genericType = new GenericType<Technology>() {};
-		editArchetype.updateById(technology, genericType);
+    	ClientResponse clientResponse = editArchetype.update(multiPart);
 		CacheKey key = new CacheKey(customerId, Technology.class.getName());
-		manager.add(key, getArcheTypesFromServer(customerId));*/
+		cacheManager.add(key, getArcheTypesFromServer(customerId));
+		
+		return clientResponse;
     }
     
     @Override
@@ -996,7 +993,6 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         }
         MultiPart multiPart = createMultiPart(pilotProjInfo, inputStreams, pilotProjInfo.getName());
         RestClient<ApplicationInfo> pilotproClient = getRestClient(REST_API_COMPONENT + REST_API_PILOTS);
-        pilotproClient.setPath(projectId);
         pilotproClient.update(multiPart);
         CacheKey key = new CacheKey(customerId, ProjectInfo.class.getName());
         cacheManager.add(key, getPilotProjectsFromServer(customerId));
