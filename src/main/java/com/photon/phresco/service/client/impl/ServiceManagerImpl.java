@@ -463,13 +463,12 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         return databases;
     }
     
-    private List<WebService> getWebServicesFromServer(String customerId) throws PhrescoException {
+    private List<WebService> getWebServicesFromServer() throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getWebServices(String customerId)");
         }
     	
 		RestClient<WebService> webServiceClient = getRestClient(REST_API_COMPONENT + REST_API_WEBSERVICES);
-		webServiceClient.queryString(REST_QUERY_CUSTOMERID, customerId);
 		GenericType<List<WebService>> genericType = new GenericType<List<WebService>>(){};
 		
 		return webServiceClient.get(genericType);
@@ -484,9 +483,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         CacheKey key = new CacheKey(WebService.class.getName());
         List<WebService> webServices = (List<WebService>) cacheManager.get(key);
         if (CollectionUtils.isEmpty(webServices)) {
-            RestClient<WebService> webServiceClient = getRestClient(REST_API_COMPONENT + REST_API_WEBSERVICES);
-            GenericType<List<WebService>> genericType = new GenericType<List<WebService>>(){};
-            webServices = webServiceClient.get(genericType);
+            webServices = getWebServicesFromServer();
             cacheManager.add(key, webServices);
         }
         
