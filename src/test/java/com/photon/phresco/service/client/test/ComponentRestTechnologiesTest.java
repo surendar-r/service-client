@@ -37,7 +37,7 @@ import com.photon.phresco.commons.model.ArtifactGroup;
 import com.photon.phresco.commons.model.ArtifactGroup.Type;
 import com.photon.phresco.commons.model.ArtifactInfo;
 import com.photon.phresco.commons.model.Technology;
-import com.photon.phresco.commons.model.Technology.Option;
+import com.photon.phresco.commons.model.TechnologyOptions;
 import com.photon.phresco.exception.PhrescoException;
 import com.photon.phresco.service.client.api.Content;
 import com.photon.phresco.service.client.factory.ServiceClientFactory;
@@ -93,7 +93,8 @@ public class ComponentRestTechnologiesTest extends BaseRestTest {
 		tech.setArchetypeInfo(archetypeInfo);
 
 		//Technology Options
-		tech.setOptions(Arrays.asList(Option.values()));
+		TechnologyOptions options = new TechnologyOptions("build");
+		tech.setOptions(Arrays.asList(options));
 		List<ArtifactGroup> plugins = new ArrayList<ArtifactGroup>();
         plugins.add(archetypeInfo);
         tech.setPlugins(plugins);
