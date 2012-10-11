@@ -27,6 +27,7 @@ import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 
@@ -59,23 +60,24 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.WebResource.Builder;
 import com.sun.jersey.multipart.BodyPart;
 import com.sun.jersey.multipart.MultiPart;
 
 @SuppressWarnings("unchecked")
 public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant, ServiceConstants, Constants {
 
-    private static final Logger S_LOGGER = Logger.getLogger(ServiceManagerImpl.class);
+	private static final String HEADER_NAME_AUTHORIZATION = "Authorization";
+	private static final Logger S_LOGGER = Logger.getLogger(ServiceManagerImpl.class);
     private static Boolean isDebugEnabled = S_LOGGER.isDebugEnabled();
     
     private EhCacheManager cacheManager;
     
     private String serverPath = null;
     private static User userInfo = null;
+    private String apiKey = null;
     
-    private static final String CACHE_FEATURES_KEY = "features";
     private static final String CACHE_MODULES_KEY = "modules";
-    private static final String CACHE_JSLIBS_KEY = "jsLibs";
 
 	public ServiceManagerImpl(String serverPath) throws PhrescoException {
     	super();
@@ -97,6 +99,12 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	builder.append(serverPath);
     	builder.append(contextPath);
     	RestClient<E> restClient = new RestClient<E>(builder.toString());
+    	
+    	//Adding API Key
+    	if (apiKey != null) {
+        	restClient.addHeader(HEADER_NAME_AUTHORIZATION, apiKey);	
+    	}
+    	
     	restClient.addHeader(PHR_AUTH_TOKEN, userInfo.getToken());
     	
     	return restClient;
@@ -118,19 +126,32 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		this.serverPath = (String) context.get(SERVICE_URL);
     	String password = (String) context.get(SERVICE_PASSWORD);
 		String username = (String) context.get(SERVICE_USERNAME);
-		doLogin(username, password);
+		String apiKey = (String) context.get(SERVICE_API_KEY);
+		
+		this.apiKey = apiKey;
+		
+		doLogin(username, password, apiKey);
 	}
 	
-    private void doLogin(String username, String password) throws PhrescoException {
+    private void doLogin(String username, String password, String apiKey) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.doLogin(String username, String password)");
         }
-    	
-    	Credentials credentials = new Credentials(username, password); 
+
+        //encode the password
+        byte[] encodeBase64 = Base64.encodeBase64(password.getBytes());
+        String encodedString = new String(encodeBase64);
+        
+    	Credentials credentials = new Credentials(username, encodedString); 
     	Client client = ClientHelper.createClient();
-        WebResource resource = client.resource(serverPath + "/login");
-        resource.accept(MediaType.APPLICATION_JSON);
-        ClientResponse response = resource.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, credentials);
+        WebResource resource = client.resource(serverPath + "/" + LOGIN);
+
+        Builder builder = resource.accept(MediaType.APPLICATION_JSON);
+        if (apiKey != null) {
+        	builder = builder.header(HEADER_NAME_AUTHORIZATION, apiKey);	
+        }
+        
+        ClientResponse response = builder.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, credentials);
         GenericType<User> genericType = new GenericType<User>() {};
         userInfo = response.getEntity(genericType);
     }

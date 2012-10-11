@@ -17,6 +17,7 @@ import com.sun.jersey.api.client.ClientResponse;
 
 public class BaseRestTest implements ServiceConstants {
 
+	public static final String API_KEY = "Bearer fzlOdZfQaWfgr7uoZ7rcJI5hhjMa";
 	public static final String PHRESCO_TEST_ARCHETYPE_JAR = "phresco-test-archetype.jar";
 	public static final String PHRESCO_TEST_ARCHETYPE_PLUGIN_JAR = "phresco-test-archetype-plugin.jar";
 
@@ -35,6 +36,8 @@ public class BaseRestTest implements ServiceConstants {
         context.put(ServiceClientConstant.SERVICE_URL, RestUtil.getServerPath());
         context.put(ServiceClientConstant.SERVICE_USERNAME, RestUtil.getUserName());
         context.put(ServiceClientConstant.SERVICE_PASSWORD, RestUtil.getPassword());
+        context.put(ServiceClientConstant.SERVICE_API_KEY, API_KEY);
+        
         serviceManager = ServiceClientFactory.getServiceManager(context);
 	}
 

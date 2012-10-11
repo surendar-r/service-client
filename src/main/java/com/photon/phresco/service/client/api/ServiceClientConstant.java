@@ -26,4 +26,7 @@ public interface ServiceClientConstant {
 	String SERVICE_USERNAME = "phresco.service.username";
 	
 	String SERVICE_PASSWORD = "phresco.service.password";
+	
+	String SERVICE_API_KEY = "phresco.service.api.key";
+	
 }

@@ -121,15 +121,11 @@ public class RestClient<E> {
 			resource = resource.path(path);
 		}
 		
+		builder = resource.getRequestBuilder();
+		
 		Set<String> keySet = HEADER.keySet();
-		int i = 0;
 		for (String key : keySet) {
-			if (i == 0) {
-				builder = resource.header(key, HEADER.get(key));
-			} else {
-				builder.header(key, HEADER.get(key));
-				i++;
-			}
+			builder = builder.header(key, HEADER.get(key));
 		}
 	}
 	
@@ -158,7 +154,7 @@ public class RestClient<E> {
 		
 		updateBuilder();
 		builder = builder.accept(accept).type(type);
-		return  builder.get(genericType);
+		return builder.get(genericType);
 	}
 	
 	/**
@@ -387,7 +383,7 @@ public class RestClient<E> {
 		int status = clientResponse.getStatus();
 		if (status == ClientResponse.Status.ACCEPTED.getStatusCode() || 
 				status == ClientResponse.Status.OK.getStatusCode() || status == ClientResponse.Status.CREATED.getStatusCode()) {
-		    System.out.println(status);
+		    S_LOGGER.info(status);
 		} else {
 			throw new PhrescoException("Not able to Create");
 		}
