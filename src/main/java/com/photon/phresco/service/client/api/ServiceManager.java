@@ -22,6 +22,7 @@ package com.photon.phresco.service.client.api;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 
 import com.photon.phresco.commons.model.ApplicationInfo;
 import com.photon.phresco.commons.model.ApplicationType;
@@ -35,6 +36,7 @@ import com.photon.phresco.commons.model.Property;
 import com.photon.phresco.commons.model.Role;
 import com.photon.phresco.commons.model.SettingsTemplate;
 import com.photon.phresco.commons.model.Technology;
+import com.photon.phresco.commons.model.TechnologyOptions;
 import com.photon.phresco.commons.model.User;
 import com.photon.phresco.commons.model.VideoInfo;
 import com.photon.phresco.commons.model.WebService;
@@ -131,7 +133,7 @@ public interface ServiceManager {
 	 * @return ClientResponse
 	 * @throws PhrescoException
 	 */
-	ClientResponse createArcheTypes(Technology technology,  List<InputStream> inputStreams, String customerId) throws PhrescoException;
+	ClientResponse createArcheTypes(Technology technology,  Map<String, InputStream> inputStreamMap, String customerId) throws PhrescoException;
 	
 	/**
 	 * To update the details of the given technology
@@ -140,7 +142,7 @@ public interface ServiceManager {
 	 * @param customerId
 	 * @throws PhrescoException
 	 */
-	ClientResponse updateArcheType(Technology technology, List<InputStream> inputStreams, String customerId) throws PhrescoException;
+	ClientResponse updateArcheType(Technology technology, Map<String, InputStream> inputStreamMap, String customerId) throws PhrescoException;
 	
 	/**
 	 * To delete the given technology
@@ -602,4 +604,6 @@ public interface ServiceManager {
 	 * @throws PhrescoException
 	 */
 	List<PlatformType> getPlatforms() throws PhrescoException;
+
+	List<TechnologyOptions> getOptions() throws PhrescoException;
 }

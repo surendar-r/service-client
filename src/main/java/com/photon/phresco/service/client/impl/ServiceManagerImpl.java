@@ -22,6 +22,7 @@ package com.photon.phresco.service.client.impl;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -44,6 +45,7 @@ import com.photon.phresco.commons.model.Property;
 import com.photon.phresco.commons.model.Role;
 import com.photon.phresco.commons.model.SettingsTemplate;
 import com.photon.phresco.commons.model.Technology;
+import com.photon.phresco.commons.model.TechnologyOptions;
 import com.photon.phresco.commons.model.User;
 import com.photon.phresco.commons.model.VideoInfo;
 import com.photon.phresco.commons.model.WebService;
@@ -242,12 +244,12 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public ClientResponse createArcheTypes(Technology technology, List<InputStream> inputStreams, String customerId) throws PhrescoException {
+    public ClientResponse createArcheTypes(Technology technology, Map<String, InputStream> inputStreamMap, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.createArcheTypes(List<Technology> archeTypes, String customerId)");
         }
         
-        MultiPart multiPart = createMultiPart(technology, inputStreams, technology.getName());
+        MultiPart multiPart = createMultiPart1(technology, inputStreamMap, technology.getName());
     	RestClient<Technology> newApp = getRestClient(REST_API_COMPONENT + REST_API_TECHNOLOGIES);
 		ClientResponse clientResponse = newApp.create(multiPart);
 		CacheKey key = new CacheKey(customerId, Technology.class.getName());
@@ -257,12 +259,12 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public ClientResponse updateArcheType(Technology technology, List<InputStream> inputStreams, String customerId) throws PhrescoException {
+    public ClientResponse updateArcheType(Technology technology, Map<String, InputStream> inputStreamMap, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.updateArcheTypes(Technology technology, InputStream inputStream, String customerId)");
         }
     	
-        MultiPart multiPart = createMultiPart(technology, inputStreams, technology.getName());
+        MultiPart multiPart = createMultiPart1(technology, inputStreamMap, technology.getName());
     	RestClient<Technology> editArchetype = getRestClient(REST_API_COMPONENT + REST_API_TECHNOLOGIES);
     	ClientResponse clientResponse = editArchetype.update(multiPart);
 		CacheKey key = new CacheKey(customerId, Technology.class.getName());
@@ -667,6 +669,20 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     			multiPart.bodyPart(binaryBodyPart);
     		}
     	}
+
+    	return multiPart;
+    }
+    
+    private MultiPart createMultiPart1(Object object, Map<String, InputStream> inputStreamMap, String name) throws PhrescoException {
+    	MultiPart multiPart = new MultiPart();
+    	BodyPart jsonBodyPart = createJSONBodyPart(Content.Type.JSON, name, object);
+    	multiPart.bodyPart(jsonBodyPart);
+    	Iterator iter = inputStreamMap.keySet().iterator();
+		while (iter.hasNext()) {
+			String key = (String) iter.next();
+			BodyPart binaryBodyPart = createBinaryBodyPart(Content.Type.ARCHETYPE, key, (InputStream) inputStreamMap.get(key));
+			multiPart.bodyPart(binaryBodyPart);
+		}
 
     	return multiPart;
     }
@@ -1719,4 +1735,16 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         
         return platforms;
     }
+	
+	@Override 
+	public List<TechnologyOptions> getOptions() throws PhrescoException {
+		if (isDebugEnabled) {
+			S_LOGGER.debug("Entered into ServiceManagerImpl.getOptions()");
+		}
+		RestClient<TechnologyOptions> client = getRestClient(REST_API_COMPONENT + REST_API_OPTIONS);
+		GenericType<List<TechnologyOptions>> genericType = new GenericType<List<TechnologyOptions>>(){};
+		List<TechnologyOptions> options = client.get(genericType);
+		
+		return options;
+	}
 }
