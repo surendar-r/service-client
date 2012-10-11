@@ -1377,23 +1377,23 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
 
     @Override
-    public ClientResponse createProject(ApplicationInfo projectInfo) throws PhrescoException {
+    public ClientResponse createProject(ProjectInfo projectInfo) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.createProject(ProjectInfo projectInfo)");
         }
 
-        RestClient<ApplicationInfo> projectClient = getRestClient(REST_API_PROJECT + REST_API_PROJECT_CREATE);
+        RestClient<ProjectInfo> projectClient = getRestClient(REST_API_PROJECT + REST_API_PROJECT_CREATE);
 
         return projectClient.create(projectInfo, MEDIATYPE_ZIP, MediaType.APPLICATION_JSON);
     }
     
     @Override
-    public ClientResponse updateProject(ApplicationInfo projectInfo) throws PhrescoException {
+    public ClientResponse updateProject(ProjectInfo projectInfo) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.updateProject(ProjectInfo projectInfo)");
         }
 
-        RestClient<ApplicationInfo> projectClient = getRestClient(REST_API_PROJECT + REST_API_PROJECT_UPDATE);
+        RestClient<ProjectInfo> projectClient = getRestClient(REST_API_PROJECT + REST_API_PROJECT_UPDATE);
 
         return projectClient.create(projectInfo, MEDIATYPE_ZIP, MediaType.APPLICATION_JSON);
     }
@@ -1411,15 +1411,15 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public List<Environment> getDefaultEnvFromServer() throws PhrescoException {
+    public Environment getDefaultEnvFromServer() throws PhrescoException {
     	if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getDefaultEnvFromServer()");
         }
     	
     	RestClient<Environment> envClient = getRestClient(REST_API_ENV_PATH);
-		GenericType<List<Environment>> genericType = new GenericType<List<Environment>>(){};
+		GenericType<Environment> genericType = new GenericType<Environment>(){};
 		
-		return envClient.get(genericType);
+		return envClient.getById(genericType);
     }
     
     private List<Property> getGlobalUrlFromServer() throws PhrescoException {

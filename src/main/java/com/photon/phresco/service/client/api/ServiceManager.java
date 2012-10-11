@@ -31,6 +31,7 @@ import com.photon.phresco.commons.model.DownloadInfo;
 import com.photon.phresco.commons.model.LogInfo;
 import com.photon.phresco.commons.model.Permission;
 import com.photon.phresco.commons.model.PlatformType;
+import com.photon.phresco.commons.model.ProjectInfo;
 import com.photon.phresco.commons.model.Property;
 import com.photon.phresco.commons.model.Role;
 import com.photon.phresco.commons.model.SettingsTemplate;
@@ -548,11 +549,11 @@ public interface ServiceManager {
 	
 	/**
 	 * To create project
-	 * @param appInfo
+	 * @param projectInfo
 	 * @return ClientResponse
 	 * @throws PhrescoException
 	 */
-	ClientResponse createProject(ApplicationInfo appInfo) throws PhrescoException;
+	ClientResponse createProject(ProjectInfo projectInfo) throws PhrescoException;
 	
 	/**
      * To update the details of the given project
@@ -560,11 +561,11 @@ public interface ServiceManager {
      * @return ClientResponse
      * @throws PhrescoException
      */
-	ClientResponse updateProject(ApplicationInfo appInfo) throws PhrescoException;
+	ClientResponse updateProject(ProjectInfo appInfo) throws PhrescoException;
 	
 	ClientResponse updateDocumentProject(ApplicationInfo appInfo) throws PhrescoException;
 	
-	List<Environment> getDefaultEnvFromServer() throws PhrescoException;
+	Environment getDefaultEnvFromServer() throws PhrescoException;
 	
 	List<Property> getGlobalUrls(String customerId) throws PhrescoException;
 	
