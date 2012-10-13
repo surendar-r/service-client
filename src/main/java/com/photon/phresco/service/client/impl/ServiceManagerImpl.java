@@ -420,13 +420,14 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             S_LOGGER.debug("Entered into ServiceManagerImpl.getServers(String customerId, String techId)");
         }
         
-        CacheKey key = new CacheKey(DownloadInfo.class.getName(), techId);
+        CacheKey key = new CacheKey(customerId, DownloadInfo.class.getName(), techId);
         List<DownloadInfo> servers = (List<DownloadInfo>) cacheManager.get(key);
         if (CollectionUtils.isEmpty(servers)) {
-            RestClient<DownloadInfo> serverClient = getRestClient(REST_API_COMPONENT + REST_API_SERVERS);
+            RestClient<DownloadInfo> serverClient = getRestClient(REST_API_COMPONENT + REST_API_DOWNLOADS);
             Map<String, String> queryStringsMap = new HashMap<String, String>();
             queryStringsMap.put(REST_QUERY_CUSTOMERID, customerId);
             queryStringsMap.put(REST_QUERY_TECHID, techId);
+            queryStringsMap.put(REST_QUERY_TYPE, SERVER);
             serverClient.queryStrings(queryStringsMap);
             GenericType<List<DownloadInfo>> genericType = new GenericType<List<DownloadInfo>>(){};
             servers = serverClient.get(genericType);
