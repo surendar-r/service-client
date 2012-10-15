@@ -1281,7 +1281,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public List<DownloadInfo> getDownloads(String customerId, String techId) throws PhrescoException {
+    public List<DownloadInfo> getDownloads(String customerId, String techId, String category) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getDownloadInfo(List<DownloadInfo> downloadInfo)");
         }
@@ -1290,7 +1290,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         List<DownloadInfo> downloadInfos = (List<DownloadInfo>) cacheManager.get(key);
         try {
             if (CollectionUtils.isEmpty(downloadInfos)) {
-                downloadInfos = getDownloadsFromServer(customerId, techId);
+                downloadInfos = getDownloadsFromServer(customerId, techId, category);
                 cacheManager.add(key, downloadInfos);
             }
         } catch(Exception e){
@@ -1312,7 +1312,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		return downloadClient.get(genericType);
     }
     
-    private List<DownloadInfo> getDownloadsFromServer(String customerId, String techId) throws PhrescoException {
+    private List<DownloadInfo> getDownloadsFromServer(String customerId, String techId, String category) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getDownloadsFromServer(String customerId, String techId)");
         }
@@ -1321,6 +1321,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         Map<String, String> queryStringsMap = new HashMap<String, String>();
         queryStringsMap.put(REST_QUERY_CUSTOMERID, customerId);
         queryStringsMap.put(REST_QUERY_TECHID, techId);
+        queryStringsMap.put(REST_QUERY_TYPE, category);
         downloadClient.queryStrings(queryStringsMap);
         GenericType<List<DownloadInfo>> genericType = new GenericType<List<DownloadInfo>>(){};
         

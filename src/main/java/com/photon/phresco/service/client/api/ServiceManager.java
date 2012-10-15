@@ -511,7 +511,7 @@ public interface ServiceManager {
 	 * @return
 	 * @throws PhrescoException
 	 */
-	List<DownloadInfo> getDownloads(String customerId, String techId) throws PhrescoException;
+	List<DownloadInfo> getDownloads(String customerId, String techId, String category) throws PhrescoException;
 	
 	/**
 	 * To get the details of the given download id
