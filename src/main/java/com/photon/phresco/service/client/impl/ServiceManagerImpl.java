@@ -20,6 +20,7 @@
 package com.photon.phresco.service.client.impl;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -427,7 +428,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             Map<String, String> queryStringsMap = new HashMap<String, String>();
             queryStringsMap.put(REST_QUERY_CUSTOMERID, customerId);
             queryStringsMap.put(REST_QUERY_TECHID, techId);
-            queryStringsMap.put(REST_QUERY_TYPE, SERVER);
+            queryStringsMap.put(REST_QUERY_TYPE, DownloadInfo.Category.SERVER.name());
             serverClient.queryStrings(queryStringsMap);
             GenericType<List<DownloadInfo>> genericType = new GenericType<List<DownloadInfo>>(){};
             servers = serverClient.get(genericType);
@@ -1286,18 +1287,11 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             S_LOGGER.debug("Entered into ServiceManagerImpl.getDownloadInfo(List<DownloadInfo> downloadInfo)");
         }
         
-        CacheKey key = new CacheKey(customerId, DownloadInfo.class.getName(), techId);
-        List<DownloadInfo> downloadInfos = (List<DownloadInfo>) cacheManager.get(key);
         try {
-            if (CollectionUtils.isEmpty(downloadInfos)) {
-                downloadInfos = getDownloadsFromServer(customerId, techId, category);
-                cacheManager.add(key, downloadInfos);
-            }
+                return getDownloadsFromServer(customerId, techId, category);
         } catch(Exception e){
             throw new PhrescoException(e);
         }
-        
-        return downloadInfos;
     }
     
     private List<DownloadInfo> getDownloadsFromServer(String customerId) throws PhrescoException {
