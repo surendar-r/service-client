@@ -31,6 +31,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.photon.phresco.exception.PhrescoException;
+import com.photon.phresco.util.Constants;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.GenericType;
@@ -46,7 +47,8 @@ public class RestClient<E> {
 	private static Boolean isDebugEnabled = S_LOGGER.isDebugEnabled();
 	private WebResource resource = null;
 	private Builder builder = null;
-	private String path = null;
+	private String path = "";
+	private String header = ""; 
 	private static final Map<String, String> HEADER = new HashMap<String, String>();
 
 	public RestClient(String serverUrl) {
@@ -151,10 +153,12 @@ public class RestClient<E> {
 	    if (isDebugEnabled) {
 	        S_LOGGER.debug("Entered into RestClient.get(GenericType<List<E>> genericType, String accept, String type)");
 	    }
-		
 		updateBuilder();
 		builder = builder.accept(accept).type(type);
-		return builder.get(genericType);
+		ClientResponse clientResponse = builder.get(ClientResponse.class);
+		MultivaluedMap<String, String> headers = clientResponse.getHeaders();
+		header = headers.getFirst(Constants.ARTIFACT_COUNT_RESULT);
+		return clientResponse.getEntity(genericType);
 	}
 	
 	/**
@@ -347,7 +351,6 @@ public class RestClient<E> {
 	    if (isDebugEnabled) {
 	        S_LOGGER.debug("Entered into RestClient.updateById(E obj, GenericType<E> genericType, String accept, String type)");
 	    }
-		
 		updateBuilder();
 		builder = builder.accept(accept).type(type);
 		ClientResponse clientResponse = builder.put(ClientResponse.class, obj);
@@ -417,5 +420,9 @@ public class RestClient<E> {
 		updateBuilder();
 		ClientResponse response = builder.type(type).get(ClientResponse.class);
 		return response;
+	}
+	
+	public String getHeader() {
+		return header;
 	}
 }
