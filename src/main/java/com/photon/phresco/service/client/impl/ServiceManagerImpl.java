@@ -59,6 +59,7 @@ import com.photon.phresco.service.client.api.ServiceManager;
 import com.photon.phresco.util.Constants;
 import com.photon.phresco.util.Credentials;
 import com.photon.phresco.util.ServiceConstants;
+import com.phresco.pom.site.Reports;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.GenericType;
@@ -1294,6 +1295,19 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         }
     }
     
+    @Override
+    public List<Reports> getReports(String techId) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getDownloadInfo(List<DownloadInfo> downloadInfo)");
+        }
+        
+        try {
+        	return getReportsFromServer(techId);
+        } catch(Exception e){
+            throw new PhrescoException(e);
+        }
+    }
+    
     private List<DownloadInfo> getDownloadsFromServer(String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getDownloadsFromServer(String customerId)");
@@ -1321,6 +1335,17 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         
         return downloadClient.get(genericType);
     }
+    
+    private List<Reports> getReportsFromServer(String techId) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getReportsFromServer(String techId)");
+        }
+        RestClient<Reports> downloadClient = getRestClient(REST_API_COMPONENT + REST_API_REPORTS);
+        downloadClient.queryString(REST_QUERY_TECHID, techId);
+        GenericType<List<Reports>> genericType = new GenericType<List<Reports>>(){};
+        return downloadClient.get(genericType);
+    }
+    
 
     @Override
     public DownloadInfo getDownload(String downloadId, String customerId) throws PhrescoException {

@@ -44,6 +44,7 @@ import com.photon.phresco.commons.model.WebService;
 import com.photon.phresco.configuration.Environment;
 import com.photon.phresco.exception.PhrescoException;
 import com.photon.phresco.service.client.impl.RestClient;
+import com.phresco.pom.site.Reports;
 import com.sun.jersey.api.client.ClientResponse;
 
 /**
@@ -607,4 +608,6 @@ public interface ServiceManager {
 	List<PlatformType> getPlatforms() throws PhrescoException;
 
 	List<TechnologyOptions> getOptions() throws PhrescoException;
+	
+	List<Reports> getReports(String techId) throws PhrescoException;
 }
