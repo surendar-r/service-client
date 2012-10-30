@@ -38,6 +38,7 @@ import com.photon.phresco.commons.model.ApplicationType;
 import com.photon.phresco.commons.model.ArtifactGroup;
 import com.photon.phresco.commons.model.Customer;
 import com.photon.phresco.commons.model.DownloadInfo;
+import com.photon.phresco.commons.model.License;
 import com.photon.phresco.commons.model.LogInfo;
 import com.photon.phresco.commons.model.Permission;
 import com.photon.phresco.commons.model.PlatformType;
@@ -1463,15 +1464,14 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getGlobalUrlFromServer(String customerId)");
         }
-    	
-    	RestClient<Property> globalUrlClient = getRestClient(REST_API_ADMIN + REST_API_GLOBALURL);
+    	RestClient<Property> globalUrlClient = getRestClient(REST_API_COMPONENT + REST_API_PROPERTY);
 		GenericType<List<Property>> genericType = new GenericType<List<Property>>(){};
 		
 		return globalUrlClient.get(genericType);
     }
 
     @Override
-    public List<Property> getGlobalUrls(String customerId) throws PhrescoException {
+    public List<Property> getGlobalUrls() throws PhrescoException {
     	if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getGlobalUrls(List<GlobalURL> globalUrl)");
         }
@@ -1491,7 +1491,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public Property getGlobalUrl(String globalUrlId, String customerId) throws PhrescoException {
+    public Property getGlobalUrl(String globalUrlId) throws PhrescoException {
     	if(isDebugEnabled){
     		S_LOGGER.debug("Entered into ServiceManagerImpl.getGlobalUrl(String globalUrlId, String customerId)");
     	}
@@ -1514,12 +1514,12 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public ClientResponse createGlobalUrl(List<Property> globalUrl, String customerId) throws PhrescoException {
+    public ClientResponse createGlobalUrl(List<Property> globalUrl) throws PhrescoException {
     	if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.createGlobalUrl(List<GlobalURL> globalUrl)");
         }
     	
-    	RestClient<Property> globalClient = getRestClient(REST_API_ADMIN + REST_API_GLOBALURL);
+    	RestClient<Property> globalClient = getRestClient(REST_API_COMPONENT + REST_API_PROPERTY);
     	ClientResponse response = globalClient.create(globalUrl);
     	CacheKey key = new CacheKey(Property.class.getName());
     	cacheManager.add(key, getGlobalUrlFromServer());
@@ -1528,26 +1528,27 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public void updateGlobalUrl(Property globalUrl, String globalurlId, String customerId) throws PhrescoException {
+    public void updateGlobalUrl(Property globalUrl, String globalurlId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.updateGlobalUrl(GlobalURL globalUrl, String globalurlId, String customerId)");
         }
-    	
-    	RestClient<Property> editGlobalUrl = getRestClient(REST_API_COMPONENT + REST_API_GLOBALURL);
+    	System.out.println("In Client................. " + globalurlId);
+    	RestClient<Property> editGlobalUrl = getRestClient(REST_API_COMPONENT + REST_API_PROPERTY);
     	editGlobalUrl.setPath(globalurlId);
 		GenericType<Property> genericType = new GenericType<Property>() {};
 		editGlobalUrl.updateById(globalUrl, genericType);
-		CacheKey key = new CacheKey(customerId, Property.class.getName());
+		System.out.println("Afetr Completed....................");
+		CacheKey key = new CacheKey(Property.class.getName());
 		cacheManager.add(key, getGlobalUrlFromServer());
     }
     
     @Override
-    public ClientResponse deleteGlobalUrl(String globalurlId, String customerId) throws PhrescoException {
+    public ClientResponse deleteGlobalUrl(String globalurlId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.deleteglobalUrl(String globalurlId, String customerId)");
         }
 
-        RestClient<Property> globalUrlClient = getRestClient(REST_API_ADMIN + REST_API_GLOBALURL);
+        RestClient<Property> globalUrlClient = getRestClient(REST_API_COMPONENT + REST_API_PROPERTY);
         globalUrlClient.setPath(globalurlId);
         ClientResponse response = globalUrlClient.deleteById();
         CacheKey key = new CacheKey(Property.class.getName());
@@ -1767,5 +1768,12 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		List<TechnologyOptions> options = client.get(genericType);
 		
 		return options;
+	}
+
+	@Override
+	public List<License> getLicenses() throws PhrescoException {
+		RestClient<License> restClient = getRestClient(REST_API_COMPONENT + REST_API_LICENSE);
+		GenericType<List<License>> genericType = new GenericType<List<License>>(){};
+		return restClient.get(genericType);
 	}
 }

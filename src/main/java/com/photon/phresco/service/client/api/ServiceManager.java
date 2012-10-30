@@ -29,6 +29,7 @@ import com.photon.phresco.commons.model.ApplicationType;
 import com.photon.phresco.commons.model.ArtifactGroup;
 import com.photon.phresco.commons.model.Customer;
 import com.photon.phresco.commons.model.DownloadInfo;
+import com.photon.phresco.commons.model.License;
 import com.photon.phresco.commons.model.LogInfo;
 import com.photon.phresco.commons.model.Permission;
 import com.photon.phresco.commons.model.PlatformType;
@@ -570,15 +571,15 @@ public interface ServiceManager {
 	
 	Environment getDefaultEnvFromServer() throws PhrescoException;
 	
-	List<Property> getGlobalUrls(String customerId) throws PhrescoException;
+	List<Property> getGlobalUrls() throws PhrescoException;
 	
-	Property getGlobalUrl(String globalUrlId, String customerId) throws PhrescoException;
+	Property getGlobalUrl(String globalUrlId) throws PhrescoException;
 	
-	ClientResponse createGlobalUrl(List<Property> globalUrl, String customerId) throws PhrescoException;
+	ClientResponse createGlobalUrl(List<Property> globalUrl) throws PhrescoException;
 	
-	ClientResponse deleteGlobalUrl(String globalurlId, String customerId) throws PhrescoException;
+	ClientResponse deleteGlobalUrl(String globalurlId) throws PhrescoException;
 	
-	void updateGlobalUrl(Property globalUrl, String globalurlId, String customerId) throws PhrescoException;
+	void updateGlobalUrl(Property globalUrl, String globalurlId) throws PhrescoException;
 	
 	List<Permission> getPermissions() throws PhrescoException;
 	
@@ -610,4 +611,6 @@ public interface ServiceManager {
 	List<TechnologyOptions> getOptions() throws PhrescoException;
 	
 	List<Reports> getReports(String techId) throws PhrescoException;
+
+	List<License> getLicenses() throws PhrescoException;
 }
