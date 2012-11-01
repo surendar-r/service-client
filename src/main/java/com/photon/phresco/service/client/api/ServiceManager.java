@@ -611,6 +611,8 @@ public interface ServiceManager {
 	List<TechnologyOptions> getOptions() throws PhrescoException;
 	
 	List<Reports> getReports(String techId) throws PhrescoException;
+	
+	List<Reports> getReports() throws PhrescoException;
 
 	List<License> getLicenses() throws PhrescoException;
 }

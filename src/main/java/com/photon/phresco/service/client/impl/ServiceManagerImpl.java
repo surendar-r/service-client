@@ -20,7 +20,6 @@
 package com.photon.phresco.service.client.impl;
 
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -1302,11 +1301,28 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             S_LOGGER.debug("Entered into ServiceManagerImpl.getDownloadInfo(List<DownloadInfo> downloadInfo)");
         }
         
-        try {
-        	return getReportsFromServer(techId);
-        } catch(Exception e){
-            throw new PhrescoException(e);
+    	CacheKey key = new CacheKey(techId, Reports.class.getName());
+        List<Reports> reports = (List<Reports>) cacheManager.get(key);
+        if (CollectionUtils.isEmpty(reports)) {
+        	reports = getTechReportsFromServer(techId);
         }
+        
+        return reports;
+    }
+    
+    @Override
+    public List<Reports> getReports() throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getDownloadInfo(List<DownloadInfo> downloadInfo)");
+        }
+        
+        CacheKey key = new CacheKey(Reports.class.getName());
+        List<Reports> reports = (List<Reports>) cacheManager.get(key);
+        if (CollectionUtils.isEmpty(reports)) {
+        	reports = getReportsFromServer();
+        }
+        
+        return reports;
     }
     
     private List<DownloadInfo> getDownloadsFromServer(String customerId) throws PhrescoException {
@@ -1337,7 +1353,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         return downloadClient.get(genericType);
     }
     
-    private List<Reports> getReportsFromServer(String techId) throws PhrescoException {
+    private List<Reports> getTechReportsFromServer(String techId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getReportsFromServer(String techId)");
         }
@@ -1347,6 +1363,14 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         return downloadClient.get(genericType);
     }
     
+    private List<Reports> getReportsFromServer() throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getReportsFromServer(String techId)");
+        }
+        RestClient<Reports> downloadClient = getRestClient(REST_API_COMPONENT + REST_API_REPORTS);
+        GenericType<List<Reports>> genericType = new GenericType<List<Reports>>(){};
+        return downloadClient.get(genericType);
+    }
 
     @Override
     public DownloadInfo getDownload(String downloadId, String customerId) throws PhrescoException {
