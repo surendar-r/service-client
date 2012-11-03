@@ -949,10 +949,6 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getPilotProjectFromServer(String customerId)");
         }
-        
-        System.out.println("................getPilotProjectsFromServer................");
-        System.out.println("customerId:::" + customerId + "::techId::" + techId);
-        System.out.println("..................................................");
         RestClient<ApplicationInfo> pilotClient = getRestClient(REST_API_COMPONENT + REST_API_PILOTS);
         Map<String, String> headers = new HashMap<String, String>();
         headers.put(REST_QUERY_CUSTOMERID, customerId);
@@ -988,10 +984,6 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getPilotProjects(String customerId)" + customerId);
         }
-        
-        System.out.println("................getPilotProjects................");
-        System.out.println("customerId:::" + customerId + "::techId::" + techId);
-        System.out.println("..................................................");
         CacheKey key = new CacheKey(customerId, ProjectInfo.class.getName(), techId);
         List<ApplicationInfo> pilotProjects = (List<ApplicationInfo>) cacheManager.get(key);
         try {
