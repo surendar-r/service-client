@@ -249,7 +249,7 @@ public interface ServiceManager {
 	 * @return ClientResponse
 	 * @throws PhrescoException
 	 */
-	ClientResponse createFeatures(ArtifactGroup moduleGroup, List<InputStream> inputStreams, String customerId) throws PhrescoException, IOException;
+	ClientResponse createFeatures(ArtifactGroup moduleGroup, Map<String, InputStream> inputStreamMap, String customerId) throws PhrescoException, IOException;
 	
 	/**
 	 * To update the details of the given feature

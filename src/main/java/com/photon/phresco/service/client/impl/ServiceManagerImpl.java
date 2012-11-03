@@ -607,12 +607,12 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
      */
     @Override
     public ClientResponse createFeatures(ArtifactGroup moduleGroup,
-                List<InputStream> inputStreams, String customerId) throws PhrescoException {
+    		Map<String, InputStream> inputStreamMap, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.createFeatures(ArtifactGroup moduleGroup, InputStream inputStream, String customerId)");
         }
         
-        MultiPart multiPart = createMultiPart(moduleGroup, inputStreams, moduleGroup.getName());
+        MultiPart multiPart = createMultiPart1(moduleGroup, inputStreamMap, moduleGroup.getName());
         RestClient<ArtifactGroup> moduleClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
         ClientResponse response = moduleClient.create(multiPart);
 

@@ -7,7 +7,7 @@ import com.sun.jersey.core.header.ContentDisposition;
 public class Content extends ContentDisposition {
 	
 	public enum Type {
-		JSON, ARCHETYPE, JAR, ZIP
+		JSON, ARCHETYPE, JAR, ZIP, FEATURE, ICON
 	}
 
     public Content(Type type, String fileName, Date creationDate,
