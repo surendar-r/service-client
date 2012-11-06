@@ -78,21 +78,21 @@ public class ComponentRestPilotTest extends BaseRestTest {
 		pilotInfo.setName("phpblog");
 		appInfo.setPilotInfo(pilotInfo);
 		
-		List<String> list = new ArrayList<String>();
-		list.add("mysql");
-		appInfo.setSelectedDatabases(list);
+//		List<String> list = new ArrayList<String>();
+//		list.add("mysql");
+//		appInfo.setSelectedDatabases(list);
 		
-		list = new ArrayList<String>();
-		list.add("jsscroll");
-		appInfo.setSelectedJSLibs(list);
-		
-		list = new ArrayList<String>();
-		list.add("mod_Blog");
-		appInfo.setSelectedModules(list);
-		
-		list = new ArrayList<String>();
-		list.add("tomcat");
-		appInfo.setSelectedServers(list);
+//		list = new ArrayList<String>();
+//		list.add("jsscroll");
+//		appInfo.setSelectedJSLibs(list);
+//		
+//		list = new ArrayList<String>();
+//		list.add("mod_Blog");
+//		appInfo.setSelectedModules(list);
+//		
+//		list = new ArrayList<String>();
+//		list.add("tomcat");
+//		appInfo.setSelectedServers(list);
 		
 		TechnologyInfo techInfo = new TechnologyInfo();
 		techInfo.setAppTypeId("web-app");
