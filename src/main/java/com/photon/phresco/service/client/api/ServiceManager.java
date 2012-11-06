@@ -259,7 +259,7 @@ public interface ServiceManager {
 	 * @return ClientResponse
 	 * @throws PhrescoException
 	 */
-	ClientResponse updateFeature(ArtifactGroup moduleGroup, List<InputStream> inputStreams, String customerId) throws PhrescoException, IOException;
+	ClientResponse updateFeature(ArtifactGroup moduleGroup, Map<String, InputStream> inputStreamMap, String customerId) throws PhrescoException, IOException;
 	
 	/**
 	 * To delete the given feature
@@ -399,7 +399,7 @@ public interface ServiceManager {
 	 * @return ClientResponse
 	 * @throws PhrescoException
 	 */
-	ClientResponse createPilotProjects(ApplicationInfo pilotProj, List<InputStream> inputStreams, String customerId) throws PhrescoException;
+	ClientResponse createPilotProjects(ApplicationInfo pilotProj, Map<String, InputStream> inputStreamMap, String customerId) throws PhrescoException;
 	
 	/**
 	 * To update the details of the given pilot project
@@ -408,7 +408,7 @@ public interface ServiceManager {
 	 * @param customerId
 	 * @throws PhrescoException
 	 */
-	void updatePilotProject(ApplicationInfo pilotProj, List<InputStream> inputStreams, String projectId, String customerId) throws PhrescoException;
+	void updatePilotProject(ApplicationInfo pilotProj, Map<String, InputStream> inputStreamMap, String projectId, String customerId) throws PhrescoException;
 	
 	/**
 	 * To delete the given pilot project
@@ -464,7 +464,7 @@ public interface ServiceManager {
 	 * @return ClientResponse
 	 * @throws PhrescoException
 	 */
-	ClientResponse createVideos(VideoInfo videoInfo, List<InputStream> inputStreams) throws PhrescoException;
+	ClientResponse createVideos(VideoInfo videoInfo, Map<String, InputStream> inputStreamMap) throws PhrescoException;
 	
 	/**
 	 * To update the  video
@@ -473,7 +473,7 @@ public interface ServiceManager {
 	 * @return 
 	 * @throws PhrescoException
 	 */
-	void updateVideo(VideoInfo videoInfo,List<InputStream> inputStreams, String videoId) throws PhrescoException;
+	void updateVideo(VideoInfo videoInfo, Map<String, InputStream> inputStreamMap, String videoId) throws PhrescoException;
 	
 	/**
 	 * To delete the given video
@@ -531,7 +531,7 @@ public interface ServiceManager {
 	 * @return ClientResponse
 	 * @throws PhrescoException
 	 */
-	ClientResponse createDownloads(DownloadInfo downloadInfo, List<InputStream> inputStreams, String customerId) throws PhrescoException;
+	ClientResponse createDownloads(DownloadInfo downloadInfo, Map<String, InputStream> inputStreamMap, String customerId) throws PhrescoException;
 	
 	/**
 	 * To update the details of the given download
@@ -540,7 +540,7 @@ public interface ServiceManager {
 	 * @param customerId
 	 * @throws PhrescoException
 	 */
-	void updateDownload(DownloadInfo downloadInfo, List<InputStream> inputStreams, String customerId) throws PhrescoException;
+	void updateDownload(DownloadInfo downloadInfo, Map<String, InputStream> inputStreamMap, String customerId) throws PhrescoException;
 	
 	/**
 	 * To delete the given download info

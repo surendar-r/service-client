@@ -251,7 +251,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             S_LOGGER.debug("Entered into ServiceManagerImpl.createArcheTypes(List<Technology> archeTypes, String customerId)");
         }
         
-        MultiPart multiPart = createMultiPart1(technology, inputStreamMap, technology.getName());
+        MultiPart multiPart = createMultiPart(technology, inputStreamMap, technology.getName());
     	RestClient<Technology> newApp = getRestClient(REST_API_COMPONENT + REST_API_TECHNOLOGIES);
 		ClientResponse clientResponse = newApp.create(multiPart);
 		CacheKey key = new CacheKey(customerId, Technology.class.getName());
@@ -266,7 +266,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             S_LOGGER.debug("Entered into ServiceManagerImpl.updateArcheTypes(Technology technology, InputStream inputStream, String customerId)");
         }
     	
-        MultiPart multiPart = createMultiPart1(technology, inputStreamMap, technology.getName());
+        MultiPart multiPart = createMultiPart(technology, inputStreamMap, technology.getName());
     	RestClient<Technology> editArchetype = getRestClient(REST_API_COMPONENT + REST_API_TECHNOLOGIES);
     	ClientResponse clientResponse = editArchetype.update(multiPart);
 		CacheKey key = new CacheKey(customerId, Technology.class.getName());
@@ -612,7 +612,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             S_LOGGER.debug("Entered into ServiceManagerImpl.createFeatures(ArtifactGroup moduleGroup, InputStream inputStream, String customerId)");
         }
         
-        MultiPart multiPart = createMultiPart1(moduleGroup, inputStreamMap, moduleGroup.getName());
+        MultiPart multiPart = createMultiPart(moduleGroup, inputStreamMap, moduleGroup.getName());
         RestClient<ArtifactGroup> moduleClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
         ClientResponse response = moduleClient.create(multiPart);
 
@@ -638,12 +638,12 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
      * @throws PhrescoException
      */
     @Override
-    public ClientResponse updateFeature(ArtifactGroup moduleGroup, List<InputStream> inputStreams, String customerId) throws PhrescoException {
+    public ClientResponse updateFeature(ArtifactGroup moduleGroup, Map<String, InputStream> inputStreamMap, String customerId) throws PhrescoException {
     	if (isDebugEnabled) {
     		S_LOGGER.debug("Entered into ServiceManagerImpl.updateFeature(ArtifactGroup moduleGroup, InputStream inputStream, String customerId)");
     	}
     	
-    	MultiPart multiPart = createMultiPart(moduleGroup, inputStreams, moduleGroup.getName());
+    	MultiPart multiPart = createMultiPart(moduleGroup, inputStreamMap, moduleGroup.getName());
     	RestClient<ArtifactGroup> moduleClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
      	moduleClient.setPath(moduleGroup.getId());
  		ClientResponse response = moduleClient.update(multiPart);
@@ -662,21 +662,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
      * @return
      * @throws PhrescoException
      */
-    private MultiPart createMultiPart(Object object, List<InputStream> inputStreams, String name) throws PhrescoException {
-    	MultiPart multiPart = new MultiPart();
-    	BodyPart jsonBodyPart = createJSONBodyPart(Content.Type.JSON, name, object);
-    	multiPart.bodyPart(jsonBodyPart);
-    	if (CollectionUtils.isNotEmpty(inputStreams)) {
-    		for (InputStream inputStream : inputStreams) {
-    			BodyPart binaryBodyPart = createBinaryBodyPart(Content.Type.ARCHETYPE, name, inputStream);
-    			multiPart.bodyPart(binaryBodyPart);
-    		}
-    	}
-
-    	return multiPart;
-    }
-    
-    private MultiPart createMultiPart1(Object object, Map<String, InputStream> inputStreamMap, String name) throws PhrescoException {
+    private MultiPart createMultiPart(Object object, Map<String, InputStream> inputStreamMap, String name) throws PhrescoException {
     	MultiPart multiPart = new MultiPart();
     	BodyPart jsonBodyPart = createJSONBodyPart(Content.Type.JSON, name, object);
     	multiPart.bodyPart(jsonBodyPart);
@@ -965,7 +951,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             S_LOGGER.debug("Entered into ServiceManagerImpl.getPilotProjects(String customerId)" + customerId);
         }
         
-        CacheKey key = new CacheKey(customerId, ProjectInfo.class.getName());
+        CacheKey key = new CacheKey(customerId, ApplicationInfo.class.getName());
         List<ApplicationInfo> pilotProjects = (List<ApplicationInfo>) cacheManager.get(key);
         try {	
     		if (CollectionUtils.isEmpty(pilotProjects)) {
@@ -984,7 +970,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getPilotProjects(String customerId)" + customerId);
         }
-        CacheKey key = new CacheKey(customerId, ProjectInfo.class.getName(), techId);
+        CacheKey key = new CacheKey(customerId, ApplicationInfo.class.getName(), techId);
         List<ApplicationInfo> pilotProjects = (List<ApplicationInfo>) cacheManager.get(key);
         try {
             if (CollectionUtils.isEmpty(pilotProjects)) {
@@ -1022,29 +1008,30 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public ClientResponse createPilotProjects(ApplicationInfo pilotProjInfo, List<InputStream> inputStreams, String customerId) throws PhrescoException {
+    public ClientResponse createPilotProjects(ApplicationInfo pilotProjInfo, Map<String, InputStream> inputStreamMap, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.createPilotProjects(List<ProjectInfo> proInfo, String customerId)");
         }
         
-        MultiPart multiPart = createMultiPart(pilotProjInfo, inputStreams, pilotProjInfo.getName());
+        MultiPart multiPart = createMultiPart(pilotProjInfo, inputStreamMap, pilotProjInfo.getName());
         RestClient<ProjectInfo> pilotClient = getRestClient(REST_API_COMPONENT + REST_API_PILOTS);
         ClientResponse response = pilotClient.create(multiPart);
-        CacheKey key = new CacheKey(customerId, ProjectInfo.class.getName());
+        CacheKey key = new CacheKey(customerId, ApplicationInfo.class.getName());
         cacheManager.add(key, getPilotProjectsFromServer(customerId));
         
         return response;
     }
     
     @Override
-    public void updatePilotProject(ApplicationInfo pilotProjInfo, List<InputStream> inputStreams, String projectId, String customerId) throws PhrescoException {
+    public void updatePilotProject(ApplicationInfo pilotProjInfo, Map<String, InputStream> inputStreamMap, String projectId, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.updatePilotProject(ProjectInfo projectInfo, String projectId)" + projectId);
         }
-        MultiPart multiPart = createMultiPart(pilotProjInfo, inputStreams, pilotProjInfo.getName());
+       
+        MultiPart multiPart = createMultiPart(pilotProjInfo, inputStreamMap, pilotProjInfo.getName());
         RestClient<ApplicationInfo> pilotproClient = getRestClient(REST_API_COMPONENT + REST_API_PILOTS);
         pilotproClient.update(multiPart);
-        CacheKey key = new CacheKey(customerId, ProjectInfo.class.getName());
+        CacheKey key = new CacheKey(customerId, ApplicationInfo.class.getName());
         cacheManager.add(key, getPilotProjectsFromServer(customerId));
     }
     
@@ -1057,7 +1044,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         RestClient<ProjectInfo> pilotproClient = getRestClient(REST_API_COMPONENT + REST_API_PILOTS);
         pilotproClient.setPath(projectId);
         ClientResponse response = pilotproClient.deleteById();
-        CacheKey key = new CacheKey(customerId, ProjectInfo.class.getName());
+        CacheKey key = new CacheKey(customerId, ApplicationInfo.class.getName());
         cacheManager.add(key, getPilotProjectsFromServer(customerId));
         
         return response;
@@ -1216,11 +1203,11 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public ClientResponse createVideos(VideoInfo videoInfo, List<InputStream> inputStreams) throws PhrescoException {
+    public ClientResponse createVideos(VideoInfo videoInfo, Map<String, InputStream> inputStreamMap) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.createVideos(VideoInfo videoInfo, InputStream videoIs, InputStream imgIs)");
         }
-        MultiPart multiPart = createMultiPart(videoInfo, inputStreams, videoInfo.getName());
+        MultiPart multiPart = createMultiPart(videoInfo, inputStreamMap, videoInfo.getName());
         RestClient<VideoInfo> videoInfoClient = getRestClient(REST_API_ADMIN + REST_API_VIDEOS);
         ClientResponse response = videoInfoClient.create(multiPart);
         CacheKey key = new CacheKey(VideoInfo.class.getName());
@@ -1229,12 +1216,12 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public void updateVideo(VideoInfo videoInfo,List<InputStream> inputStreams, String id) throws PhrescoException {
+    public void updateVideo(VideoInfo videoInfo,Map<String, InputStream> inputStreamMap, String id) throws PhrescoException {
     	if (isDebugEnabled) {
     		S_LOGGER.debug("Entered into ServiceManagerImpl.updateVideo(VideoInfo createVideoInstance,List<InputStream> inputStreams, String id)" + id);
     	}
     	
-    	MultiPart multiPart = createMultiPart(videoInfo, inputStreams, videoInfo.getName());
+    	MultiPart multiPart = createMultiPart(videoInfo, inputStreamMap, videoInfo.getName());
     	RestClient<VideoInfo> videoInfoClient = getRestClient(REST_API_ADMIN + REST_API_VIDEOS);
     	videoInfoClient.update(multiPart);
     	CacheKey key = new CacheKey(VideoInfo.class.getName());
@@ -1388,12 +1375,12 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public ClientResponse createDownloads(DownloadInfo downloadInfo, List<InputStream> inputStreams, String customerId) throws PhrescoException {
+    public ClientResponse createDownloads(DownloadInfo downloadInfo, Map<String, InputStream> inputStreamMap, String customerId) throws PhrescoException {
     	if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.createDownloadInfo(List<DownloadInfo> downloadInfo)");
         }
     	
-    	MultiPart multiPart = createMultiPart(downloadInfo, inputStreams, downloadInfo.getName());
+    	MultiPart multiPart = createMultiPart(downloadInfo, inputStreamMap, downloadInfo.getName());
     	RestClient<DownloadInfo> downloadClient = getRestClient(REST_API_COMPONENT + REST_API_DOWNLOADS);
     	ClientResponse response = downloadClient.create(multiPart);
     	CacheKey key = new CacheKey(customerId, DownloadInfo.class.getName());
@@ -1403,12 +1390,12 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
 
     @Override
-    public void updateDownload(DownloadInfo downloadInfo, List<InputStream> inputStreams, String customerId) throws PhrescoException {
+    public void updateDownload(DownloadInfo downloadInfo, Map<String, InputStream> inputStreamMap, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.updateDownload(DownloadInfo downloadInfo, String downloadId)");
         }
         
-        MultiPart multiPart = createMultiPart(downloadInfo, inputStreams, downloadInfo.getName());
+        MultiPart multiPart = createMultiPart(downloadInfo, inputStreamMap, downloadInfo.getName());
         RestClient<DownloadInfo> downloadClient = getRestClient(REST_API_COMPONENT + REST_API_DOWNLOADS);
         downloadClient.update(multiPart);
         CacheKey key = new CacheKey(customerId, DownloadInfo.class.getName());
