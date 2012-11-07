@@ -757,27 +757,32 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         return customers;
     }
     
+    private Customer getCustomerFromServer(String customerId) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getCustomerFromServer(String customerId)");
+        }
+        
+        RestClient<Customer> customersClient = getRestClient(REST_API_ADMIN + REST_API_CUSTOMERS);
+        customersClient.setPath(customerId);
+        GenericType<Customer> genericType = new GenericType<Customer>(){};
+        
+        return customersClient.getById(genericType);
+    }
+    
     @Override
     public Customer getCustomer(String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getCustomer(String customerId)" + customerId);
         }
         
-        CacheKey key = new CacheKey(Customer.class.getName());
-        List<Customer> customers = (List<Customer>) cacheManager.get(key);
-        if (CollectionUtils.isEmpty(customers)) {
-        	customers = getCustomersFromServer();
-        	cacheManager.add(key, customers);
+        CacheKey key = new CacheKey(customerId, Customer.class.getName());
+        Customer customer = (Customer) cacheManager.get(key);
+        if (customer == null) {
+        	customer = getCustomerFromServer(customerId);
+        	cacheManager.add(key, customer);
         }
-        if (CollectionUtils.isNotEmpty(customers)) {
-        	for (Customer customer : customers) {
-				if (customer.getId().equals(customerId)) {
-					return customer;
-				}
-			}
-        }
-        
-        return null;
+
+        return customer;
     }
     
     @Override
