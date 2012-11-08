@@ -418,8 +418,7 @@ public class RestClient<E> {
 	
 	public ClientResponse get(String type) {
 		updateBuilder();
-		ClientResponse response = builder.type(type).get(ClientResponse.class);
-		return response;
+		return builder.type(type).get(ClientResponse.class);
 	}
 	
 	public String getHeader() {

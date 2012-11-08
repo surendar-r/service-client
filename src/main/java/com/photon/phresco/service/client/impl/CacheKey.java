@@ -42,28 +42,37 @@ public class CacheKey implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         CacheKey other = (CacheKey) obj;
         if (api == null) {
-            if (other.api != null)
+            if (other.api != null) {
                 return false;
-        } else if (!api.equals(other.api))
+            }
+        } else if (!api.equals(other.api)) {
             return false;
+        }
         if (custId == null) {
-            if (other.custId != null)
+            if (other.custId != null) {
                 return false;
-        } else if (!custId.equals(other.custId))
+            }
+        } else if (!custId.equals(other.custId)) {
             return false;
+        }
         if (id == null) {
-            if (other.id != null)
+            if (other.id != null) {
                 return false;
-        } else if (!id.equals(other.id))
+            }
+        } else if (!id.equals(other.id)) {
             return false;
+        }
         return true;
     }
 

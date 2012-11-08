@@ -81,6 +81,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     private static User userInfo = null;
     private String apiKey = null;
     
+    private static String debugMsg = "Entered into ServiceManagerImpl.getDownloadInfo(List<DownloadInfo> downloadInfo)";
     private static final String CACHE_MODULES_KEY = "modules";
 
 	public ServiceManagerImpl(String serverPath) throws PhrescoException {
@@ -130,14 +131,14 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		this.serverPath = (String) context.get(SERVICE_URL);
     	String password = (String) context.get(SERVICE_PASSWORD);
 		String username = (String) context.get(SERVICE_USERNAME);
-		String apiKey = (String) context.get(SERVICE_API_KEY);
+		String apiServiceKey = (String) context.get(SERVICE_API_KEY);
 		
-		this.apiKey = apiKey;
+		this.apiKey = apiServiceKey;
 		
-		doLogin(username, password, apiKey);
+		doLogin(username, password, apiServiceKey);
 	}
 	
-    private void doLogin(String username, String password, String apiKey) throws PhrescoException {
+    private void doLogin(String username, String password, String apiServiceKey) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.doLogin(String username, String password)");
         }
@@ -151,8 +152,8 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         WebResource resource = client.resource(serverPath + "/" + LOGIN);
 
         Builder builder = resource.accept(MediaType.APPLICATION_JSON);
-        if (apiKey != null) {
-        	builder = builder.header(HEADER_NAME_AUTHORIZATION, apiKey);	
+        if (apiServiceKey != null) {
+        	builder = builder.header(HEADER_NAME_AUTHORIZATION, apiServiceKey);	
         }
         
         ClientResponse response = builder.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, credentials);
@@ -1269,7 +1270,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     @Override
     public List<DownloadInfo> getDownloads(String customerId, String techId, String category) throws PhrescoException {
         if (isDebugEnabled) {
-            S_LOGGER.debug("Entered into ServiceManagerImpl.getDownloadInfo(List<DownloadInfo> downloadInfo)");
+            S_LOGGER.debug(debugMsg);
         }
         
         try {
@@ -1282,7 +1283,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     @Override
     public List<Reports> getReports(String techId) throws PhrescoException {
         if (isDebugEnabled) {
-            S_LOGGER.debug("Entered into ServiceManagerImpl.getDownloadInfo(List<DownloadInfo> downloadInfo)");
+            S_LOGGER.debug(debugMsg);
         }
         
     	CacheKey key = new CacheKey(techId, Reports.class.getName());
@@ -1297,7 +1298,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     @Override
     public List<Reports> getReports() throws PhrescoException {
         if (isDebugEnabled) {
-            S_LOGGER.debug("Entered into ServiceManagerImpl.getDownloadInfo(List<DownloadInfo> downloadInfo)");
+            S_LOGGER.debug(debugMsg);
         }
         
         CacheKey key = new CacheKey(Reports.class.getName());
@@ -1540,12 +1541,10 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.updateGlobalUrl(GlobalURL globalUrl, String globalurlId, String customerId)");
         }
-    	System.out.println("In Client................. " + globalurlId);
     	RestClient<Property> editGlobalUrl = getRestClient(REST_API_COMPONENT + REST_API_PROPERTY);
     	editGlobalUrl.setPath(globalurlId);
 		GenericType<Property> genericType = new GenericType<Property>() {};
 		editGlobalUrl.updateById(globalUrl, genericType);
-		System.out.println("Afetr Completed....................");
 		CacheKey key = new CacheKey(Property.class.getName());
 		cacheManager.add(key, getGlobalUrlFromServer());
     }
