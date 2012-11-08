@@ -645,7 +645,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	
     	MultiPart multiPart = createMultiPart(moduleGroup, inputStreamMap, moduleGroup.getName());
     	RestClient<ArtifactGroup> moduleClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
-     	moduleClient.setPath(moduleGroup.getId());
+//     	moduleClient.setPath(moduleGroup.getId());
  		ClientResponse response = moduleClient.update(multiPart);
         // TODO:Lohes
 // 		CacheKey key = new CacheKey(customerId, CACHE_FEATURES_KEY);
