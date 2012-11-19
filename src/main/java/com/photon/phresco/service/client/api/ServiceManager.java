@@ -525,6 +525,17 @@ public interface ServiceManager {
 	DownloadInfo getDownload(String id, String customerId) throws PhrescoException;
 	
 	/**
+	 * To get the download info for the given id
+	 * @param id
+	 * @return
+	 * @throws PhrescoException
+	 */
+	DownloadInfo getDownloadInfo(String id) throws PhrescoException;
+	
+	
+	ArtifactGroup getArtifactGroupInfo(String id) throws PhrescoException;
+	
+	/**
 	 * To create download for the given customer
 	 * @param multiPart
 	 * @param customerId

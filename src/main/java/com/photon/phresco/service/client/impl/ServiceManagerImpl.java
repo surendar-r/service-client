@@ -1420,6 +1420,63 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 
         return response;
     }
+    
+    private DownloadInfo getDownloadFromServer(String id) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getDownloadFromServer(String customerId)");
+        }
+        
+        RestClient<DownloadInfo> downloadClient = getRestClient(REST_API_COMPONENT + REST_API_DOWNLOADS);
+        downloadClient.setPath(id);
+        GenericType<DownloadInfo> genericType = new GenericType<DownloadInfo>(){};
+        
+        return downloadClient.getById(genericType);
+    }
+    
+    @Override
+    public DownloadInfo getDownloadInfo(String id) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getDownload(String id)" + id);
+        }
+        
+        CacheKey key = new CacheKey(id, DownloadInfo.class.getName());
+        DownloadInfo download = (DownloadInfo) cacheManager.get(key);
+        if (download == null) {
+        	download = getDownloadFromServer(id);
+        	cacheManager.add(key, download);
+        }
+
+        return download;
+    }
+    
+    private ArtifactGroup getArtifactGroupFromServer(String id) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getArtifactGroupFromServer(String id)");
+        }
+        
+        RestClient<ArtifactGroup> downloadClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
+        downloadClient.setPath(id);
+        GenericType<ArtifactGroup> genericType = new GenericType<ArtifactGroup>(){};
+        
+        return downloadClient.getById(genericType);
+    }
+    
+    @Override
+    public ArtifactGroup getArtifactGroupInfo(String id) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getArtifactGroupInfo(String id)" + id);
+        }
+        
+        CacheKey key = new CacheKey(id, ArtifactGroup.class.getName());
+        ArtifactGroup artifactgroup = (ArtifactGroup) cacheManager.get(key);
+        if (artifactgroup == null) {
+        	artifactgroup = getArtifactGroupFromServer(id);
+        	cacheManager.add(key, artifactgroup);
+        }
+
+        return artifactgroup;
+    }
+    
 
     @Override
     public ClientResponse createProject(ProjectInfo projectInfo) throws PhrescoException {
