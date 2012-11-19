@@ -131,11 +131,9 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		this.serverPath = (String) context.get(SERVICE_URL);
     	String password = (String) context.get(SERVICE_PASSWORD);
 		String username = (String) context.get(SERVICE_USERNAME);
-		String apiServiceKey = (String) context.get(SERVICE_API_KEY);
+		this.apiKey = (String) context.get(SERVICE_API_KEY);
 		
-		this.apiKey = apiServiceKey;
-		
-		doLogin(username, password, apiServiceKey);
+		doLogin(username, password, apiKey);
 	}
 	
     private void doLogin(String username, String password, String apiServiceKey) throws PhrescoException {

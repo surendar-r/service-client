@@ -23,14 +23,12 @@ package com.photon.phresco.service.client.test;
 import java.util.List;
 
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.commons.codec.binary.Base64;
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
+import com.google.gson.Gson;
 import com.photon.phresco.commons.model.ApplicationType;
 import com.photon.phresco.commons.model.User;
 import com.photon.phresco.exception.PhrescoException;
@@ -46,28 +44,31 @@ import com.sun.jersey.api.client.WebResource.Builder;
 
 public class APIManagerTest extends BaseRestTest {
 
-    private static final String HEADER_NAME_AUTHORIZATION = "Authorization";
+   private static final String HEADER_NAME_AUTHORIZATION = "Authorization";
 //    private static final String API_KEY = "Bearer fzlOdZfQaWfgr7uoZ7rcJI5hhjMa";
-//    private static final String API_KEY = "Bearer czxnYrfBVR5qw20z6jU5fTZwLtIa";
-    private static final String API_KEY = "Bearer hOUSaaxxU4idOvh3Vm4t_eG0r7Qa";
+//    private static final String API_KEY = null;
+ //   private static final String API_KEY = "Bearer kQSuVB9Wn9_u21TkbCuNSiAUOrsa";
     
     
-	@Before
+    @Before
 	public void init() throws PhrescoException {
 		initialize();
 	}
 
-	@Test
+    @Test
 	public void testLoginAPI() throws PhrescoException {
     	String username = RestUtil.getUserName();
         String password = RestUtil.getPassword();
         String serverPath = RestUtil.getServerPath();
+        System.out.println("uname " +  username);
+        System.out.println("pwd " +  password);
+        System.out.println("KEY " +  API_KEY);
         
-//        String serverPath = "http://localhost:8080/service/rest/api";
+                
+    //    String serverPath = "http://localhost:8080/service/rest/api";
 //        String serverPath = "http://172.16.21.186:8280/2.0-service/1.0.0/rest/api";
 //        String serverPath = "http://172.16.21.186:2020/2.0-service/1.0.0/rest/api";
-        
-        System.out.println("serverPath " + serverPath);
+   //       String serverPath = "http://172.16.18.178:8280/service/2.0/rest/api";
 
         //encode the password
         byte[] encodeBase64 = Base64.encodeBase64(password.getBytes());
@@ -76,19 +77,29 @@ public class APIManagerTest extends BaseRestTest {
     	Credentials credentials = new Credentials(username, encodedString); 
     	Client client = ClientHelper.createClient();
         WebResource resource = client.resource(serverPath + "/" + LOGIN);
-
+        System.out.println("serverPath " + serverPath + "/" + LOGIN);
         Builder builder = resource.accept(MediaType.APPLICATION_JSON);
         if (API_KEY != null) {
-        	builder = builder.header(HEADER_NAME_AUTHORIZATION, API_KEY);	
+        	
+        builder = builder.header(HEADER_NAME_AUTHORIZATION, API_KEY);	
+        System.out.println("KEY " +  API_KEY);
+        
         }
         
+        Gson gson = new Gson();
+        String json = gson.toJson(credentials);
+        System.out.println(json);
+        
         ClientResponse response = builder.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, credentials);
+        
+        System.out.println("response ===> " + response.toString());
+        System.out.println("response ===> " + response.getStatus());
         GenericType<User> genericType = new GenericType<User>() {};
         User userInfo = response.getEntity(genericType);
         System.out.println("userInfo is " + userInfo);
 	}
 
-	@Test
+//	@Test
 	public void testGetAppTypes() throws PhrescoException {
 		User userInfo = serviceManager.getUserInfo();
 		System.out.println("serviceManager " + userInfo);
