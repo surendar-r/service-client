@@ -515,6 +515,34 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         return webServices;
     }
     
+    private WebService getWebServiceFromServer(String id) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getWebServices(String id)");
+        }
+    	
+		RestClient<WebService> webServiceClient = getRestClient(REST_API_COMPONENT + REST_API_WEBSERVICES);
+		webServiceClient.setPath(id);
+		GenericType<WebService> genericType = new GenericType<WebService>(){};
+		
+		return webServiceClient.getById(genericType);
+	}
+    
+    @Override
+    public WebService getWebService(String id) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getWebService(String id)");
+        }
+        
+        CacheKey key = new CacheKey("", WebService.class.getName(), id);
+        WebService webService = (WebService) cacheManager.get(key);
+        if (webService == null) {
+            webService = getWebServiceFromServer(id);
+            cacheManager.add(key, webService);
+        }
+        
+        return webService;
+    }
+    
     @Override
     public List<ArtifactGroup> getFeatures(String customerId, String techId, String type) throws PhrescoException {
         if (isDebugEnabled) {

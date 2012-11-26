@@ -215,6 +215,14 @@ public interface ServiceManager {
 	List<WebService> getWebServices() throws PhrescoException;
 	
 	/**
+	 * To get the WebService for the given Id
+	 * @param id
+	 * @return
+	 * @throws PhrescoException
+	 */
+	WebService getWebService(String id) throws PhrescoException;
+	
+	/**
 	 * To get the features of the the of the specified type(module/js) for the given customer and techid
 	 * @param customerId
 	 * @param techId
