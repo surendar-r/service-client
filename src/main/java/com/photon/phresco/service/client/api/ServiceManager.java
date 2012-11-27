@@ -44,6 +44,7 @@ import com.photon.phresco.commons.model.VideoInfo;
 import com.photon.phresco.commons.model.WebService;
 import com.photon.phresco.configuration.Environment;
 import com.photon.phresco.exception.PhrescoException;
+import com.photon.phresco.service.client.impl.CacheKey;
 import com.photon.phresco.service.client.impl.RestClient;
 import com.phresco.pom.site.Reports;
 import com.sun.jersey.api.client.ClientResponse;
@@ -276,7 +277,7 @@ public interface ServiceManager {
 	 * @return ClientResponse
 	 * @throws PhrescoException
 	 */
-	ClientResponse deleteFeature(String moduleId, String customerId) throws PhrescoException;
+	ClientResponse deleteFeature(String moduleId, CacheKey key) throws PhrescoException;
 	
 	/**
 	 * To get all the customers

@@ -741,20 +741,35 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         return jsonBodyPart;
     }
 
-    @Override
-    public ClientResponse deleteFeature(String moduleId, String customerId) throws PhrescoException {
+    public ClientResponse deleteFeature(String moduleId, CacheKey key) throws PhrescoException {
     	if (isDebugEnabled) {
      		S_LOGGER.debug("Entered into ServiceManagerImpl.deleteFeatures(String moduleId, String customerId)");
      	}
-
+        String customerId = key.getCustId();
+    	String tech = key.getId();
      	RestClient<ArtifactGroup> deleteModule = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
      	deleteModule.setPath(moduleId);
      	ClientResponse response = deleteModule.deleteById();
-        // TODO:Lohes
-//     	CacheKey key = new CacheKey(customerId, CACHE_FEATURES_KEY);
-//     	manager.add(key, getModulesFromServer(customerId));
-     	
+    	cacheManager.add(key, getModulesFromServer(customerId, tech));
+
      	return response;
+    }
+    
+    private List<ArtifactGroup> getModulesFromServer(String customerId, String techId) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getModulesFromServer()");
+        }
+        
+        RestClient<ArtifactGroup> moduleGroupClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
+    	Map<String, String> headers = new HashMap<String, String>();
+    	headers.put(REST_QUERY_TECHID, techId);
+    	headers.put(REST_QUERY_CUSTOMERID, customerId);
+    	headers.put(REST_QUERY_TYPE, REST_QUERY_TYPE_MODULE);
+    	moduleGroupClient.queryStrings(headers);
+    	GenericType<List<ArtifactGroup>> genericType = new GenericType<List<ArtifactGroup>>(){};
+
+    	return moduleGroupClient.get(genericType);
+        
     }
     
     private List<Customer> getCustomersFromServer() throws PhrescoException {
