@@ -619,7 +619,7 @@ public interface ServiceManager {
 	
 	ClientResponse sendErrorReport(List<LogInfo> loginfo) throws PhrescoException;
 	
-	Property getForumPath(String customerId) throws PhrescoException;
+	List<Property> getProperties() throws PhrescoException;
 	
 	/**
 	 * To get all the platforms

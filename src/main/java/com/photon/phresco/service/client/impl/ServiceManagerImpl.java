@@ -1797,17 +1797,31 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public Property getForumPath(String customerId) throws PhrescoException {
+    public List<Property> getProperties() throws PhrescoException {
     	if (isDebugEnabled) {
-            S_LOGGER.debug("Entered into ServiceManagerImpl.getForumPath(String customerId)");
-        }
+    		S_LOGGER.debug("Entered into ServiceManagerImpl.getProperties()");
+    	}
+
+    	CacheKey key = new CacheKey(Property.class.getName());
+    	List<Property> properties = (List<Property>) cacheManager.get(key);
+    	if (properties == null) {
+    		properties = getPropertiesFromServer();
+    		cacheManager.add(key, properties);
+    	}
     	
-    	RestClient<Property> adminClient = getRestClient(REST_API_ADMIN + REST_API_FORUMS);
-    	GenericType<Property> genericType = new GenericType<Property>() {};
-    	adminClient.queryString(REST_QUERY_CUSTOMERID, customerId);
-    	Property adminConfigInfo = adminClient.getById(genericType);
-    	
-    	return adminConfigInfo;
+    	return properties;
+    }
+
+    private List<Property> getPropertiesFromServer() throws PhrescoException {
+    	if (isDebugEnabled) {
+    		S_LOGGER.debug("Entered into ServiceManagerImpl.getForumPathFromServer()");
+    	}
+
+    	RestClient<Property> adminClient = getRestClient(REST_API_COMPONENT + REST_API_PROPERTY);
+    	GenericType<List<Property>> genericType = new GenericType<List<Property>>() {};
+    	List<Property> properties = adminClient.get(genericType);
+
+    	return properties;
     }
 
 	@Override
