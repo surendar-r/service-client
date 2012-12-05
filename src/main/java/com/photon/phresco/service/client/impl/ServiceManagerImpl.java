@@ -884,7 +884,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public List<SettingsTemplate> getconfigTemplates(String customerId) throws PhrescoException {
+    public List<SettingsTemplate> getConfigTemplates(String customerId) throws PhrescoException {
     	if (isDebugEnabled) {
     		S_LOGGER.debug("Enetered into ServiceManagerImpl.getconfigTemplates(String customerId)");
     	}

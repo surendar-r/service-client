@@ -337,7 +337,7 @@ public interface ServiceManager {
 	 * @return List<SettingsTemplate>
 	 * @throws PhrescoException
 	 */
-	List<SettingsTemplate> getconfigTemplates(String customerId) throws PhrescoException;
+	List<SettingsTemplate> getConfigTemplates(String customerId) throws PhrescoException;
 	
 	/**
 	 * To get the details of the given config template
