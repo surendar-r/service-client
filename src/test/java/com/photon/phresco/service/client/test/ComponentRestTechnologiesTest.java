@@ -94,7 +94,7 @@ public class ComponentRestTechnologiesTest extends BaseRestTest {
 
 		//Technology Options
 		TechnologyOptions options = new TechnologyOptions("build");
-		tech.setOptions(Arrays.asList(options));
+//		tech.setOptions(Arrays.asList(options));
 		List<ArtifactGroup> plugins = new ArrayList<ArtifactGroup>();
         plugins.add(archetypeInfo);
         tech.setPlugins(plugins);
