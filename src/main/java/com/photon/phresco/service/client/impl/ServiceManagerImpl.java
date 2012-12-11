@@ -48,6 +48,7 @@ import com.photon.phresco.commons.model.SettingsTemplate;
 import com.photon.phresco.commons.model.Technology;
 import com.photon.phresco.commons.model.TechnologyOptions;
 import com.photon.phresco.commons.model.User;
+import com.photon.phresco.commons.model.VersionInfo;
 import com.photon.phresco.commons.model.VideoInfo;
 import com.photon.phresco.commons.model.WebService;
 import com.photon.phresco.configuration.Environment;
@@ -1894,5 +1895,20 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		RestClient<License> restClient = getRestClient(REST_API_COMPONENT + REST_API_LICENSE);
 		GenericType<List<License>> genericType = new GenericType<List<License>>(){};
 		return restClient.get(genericType);
+	}
+
+	@Override
+	public VersionInfo getVersionInfo(String currentVersion) throws PhrescoException {
+		RestClient<VersionInfo> restClient = getRestClient(ServiceConstants.REST_API_VERSION);
+		restClient.queryString(VERSION, currentVersion);
+		GenericType<VersionInfo> genericType = new GenericType<VersionInfo>(){};
+		return restClient.getById(genericType);
+	}
+
+	@Override
+	public ClientResponse getUpdateVersionContent(String customerId) throws PhrescoException {
+		RestClient<VersionInfo> restClient = getRestClient(ServiceConstants.REST_API_VERSION + "/update");
+		restClient.queryString(REST_QUERY_CUSTOMERID, customerId);
+		return restClient.get(MediaType.MULTIPART_FORM_DATA);
 	}
 }

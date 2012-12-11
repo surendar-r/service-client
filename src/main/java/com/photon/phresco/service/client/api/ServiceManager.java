@@ -40,6 +40,7 @@ import com.photon.phresco.commons.model.SettingsTemplate;
 import com.photon.phresco.commons.model.Technology;
 import com.photon.phresco.commons.model.TechnologyOptions;
 import com.photon.phresco.commons.model.User;
+import com.photon.phresco.commons.model.VersionInfo;
 import com.photon.phresco.commons.model.VideoInfo;
 import com.photon.phresco.commons.model.WebService;
 import com.photon.phresco.configuration.Environment;
@@ -635,4 +636,8 @@ public interface ServiceManager {
 	List<Reports> getReports() throws PhrescoException;
 
 	List<License> getLicenses() throws PhrescoException;
+	
+	VersionInfo getVersionInfo(String currentVersion) throws PhrescoException;
+	
+	ClientResponse getUpdateVersionContent(String customerId) throws PhrescoException;
 }
