@@ -301,7 +301,7 @@ public interface ServiceManager {
 	 * @return ClientResponse
 	 * @throws PhrescoException
 	 */
-	ClientResponse createCustomers(List<Customer> customers) throws PhrescoException;
+	ClientResponse createCustomers(Customer customer,  Map<String, InputStream> inputStreamMap) throws PhrescoException;
 	
 	
 	/**

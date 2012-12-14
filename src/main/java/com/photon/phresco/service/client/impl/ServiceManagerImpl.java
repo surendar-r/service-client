@@ -829,17 +829,18 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public ClientResponse createCustomers(List<Customer> customers) throws PhrescoException {
+    public ClientResponse createCustomers(Customer customer,  Map<String, InputStream> inputStreamMap) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.createCustomers(List<Customer> customers)");
         }
         
         RestClient<Customer> customersClient = getRestClient(REST_API_ADMIN + REST_API_CUSTOMERS);
-        ClientResponse response = customersClient.create(customers);
+        //ClientResponse response = customersClient.create(customers);
         CacheKey key = new CacheKey(Customer.class.getName());
         cacheManager.add(key, getCustomersFromServer());
         
-        return response;
+        //return response;
+        return null;
     }
     
     @Override
@@ -1911,4 +1912,5 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		restClient.queryString(REST_QUERY_CUSTOMERID, customerId);
 		return restClient.get(MediaType.MULTIPART_FORM_DATA);
 	}
+
 }
