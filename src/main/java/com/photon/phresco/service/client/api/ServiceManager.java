@@ -640,4 +640,6 @@ public interface ServiceManager {
 	VersionInfo getVersionInfo(String currentVersion) throws PhrescoException;
 	
 	ClientResponse getUpdateVersionContent(String customerId) throws PhrescoException;
+	
+	InputStream getIcon(String id) throws PhrescoException; 
 }

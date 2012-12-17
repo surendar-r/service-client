@@ -1913,4 +1913,12 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		return restClient.get(MediaType.MULTIPART_FORM_DATA);
 	}
 
+	@Override
+	public InputStream getIcon(String id) throws PhrescoException {
+		RestClient<VersionInfo> restClient = getRestClient(REST_API_ADMIN + "/icon");
+		restClient.queryString(REST_QUERY_ID, id);
+		ClientResponse clientResponse = restClient.get(MediaType.MULTIPART_FORM_DATA);
+		return clientResponse.getEntityInputStream();
+	}
+
 }
