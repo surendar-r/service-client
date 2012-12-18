@@ -38,6 +38,7 @@ import com.photon.phresco.commons.model.Property;
 import com.photon.phresco.commons.model.Role;
 import com.photon.phresco.commons.model.SettingsTemplate;
 import com.photon.phresco.commons.model.Technology;
+import com.photon.phresco.commons.model.TechnologyGroup;
 import com.photon.phresco.commons.model.TechnologyOptions;
 import com.photon.phresco.commons.model.User;
 import com.photon.phresco.commons.model.VersionInfo;
@@ -637,9 +638,13 @@ public interface ServiceManager {
 
 	List<License> getLicenses() throws PhrescoException;
 	
+	ClientResponse createTechnologyGroups(List<TechnologyGroup> technologyGroup, String customerId)	throws PhrescoException;
+
 	VersionInfo getVersionInfo(String currentVersion) throws PhrescoException;
 	
 	ClientResponse getUpdateVersionContent(String customerId) throws PhrescoException;
 	
+	ClientResponse deleteTechnologyGroups(String TechGrpId, String customerId) throws PhrescoException;
+
 	InputStream getIcon(String id) throws PhrescoException; 
 }

@@ -46,6 +46,7 @@ import com.photon.phresco.commons.model.Property;
 import com.photon.phresco.commons.model.Role;
 import com.photon.phresco.commons.model.SettingsTemplate;
 import com.photon.phresco.commons.model.Technology;
+import com.photon.phresco.commons.model.TechnologyGroup;
 import com.photon.phresco.commons.model.TechnologyOptions;
 import com.photon.phresco.commons.model.User;
 import com.photon.phresco.commons.model.VersionInfo;
@@ -1893,6 +1894,9 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 
 	@Override
 	public List<License> getLicenses() throws PhrescoException {
+		if (isDebugEnabled) {
+			S_LOGGER.debug("Entered into ServiceManagerImpl.getLicenses()");
+		}
 		RestClient<License> restClient = getRestClient(REST_API_COMPONENT + REST_API_LICENSE);
 		GenericType<List<License>> genericType = new GenericType<List<License>>(){};
 		return restClient.get(genericType);
@@ -1920,5 +1924,33 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		ClientResponse clientResponse = restClient.get(MediaType.MULTIPART_FORM_DATA);
 		return clientResponse.getEntityInputStream();
 	}
+
+	@Override
+    public ClientResponse createTechnologyGroups(List<TechnologyGroup> technologyGroup, String customerId ) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.createTechnologyGroups(List<TechnologyGroup> technologyGroup, String customerId)");
+        }
+    	RestClient<TechnologyGroup> newTechGrp = getRestClient(REST_API_COMPONENT + REST_API_TECHGROUPS);
+		ClientResponse clientResponse = newTechGrp.create(technologyGroup);
+		CacheKey key = new CacheKey(customerId, ApplicationType.class.getName());
+		cacheManager.add(key, getApplicationTypesFromServer(customerId));
+		
+		return clientResponse;
+    }
+    
+    @Override
+    public ClientResponse deleteTechnologyGroups(String TechGrpId, String customerId) throws PhrescoException {
+    	if (isDebugEnabled) {
+    		S_LOGGER.debug("Entered into ServiceManagerImpl.deleteTechnologyGroups(String TechGrpId, String customerId)");
+    	}
+
+    	RestClient<TechnologyGroup> deleteTechGrp = getRestClient(REST_API_COMPONENT + REST_API_TECHGROUPS);
+    	deleteTechGrp.setPath(TechGrpId);
+    	ClientResponse clientResponse = deleteTechGrp.deleteById();
+    	CacheKey key = new CacheKey(customerId, ApplicationType.class.getName());
+		cacheManager.add(key, getApplicationTypesFromServer(customerId));
+
+    	return clientResponse;
+    }
 
 }
