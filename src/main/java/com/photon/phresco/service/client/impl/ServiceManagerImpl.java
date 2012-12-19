@@ -35,6 +35,7 @@ import org.apache.log4j.Logger;
 import com.photon.phresco.commons.model.ApplicationInfo;
 import com.photon.phresco.commons.model.ApplicationType;
 import com.photon.phresco.commons.model.ArtifactGroup;
+import com.photon.phresco.commons.model.ArtifactInfo;
 import com.photon.phresco.commons.model.Customer;
 import com.photon.phresco.commons.model.DownloadInfo;
 import com.photon.phresco.commons.model.License;
@@ -1523,7 +1524,35 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         return artifactgroup;
     }
     
+    @Override
+    public ArtifactInfo getArtifactInfo(String id) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getArtifactInfo(String id)" + id);
+        }
+        CacheKey key = new CacheKey(id, ArtifactInfo.class.getName());
+        ArtifactInfo artifactInfo = (ArtifactInfo) cacheManager.get(key);
+        if (artifactInfo == null) {
+        	artifactInfo = getArtifactInfoFromServer(id);
+        	cacheManager.add(key, artifactInfo);
+        }
 
+        return artifactInfo;
+    }
+    
+    private ArtifactInfo getArtifactInfoFromServer(String id) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getArtifactInfoFromServer(String id)");
+        }
+        
+        RestClient<ArtifactInfo> downloadClient = getRestClient(REST_API_COMPONENT + REST_API_ARTIFACTINFO);
+        Map<String, String> headers = new HashMap<String, String>();
+    	headers.put(REST_QUERY_ID, id);
+    	downloadClient.queryStrings(headers);
+        GenericType<ArtifactInfo> genericType = new GenericType<ArtifactInfo>(){};
+        
+        return downloadClient.getById(genericType);
+    }
+    
     @Override
     public ClientResponse createProject(ProjectInfo projectInfo) throws PhrescoException {
         if (isDebugEnabled) {

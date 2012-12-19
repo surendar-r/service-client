@@ -27,6 +27,7 @@ import java.util.Map;
 import com.photon.phresco.commons.model.ApplicationInfo;
 import com.photon.phresco.commons.model.ApplicationType;
 import com.photon.phresco.commons.model.ArtifactGroup;
+import com.photon.phresco.commons.model.ArtifactInfo;
 import com.photon.phresco.commons.model.Customer;
 import com.photon.phresco.commons.model.DownloadInfo;
 import com.photon.phresco.commons.model.License;
@@ -647,4 +648,6 @@ public interface ServiceManager {
 	ClientResponse deleteTechnologyGroups(String TechGrpId, String customerId) throws PhrescoException;
 
 	InputStream getIcon(String id) throws PhrescoException; 
+	
+	ArtifactInfo getArtifactInfo(String id) throws PhrescoException; 
 }
