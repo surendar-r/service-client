@@ -649,5 +649,7 @@ public interface ServiceManager {
 
 	InputStream getIcon(String id) throws PhrescoException; 
 	
-	ArtifactInfo getArtifactInfo(String id) throws PhrescoException; 
+	ArtifactInfo getArtifactInfo(String id) throws PhrescoException;
+
+	Technology getTechnology(String techId) throws PhrescoException; 
 }

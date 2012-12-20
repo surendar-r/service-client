@@ -1525,6 +1525,32 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
+    public Technology getTechnology(String techId) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getTechnology(String techId)");
+        }
+        
+        CacheKey key = new CacheKey(techId, Technology.class.getName());
+        Technology technology = (Technology) cacheManager.get(key);
+        if (technology == null) {
+        	technology = getTechnologyFromServer(techId);
+        	cacheManager.add(key, technology);
+        }
+
+        return technology;
+    }
+    
+    private Technology getTechnologyFromServer(String techId) throws PhrescoException {
+    	
+    	 RestClient<Technology> techClient = getRestClient(REST_API_COMPONENT + REST_API_TECHNOLOGIES);
+         techClient.setPath(techId);
+         GenericType<Technology> genericType = new GenericType<Technology>(){};
+         Technology tech = techClient.getById(genericType);
+         
+         return tech;
+	}
+    
+    @Override
     public ArtifactInfo getArtifactInfo(String id) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getArtifactInfo(String id)" + id);
