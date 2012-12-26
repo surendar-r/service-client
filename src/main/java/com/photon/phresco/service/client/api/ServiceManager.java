@@ -343,6 +343,15 @@ public interface ServiceManager {
 	List<SettingsTemplate> getConfigTemplates(String customerId) throws PhrescoException;
 	
 	/**
+	 * To get the config templates for the given customer and the techId
+	 * @param customerId
+	 * @param techid
+	 * @return
+	 * @throws PhrescoException
+	 */
+	List<SettingsTemplate> getConfigTemplates(String customerId, String techid) throws PhrescoException;
+	
+	/**
 	 * To get the details of the given config template
 	 * @param configId
 	 * @param customerId
@@ -545,6 +554,12 @@ public interface ServiceManager {
 	DownloadInfo getDownloadInfo(String id) throws PhrescoException;
 	
 	
+	/**
+	 * To get the artifact group info of the given id
+	 * @param id
+	 * @return
+	 * @throws PhrescoException
+	 */
 	ArtifactGroup getArtifactGroupInfo(String id) throws PhrescoException;
 	
 	/**

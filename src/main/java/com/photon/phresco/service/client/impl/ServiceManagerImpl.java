@@ -903,6 +903,36 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	return configTemplates;
     }
     
+    private List<SettingsTemplate> getConfigTemplatesFromServer(String customerId, String techId) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Entered into ServiceManagerImpl.getConfigTemplatesFromServer(String customerId, String techId)" + customerId);
+        }
+        
+        RestClient<SettingsTemplate> settingClient = getRestClient(REST_API_COMPONENT + REST_API_SETTINGS);
+        settingClient.queryString(REST_QUERY_CUSTOMERID, customerId);
+        settingClient.queryString(REST_QUERY_TECHID, techId);
+        GenericType<List<SettingsTemplate>> genericType = new GenericType<List<SettingsTemplate>>(){};
+        
+        return settingClient.get(genericType);
+        
+    }
+    
+    @Override
+    public List<SettingsTemplate> getConfigTemplates(String customerId, String techId) throws PhrescoException {
+        if (isDebugEnabled) {
+            S_LOGGER.debug("Enetered into ServiceManagerImpl.getconfigTemplates(String customerId, String techId)");
+        }
+
+        CacheKey key = new CacheKey(customerId, SettingsTemplate.class.getName(), techId);
+        List<SettingsTemplate> configTemplates = (List<SettingsTemplate>) cacheManager.get(key);
+        if (CollectionUtils.isEmpty(configTemplates)) {
+            configTemplates = getConfigTemplatesFromServer(customerId, techId);
+            cacheManager.add(key, configTemplates);
+        }
+        
+        return configTemplates;
+    }
+    
     @Override
     public ClientResponse createConfigTemplates(List<SettingsTemplate> settings, String customerId) throws PhrescoException {
         if (isDebugEnabled) {
