@@ -312,7 +312,7 @@ public interface ServiceManager {
 	 * @param customerId
 	 * @throws PhrescoException
 	 */
-	void updateCustomer(Customer customer, String customerId) throws PhrescoException;
+	void updateCustomer(Customer customer, Map<String, InputStream> inputStreamMap) throws PhrescoException;
 	
 	/**
 	 * To delete the given customer

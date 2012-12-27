@@ -846,15 +846,14 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 	}
     
     @Override
-    public void updateCustomer(Customer customer, String customerId) throws PhrescoException {
+    public void updateCustomer(Customer customer, Map<String, InputStream> inputStreamMap) throws PhrescoException {
         if (isDebugEnabled) {
-            S_LOGGER.debug("Entered into ServiceManagerImpl.updateCustomer(Customer customer, String customerId)" + customerId);
+            S_LOGGER.debug("Entered into ServiceManagerImpl.updateCustomer(Customer customer, String customerId)" + customer.getId());
         }
-        
+       
+        MultiPart multiPart = createMultiPart(customer, inputStreamMap, customer.getName());
         RestClient<Customer> customersClient = getRestClient(REST_API_ADMIN + REST_API_CUSTOMERS);
-        customersClient.setPath(customerId);
-        GenericType<Customer> genericType = new GenericType<Customer>() {};
-        customersClient.updateById(customer, genericType);
+        ClientResponse response = customersClient.update(multiPart);
         CacheKey key = new CacheKey(Customer.class.getName());
         cacheManager.add(key, getCustomersFromServer());
     }
