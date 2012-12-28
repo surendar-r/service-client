@@ -36,6 +36,7 @@ import com.photon.phresco.commons.model.ApplicationInfo;
 import com.photon.phresco.commons.model.ApplicationType;
 import com.photon.phresco.commons.model.ArtifactGroup;
 import com.photon.phresco.commons.model.ArtifactInfo;
+import com.photon.phresco.commons.model.CoreOption;
 import com.photon.phresco.commons.model.Customer;
 import com.photon.phresco.commons.model.DownloadInfo;
 import com.photon.phresco.commons.model.License;
@@ -556,6 +557,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         List<ArtifactGroup> modules = (List<ArtifactGroup>) cacheManager.get(key);
         if (CollectionUtils.isEmpty(modules)) {
             modules = getFeaturesFromServer(customerId, techId, type);
+            cacheManager.add(key, modules);
         }
         
         return modules;
@@ -574,8 +576,6 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         moduleGroupClient.queryStrings(queryStringsMap);
         GenericType<List<ArtifactGroup>> genericType = new GenericType<List<ArtifactGroup>>(){};
         List<ArtifactGroup> modules = moduleGroupClient.get(genericType);
-        CacheKey key = new CacheKey(customerId, CACHE_MODULES_KEY, techId);
-        cacheManager.add(key, modules);
         
         return modules;
     }
@@ -677,9 +677,15 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	RestClient<ArtifactGroup> moduleClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
 //     	moduleClient.setPath(moduleGroup.getId());
  		ClientResponse response = moduleClient.update(multiPart);
-        // TODO:Lohes
-// 		CacheKey key = new CacheKey(customerId, CACHE_FEATURES_KEY);
-// 		manager.add(key, getModulesFromServer(customerId));
+ 		
+ 		CacheKey moduleGroupKey = new CacheKey(moduleGroup.getId());
+ 		cacheManager.add(moduleGroupKey, moduleGroup);
+ 		List<CoreOption> appliesTo = moduleGroup.getAppliesTo();
+ 		for (CoreOption coreOption : appliesTo) {
+ 			CacheKey key = new CacheKey(customerId, moduleGroup.getType().name(), coreOption.getTechId());
+ 			List<ArtifactGroup> features = getFeaturesFromServer(customerId, coreOption.getTechId(), moduleGroup.getType().name());
+ 	 		cacheManager.add(key, features);
+		}
  		
  		return response;
     }
