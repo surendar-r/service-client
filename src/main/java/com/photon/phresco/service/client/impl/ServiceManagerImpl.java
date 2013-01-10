@@ -161,6 +161,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         ClientResponse response = builder.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, credentials);
         GenericType<User> genericType = new GenericType<User>() {};
         userInfo = response.getEntity(genericType);
+        cacheManager.resetCache();
     }
     
     @Override

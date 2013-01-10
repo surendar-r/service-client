@@ -58,4 +58,8 @@ public class EhCacheManager {
 		// We don't have the object in the cache so return null
 		return null;
 	}
+	
+	public void resetCache() {
+	    cache.removeAll();
+	}
 }
