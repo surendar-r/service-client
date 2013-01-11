@@ -1443,7 +1443,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     		S_LOGGER.debug("Entered into Restclient.getDownload(String downloadId, String customerId)");
     	}
     	
-    	CacheKey key = new CacheKey(DownloadInfo.class.getName());
+    	CacheKey key = new CacheKey(customerId, DownloadInfo.class.getName());
     	List<DownloadInfo> downloadInfos = (List<DownloadInfo>) cacheManager.get(key);
     	if (CollectionUtils.isEmpty(downloadInfos)) {
     		downloadInfos = getDownloadsFromServer(customerId);
