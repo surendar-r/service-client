@@ -97,6 +97,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	super();
     	init(context);
     	cacheManager = new EhCacheManager();
+    	cacheManager.resetCache();
     }
     
     public <E> RestClient<E> getRestClient(String contextPath) throws PhrescoException {
@@ -157,11 +158,9 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         if (apiServiceKey != null) {
         	builder = builder.header(HEADER_NAME_AUTHORIZATION, apiServiceKey);	
         }
-        
         ClientResponse response = builder.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, credentials);
         GenericType<User> genericType = new GenericType<User>() {};
         userInfo = response.getEntity(genericType);
-        cacheManager.resetCache();
     }
     
     @Override
