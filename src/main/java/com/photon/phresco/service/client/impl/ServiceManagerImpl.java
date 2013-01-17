@@ -1348,13 +1348,13 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     }
     
     @Override
-    public List<DownloadInfo> getDownloads(String customerId, String techId, String category) throws PhrescoException {
+    public List<DownloadInfo> getDownloads(String customerId, String techId, String category, String platform) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug(debugMsg);
         }
         
         try {
-                return getDownloadsFromServer(customerId, techId, category);
+                return getDownloadsFromServer(customerId, techId, category, platform);
         } catch(Exception e){
             throw new PhrescoException(e);
         }
@@ -1402,7 +1402,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		return downloadClient.get(genericType);
     }
     
-    private List<DownloadInfo> getDownloadsFromServer(String customerId, String techId, String category) throws PhrescoException {
+    private List<DownloadInfo> getDownloadsFromServer(String customerId, String techId, String category, String platform) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getDownloadsFromServer(String customerId, String techId)");
         }
@@ -1412,6 +1412,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         queryStringsMap.put(REST_QUERY_CUSTOMERID, customerId);
         queryStringsMap.put(REST_QUERY_TECHID, techId);
         queryStringsMap.put(REST_QUERY_TYPE, category);
+        queryStringsMap.put(REST_QUERY_PLATFORM, platform);
         downloadClient.queryStrings(queryStringsMap);
         GenericType<List<DownloadInfo>> genericType = new GenericType<List<DownloadInfo>>(){};
         
@@ -2042,5 +2043,32 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 
     	return clientResponse;
     }
+
+	@Override
+	public List<Technology> getTechnologyByCustomer(String customerId)
+			throws PhrescoException {
+		RestClient<Technology> techClient = getRestClient(REST_API_COMPONENT + REST_API_TECHNOLOGIES);
+		techClient.queryString(REST_QUERY_CUSTOMERID, customerId);
+		GenericType<List<Technology>> genericType = new GenericType<List<Technology>>(){};
+        return techClient.get(genericType);
+	}
+
+	@Override
+	public SettingsTemplate getConfigTemplate(String id)
+			throws PhrescoException {
+		RestClient<SettingsTemplate> settingClient = getRestClient(REST_API_COMPONENT + REST_API_SETTINGS);
+    	settingClient.setPath(id);
+        GenericType<SettingsTemplate> genericType = new GenericType<SettingsTemplate>(){};
+		return settingClient.getById(genericType);
+	}
+
+	@Override
+	public ArtifactGroup getFeatureById(String id) throws PhrescoException {
+		RestClient<ArtifactGroup> moduleGroupClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
+		moduleGroupClient.setPath(id);
+        GenericType<ArtifactGroup> genericType = new GenericType<ArtifactGroup>(){};
+        ArtifactGroup artifactGroup = moduleGroupClient.getById(genericType);
+		return artifactGroup;
+	}
 
 }

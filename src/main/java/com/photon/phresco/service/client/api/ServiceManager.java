@@ -534,7 +534,7 @@ public interface ServiceManager {
 	 * @return
 	 * @throws PhrescoException
 	 */
-	List<DownloadInfo> getDownloads(String customerId, String techId, String category) throws PhrescoException;
+	List<DownloadInfo> getDownloads(String customerId, String techId, String category, String platform) throws PhrescoException;
 	
 	/**
 	 * To get the details of the given download id
@@ -666,5 +666,11 @@ public interface ServiceManager {
 	
 	ArtifactInfo getArtifactInfo(String id) throws PhrescoException;
 
-	Technology getTechnology(String techId) throws PhrescoException; 
+	Technology getTechnology(String techId) throws PhrescoException;
+
+	List<Technology> getTechnologyByCustomer(String customerId) throws PhrescoException;
+
+	SettingsTemplate getConfigTemplate(String id) throws PhrescoException;
+
+	ArtifactGroup getFeatureById(String id) throws PhrescoException; 
 }
