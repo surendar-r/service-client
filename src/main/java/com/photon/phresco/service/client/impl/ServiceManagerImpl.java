@@ -648,9 +648,12 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 
         //To set all the features
         String type = moduleGroup.getType().name();
-        String techId = moduleGroup.getAppliesTo().get(0).getTechId();
-        CacheKey featuresKey = new CacheKey(customerId, type, techId);
-        cacheManager.add(featuresKey, getFeaturesFromServer(customerId, techId, type));
+        List<CoreOption> coreOptions = moduleGroup.getAppliesTo();
+ 		for (CoreOption coreOption : coreOptions) {
+ 			CacheKey key = new CacheKey(customerId, type, coreOption.getTechId());
+ 			List<ArtifactGroup> features = getFeaturesFromServer(customerId, coreOption.getTechId(), type);
+ 	 		cacheManager.add(key, features);
+		}
         
         //To set the artifactGroup against its Id
         ArtifactGroup artifactGroup = response.getEntity(ArtifactGroup.class);
