@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.photon.phresco.commons.model.User;
-import com.photon.phresco.exception.PhrescoException;
+import com.photon.phresco.exception.PhrescoWebServiceException;
 import com.photon.phresco.service.client.api.ServiceClientConstant;
 import com.photon.phresco.service.client.api.ServiceContext;
 import com.photon.phresco.service.client.api.ServiceManager;
@@ -37,7 +37,7 @@ public final class ServiceClientFactory implements ServiceClientConstant {
 
  	}
  	
-	public static ServiceManager getServiceManager(ServiceContext context) throws PhrescoException {
+	public static ServiceManager getServiceManager(ServiceContext context) throws PhrescoWebServiceException {
 		ServiceManager serviceManager = CONTEXT_MANAGER_MAP.get(context);
 		if (serviceManager == null) {
 			serviceManager = new ServiceManagerImpl(context);

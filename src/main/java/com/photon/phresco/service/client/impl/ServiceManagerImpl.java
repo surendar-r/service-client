@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.CollectionUtils;
@@ -56,6 +58,7 @@ import com.photon.phresco.commons.model.VideoInfo;
 import com.photon.phresco.commons.model.WebService;
 import com.photon.phresco.configuration.Environment;
 import com.photon.phresco.exception.PhrescoException;
+import com.photon.phresco.exception.PhrescoWebServiceException;
 import com.photon.phresco.service.client.api.Content;
 import com.photon.phresco.service.client.api.ServiceClientConstant;
 import com.photon.phresco.service.client.api.ServiceContext;
@@ -86,21 +89,25 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     private String apiKey = null;
     
     private static String debugMsg = "Entered into ServiceManagerImpl.getDownloadInfo(List<DownloadInfo> downloadInfo)";
-    private static final String CACHE_MODULES_KEY = "modules";
 
 	public ServiceManagerImpl(String serverPath) throws PhrescoException {
     	super();
     	this.serverPath = serverPath;
     }
 
-    public ServiceManagerImpl(ServiceContext context) throws PhrescoException {
+    public ServiceManagerImpl(ServiceContext context) throws PhrescoWebServiceException {
     	super();
-    	init(context);
+    	try {
+    		init(context);
+    	} catch (PhrescoWebServiceException e) {
+    		System.out.println("In Constructor,..." + e.getResponse().getStatus());
+			throw new PhrescoWebServiceException(e.getResponse());
+		}
     	cacheManager = new EhCacheManager();
     	cacheManager.resetCache();
     }
     
-    public <E> RestClient<E> getRestClient(String contextPath) throws PhrescoException {
+    public <E> RestClient<E> getRestClient(String contextPath) throws PhrescoWebServiceException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getRestClient(String contextPath)" + contextPath);
         }
@@ -120,7 +127,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	return restClient;
 	}
     
-    public User getUserInfo() throws PhrescoException {
+    public User getUserInfo() throws PhrescoWebServiceException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getUserInfo())");
         }
@@ -128,24 +135,28 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		return userInfo;
 	}
 
-	public void setUserInfo(User userInfo) throws PhrescoException {
+	public void setUserInfo(User userInfo) throws PhrescoWebServiceException {
 		this.userInfo = userInfo;
 	}
 	
-	private void init(ServiceContext context) throws PhrescoException {
+	private void init(ServiceContext context) throws PhrescoWebServiceException {
 		this.serverPath = (String) context.get(SERVICE_URL);
     	String password = (String) context.get(SERVICE_PASSWORD);
 		String username = (String) context.get(SERVICE_USERNAME);
 		this.apiKey = (String) context.get(SERVICE_API_KEY);
+		try {
+			doLogin(username, password, apiKey);
+		} catch (PhrescoWebServiceException e) {
+			System.out.println("In Dologin,..." + e.getResponse().getStatus());
+			throw new PhrescoWebServiceException(e.getResponse());
+		}
 		
-		doLogin(username, password, apiKey);
 	}
 	
-    private void doLogin(String username, String password, String apiServiceKey) throws PhrescoException {
+    private void doLogin(String username, String password, String apiServiceKey) throws PhrescoWebServiceException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.doLogin(String username, String password)");
         }
-
         //encode the password
         byte[] encodeBase64 = Base64.encodeBase64(password.getBytes());
         String encodedString = new String(encodeBase64);
@@ -153,12 +164,19 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	Credentials credentials = new Credentials(username, encodedString); 
     	Client client = ClientHelper.createClient();
         WebResource resource = client.resource(serverPath + "/" + LOGIN);
-
         Builder builder = resource.accept(MediaType.APPLICATION_JSON);
         if (apiServiceKey != null) {
         	builder = builder.header(HEADER_NAME_AUTHORIZATION, apiServiceKey);	
         }
-        ClientResponse response = builder.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, credentials);
+        ClientResponse response = null;
+        try {
+        	response = builder.type(MediaType.APPLICATION_JSON).post(ClientResponse.class, credentials);
+        } catch (Exception e) {
+        	throw new PhrescoWebServiceException(Response.status(Status.INTERNAL_SERVER_ERROR).build());
+		}
+        if(response.getStatus() == 204) {
+        	throw new PhrescoWebServiceException(Response.status(Status.NO_CONTENT).build());
+        }
         GenericType<User> genericType = new GenericType<User>() {};
         userInfo = response.getEntity(genericType);
     }
