@@ -47,6 +47,7 @@ import com.photon.phresco.commons.model.VideoInfo;
 import com.photon.phresco.commons.model.WebService;
 import com.photon.phresco.configuration.Environment;
 import com.photon.phresco.exception.PhrescoException;
+import com.photon.phresco.exception.PhrescoWebServiceException;
 import com.photon.phresco.service.client.impl.CacheKey;
 import com.photon.phresco.service.client.impl.RestClient;
 import com.phresco.pom.site.Reports;
@@ -71,7 +72,7 @@ public interface ServiceManager {
 	 * @return
 	 * @throws PhrescoException
 	 */
-	User getUserInfo() throws PhrescoException;
+	User getUserInfo() throws PhrescoWebServiceException;
 	
 	/**
 	 * To get the video info
