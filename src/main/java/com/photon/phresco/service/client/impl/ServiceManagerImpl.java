@@ -100,7 +100,6 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	try {
     		init(context);
     	} catch (PhrescoWebServiceException e) {
-    		System.out.println("In Constructor,..." + e.getResponse().getStatus());
 			throw new PhrescoWebServiceException(e.getResponse());
 		}
     	cacheManager = new EhCacheManager();
@@ -147,7 +146,6 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		try {
 			doLogin(username, password, apiKey);
 		} catch (PhrescoWebServiceException e) {
-			System.out.println("In Dologin,..." + e.getResponse().getStatus());
 			throw new PhrescoWebServiceException(e.getResponse());
 		}
 		
