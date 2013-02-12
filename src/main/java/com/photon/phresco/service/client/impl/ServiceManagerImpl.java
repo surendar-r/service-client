@@ -769,16 +769,14 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         return jsonBodyPart;
     }
 
-    public ClientResponse deleteFeature(String moduleId, CacheKey key) throws PhrescoException {
+    public ClientResponse deleteFeature(String moduleId) throws PhrescoException {
     	if (isDebugEnabled) {
      		S_LOGGER.debug("Entered into ServiceManagerImpl.deleteFeatures(String moduleId, String customerId)");
      	}
-        String customerId = key.getCustId();
-    	String tech = key.getId();
      	RestClient<ArtifactGroup> deleteModule = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
      	deleteModule.setPath(moduleId);
      	ClientResponse response = deleteModule.deleteById();
-    	cacheManager.add(key, getModulesFromServer(customerId, tech));
+    	cacheManager.resetCache();
 
      	return response;
     }

@@ -281,7 +281,7 @@ public interface ServiceManager {
 	 * @return ClientResponse
 	 * @throws PhrescoException
 	 */
-	ClientResponse deleteFeature(String moduleId, CacheKey key) throws PhrescoException;
+	ClientResponse deleteFeature(String moduleId) throws PhrescoException;
 	
 	/**
 	 * To get all the customers
