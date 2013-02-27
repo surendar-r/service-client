@@ -167,7 +167,7 @@ public interface ServiceManager {
 	 * @return List<ApplicationType>
 	 * @throws PhrescoException
 	 */
-	List<ApplicationType> getApplicationTypes(String customerId) throws PhrescoException;
+	List<ApplicationType> getApplicationTypes() throws PhrescoException;
 	
 	/**
 	 * To get the details of the given application type

@@ -19,6 +19,7 @@
  */
 package com.photon.phresco.service.client.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,10 +32,13 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.photon.phresco.exception.PhrescoException;
+import com.photon.phresco.exception.PhrescoWebServiceException;
 import com.photon.phresco.util.Constants;
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.GenericType;
+import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.WebResource.Builder;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
@@ -48,10 +52,12 @@ public class RestClient<E> {
 	private WebResource resource = null;
 	private Builder builder = null;
 	private String path = "";
-	private String header = ""; 
+	private String header = "";
+	private static int responseCode;
 	private static final Map<String, String> HEADER = new HashMap<String, String>();
 
 	public RestClient(String serverUrl) {
+		responseCode = 0;
 		Client client = ClientHelper.createClient();
 		resource = client.resource(serverUrl);
 	}
@@ -135,8 +141,9 @@ public class RestClient<E> {
 	 * Get List of objects for the specified generic type object
 	 * @param genericType
 	 * @return
+	 * @throws PhrescoException 
 	 */
-	public List<E> get(GenericType<List<E>> genericType) {
+	public List<E> get(GenericType<List<E>> genericType) throws PhrescoException {
 	    if (isDebugEnabled) {
 	        S_LOGGER.debug("Entered into RestClient.get(GenericType<List<E>> genericType)");
 	    }
@@ -148,17 +155,34 @@ public class RestClient<E> {
 	 * Get List of objects for the specified generic type object
 	 * @param genericType
 	 * @return
+	 * @throws PhrescoException 
 	 */
-	public List<E> get(GenericType<List<E>> genericType, String accept, String type) {
+	public List<E> get(GenericType<List<E>> genericType, String accept, String type) throws PhrescoException {
 	    if (isDebugEnabled) {
 	        S_LOGGER.debug("Entered into RestClient.get(GenericType<List<E>> genericType, String accept, String type)");
 	    }
+	    List<E> entities = new ArrayList<E>();
 		updateBuilder();
 		builder = builder.accept(accept).type(type);
 		ClientResponse clientResponse = builder.get(ClientResponse.class);
 		MultivaluedMap<String, String> headers = clientResponse.getHeaders();
 		header = headers.getFirst(Constants.ARTIFACT_COUNT_RESULT);
-		return clientResponse.getEntity(genericType);
+		try {
+			responseCode = clientResponse.getStatus(); 
+			if( responseCode != 204) {
+				entities = clientResponse.getEntity(genericType);
+			}
+		} catch (ClientHandlerException e) {
+			e.printStackTrace();
+			throw new PhrescoException(e);
+		} catch (UniformInterfaceException e) {
+			e.printStackTrace();
+			throw new PhrescoException(e);
+		} catch (PhrescoWebServiceException e) {
+			e.printStackTrace();
+			throw new PhrescoException(e);
+		}
+		return entities;
 	}
 	
 	/**
@@ -184,7 +208,6 @@ public class RestClient<E> {
 	    if (isDebugEnabled) {
 	        S_LOGGER.debug("Entered into RestClient.getById(GenericType<?> genericType, String accept, String type)");
 	    }
-		
 		updateBuilder();
 		builder = builder.accept(accept).type(type);
 		return (E) builder.get(genericType);
@@ -423,5 +446,13 @@ public class RestClient<E> {
 	
 	public String getHeader() {
 		return header;
+	}
+	
+	public int getResponseCode() {
+		return responseCode;
+	}
+	
+	public void setResponseCode(int responseCode) {
+		this.responseCode = responseCode;
 	}
 }

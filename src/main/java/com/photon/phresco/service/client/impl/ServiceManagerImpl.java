@@ -20,6 +20,7 @@
 package com.photon.phresco.service.client.impl;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -115,14 +116,13 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	builder.append(serverPath);
     	builder.append(contextPath);
     	RestClient<E> restClient = new RestClient<E>(builder.toString());
-    	
     	//Adding API Key
     	if (apiKey != null) {
         	restClient.addHeader(HEADER_NAME_AUTHORIZATION, apiKey);	
     	}
     	
     	restClient.addHeader(PHR_AUTH_TOKEN, userInfo.getToken());
-    	
+    	restClient.setResponseCode(0);
     	return restClient;
 	}
     
@@ -184,23 +184,35 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getVideoInfos()");
         }
-    	
+    	List<VideoInfo> videoInfos = new ArrayList<VideoInfo>();
     	RestClient<VideoInfo> videoInfosClient = getRestClient(REST_API_ADMIN + REST_API_VIDEOS);
     	GenericType<List<VideoInfo>> genericType = new GenericType<List<VideoInfo>>(){};
-    	
-    	return videoInfosClient.get(genericType);
+    	try {
+			if(videoInfosClient.getResponseCode() != 204) {
+				videoInfos = videoInfosClient.get(genericType);
+			}
+		} catch (PhrescoException e) {
+			throw e;
+		}
+    	return videoInfos; 
     }
     
     private List<Technology> getArcheTypesFromServer(String customerId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getArcheTypesFromServer(String customerId)");
         }
-    	
+    	List<Technology> technologies = new ArrayList<Technology>();
     	RestClient<Technology> archeTypeClient = getRestClient(REST_API_COMPONENT + REST_API_TECHNOLOGIES);
     	archeTypeClient.queryString(REST_QUERY_CUSTOMERID, customerId);
 		GenericType<List<Technology>> genericType = new GenericType<List<Technology>>(){};
-		
-		return archeTypeClient.get(genericType);
+		try {
+			if(archeTypeClient.getResponseCode() != 204) {
+				technologies = archeTypeClient.get(genericType);
+			}
+		} catch (PhrescoException e) {
+			throw e;
+		}
+		return technologies;
     }
     
     @Override
@@ -309,32 +321,38 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	return clientResponse;
     }
     
-    private List<ApplicationType> getApplicationTypesFromServer(String customerId) throws PhrescoException {
+    private List<ApplicationType> getApplicationTypesFromServer() throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getApplicationTypesFromServer(String customerId)");
         }
-    	
+    	List<ApplicationType> apptypes = new ArrayList<ApplicationType>();
     	RestClient<ApplicationType> appTypeClient = getRestClient(REST_API_COMPONENT + REST_API_APPTYPES);
-    	appTypeClient.queryString(REST_QUERY_CUSTOMERID, customerId);
 		GenericType<List<ApplicationType>> genericType = new GenericType<List<ApplicationType>>(){};
-		
-		return appTypeClient.get(genericType);
+		try {
+			if(appTypeClient.getResponseCode() != 204) {
+				apptypes = appTypeClient.get(genericType);
+			}
+		} catch (PhrescoException e) {
+			throw e;
+		}
+		return apptypes;
     }
     
     @Override
-    public List<ApplicationType> getApplicationTypes(String customerId) throws PhrescoException {
+    public List<ApplicationType> getApplicationTypes() throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getApplicationTypes(String customerId)");
         }
         
-        CacheKey key = new CacheKey(customerId, ApplicationType.class.getName());
+        CacheKey key = new CacheKey(DEFAULT_CUSTOMER_NAME, ApplicationType.class.getName());
     	List<ApplicationType> appTypes = (List<ApplicationType>) cacheManager.get(key);
     	try {
     		if (CollectionUtils.isEmpty(appTypes)) {
-    			appTypes = getApplicationTypesFromServer(customerId);
+    			appTypes = getApplicationTypesFromServer();
     			cacheManager.add(key, appTypes);
     		}
     	} catch(Exception e) {
+    		e.printStackTrace();
     		throw new PhrescoException(e);
     	}
     	
@@ -350,7 +368,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         CacheKey key = new CacheKey(customerId, ApplicationType.class.getName());
     	List<ApplicationType> appTypes = (List<ApplicationType>) cacheManager.get(key);
     	if (CollectionUtils.isEmpty(appTypes)) {
-			appTypes = getApplicationTypesFromServer(customerId);
+			appTypes = getApplicationTypesFromServer();
 			cacheManager.add(key, appTypes);
 		}
         if (CollectionUtils.isNotEmpty(appTypes)) {
@@ -373,7 +391,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	RestClient<ApplicationType> newApp = getRestClient(REST_API_COMPONENT + REST_API_APPTYPES);
 		ClientResponse clientResponse = newApp.create(appTypes);
 		CacheKey key = new CacheKey(customerId, ApplicationType.class.getName());
-		cacheManager.add(key, getApplicationTypesFromServer(customerId));
+		cacheManager.add(key, getApplicationTypesFromServer());
 		
 		return clientResponse;
     }
@@ -389,7 +407,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		GenericType<ApplicationType> genericType = new GenericType<ApplicationType>() {};
 		editApptype.updateById(appType, genericType);
 		CacheKey key = new CacheKey(customerId, ApplicationType.class.getName());
-		cacheManager.add(key, getApplicationTypesFromServer(customerId));
+		cacheManager.add(key, getApplicationTypesFromServer());
     }
     
     @Override
@@ -402,7 +420,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 	    deleteApptype.setPath(appTypeId);
 	    ClientResponse clientResponse = deleteApptype.deleteById();
 	    CacheKey key = new CacheKey(customerId, ApplicationType.class.getName());
-	    cacheManager.add(key, getApplicationTypesFromServer(customerId));
+	    cacheManager.add(key, getApplicationTypesFromServer());
 	    
 	    return clientResponse;
     }
@@ -412,11 +430,18 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             S_LOGGER.debug("Entered into ServiceManagerImpl.getServers(String customerId)");
         }
     	
+        List<DownloadInfo> downloadInfos = new ArrayList<DownloadInfo>();
 		RestClient<DownloadInfo> serverClient = getRestClient(REST_API_COMPONENT + REST_API_SERVERS);
         serverClient.queryString(REST_QUERY_CUSTOMERID, customerId);
 		GenericType<List<DownloadInfo>> genericType = new GenericType<List<DownloadInfo>>(){};
-		
-		return serverClient.get(genericType);
+		try {
+			if(serverClient.getResponseCode() != 204) {
+				downloadInfos = serverClient.get(genericType);
+			}
+		} catch (PhrescoException e) {
+			throw e;
+		}
+		return downloadInfos;
 	}
     
     @Override
@@ -463,11 +488,19 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             S_LOGGER.debug("Entered into ServiceManagerImpl.getDatabases(String customerId)");
         }
     	
+        List<DownloadInfo>  downloadInfos = new ArrayList<DownloadInfo>();
 		RestClient<DownloadInfo> dbClient = getRestClient(REST_API_COMPONENT + REST_API_DATABASES);
         dbClient.queryString(REST_QUERY_CUSTOMERID, customerId);
 		GenericType<List<DownloadInfo>> genericType = new GenericType<List<DownloadInfo>>(){};
 		
-		return dbClient.get(genericType);
+		try {
+			if(dbClient.getResponseCode() != 204) {
+				downloadInfos = dbClient.get(genericType);
+			}
+		} catch (PhrescoException e) {
+			throw e;
+		}
+		return downloadInfos;
 	}
     
     @Override
@@ -513,10 +546,17 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             S_LOGGER.debug("Entered into ServiceManagerImpl.getWebServices(String customerId)");
         }
     	
+        List<WebService> webServices = new ArrayList<WebService>();
 		RestClient<WebService> webServiceClient = getRestClient(REST_API_COMPONENT + REST_API_WEBSERVICES);
 		GenericType<List<WebService>> genericType = new GenericType<List<WebService>>(){};
-		
-		return webServiceClient.get(genericType);
+		try {
+			if(webServiceClient.getResponseCode() != 204) {
+				webServices = webServiceClient.get(genericType);
+			}
+		} catch (PhrescoException e) {
+			throw e;
+		}
+		return webServices;
 	}
     
     @Override
@@ -583,7 +623,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getModules(String customerId, String techId)");
         }
-        
+        List<ArtifactGroup> features = new ArrayList<ArtifactGroup>();
         RestClient<ArtifactGroup> moduleGroupClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
         Map<String, String> queryStringsMap = new HashMap<String, String>();
         queryStringsMap.put(REST_QUERY_CUSTOMERID, customerId);
@@ -591,9 +631,15 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         queryStringsMap.put(REST_QUERY_TECHID, techId);
         moduleGroupClient.queryStrings(queryStringsMap);
         GenericType<List<ArtifactGroup>> genericType = new GenericType<List<ArtifactGroup>>(){};
-        List<ArtifactGroup> modules = moduleGroupClient.get(genericType);
         
-        return modules;
+        try {
+			if(moduleGroupClient.getResponseCode() != 204) {
+				features = moduleGroupClient.get(genericType);
+			}
+		} catch (PhrescoException e) {
+			throw e;
+		}
+        return features;
     }
     
     @Override
@@ -612,7 +658,13 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             queryStringsMap.put(REST_QUERY_TECHID, techId);
             moduleGroupClient.queryStrings(queryStringsMap);
             GenericType<List<ArtifactGroup>> genericType = new GenericType<List<ArtifactGroup>>(){};
-            components = moduleGroupClient.get(genericType);
+            try {
+    			if(moduleGroupClient.getResponseCode() != 204) {
+    				components = moduleGroupClient.get(genericType);
+    			}
+    		} catch (PhrescoException e) {
+    			throw e;
+    		}
             cacheManager.add(key, components);
         }
         
@@ -786,6 +838,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             S_LOGGER.debug("Entered into ServiceManagerImpl.getModulesFromServer()");
         }
         
+        List<ArtifactGroup> modules = new ArrayList<ArtifactGroup>();
         RestClient<ArtifactGroup> moduleGroupClient = getRestClient(REST_API_COMPONENT + REST_API_MODULES);
     	Map<String, String> headers = new HashMap<String, String>();
     	headers.put(REST_QUERY_TECHID, techId);
@@ -793,8 +846,14 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	headers.put(REST_QUERY_TYPE, REST_QUERY_TYPE_MODULE);
     	moduleGroupClient.queryStrings(headers);
     	GenericType<List<ArtifactGroup>> genericType = new GenericType<List<ArtifactGroup>>(){};
-
-    	return moduleGroupClient.get(genericType);
+    	try {
+    		if(moduleGroupClient.getResponseCode() != 204) {
+    			modules = moduleGroupClient.get(genericType);
+    		}
+    	} catch (PhrescoException e) {
+    		throw e;
+		}
+    	return modules;
         
     }
     
@@ -803,10 +862,17 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             S_LOGGER.debug("Entered into ServiceManagerImpl.getCustomersFromServer()");
         }
         
+        List<Customer> customers = new ArrayList<Customer>();
         RestClient<Customer> customersClient = getRestClient(REST_API_ADMIN + REST_API_CUSTOMERS);
         GenericType<List<Customer>> genericType = new GenericType<List<Customer>>(){};
-        
-        return customersClient.get(genericType);
+        try {
+        	if(customersClient.getResponseCode() != 204) {
+        		customers = customersClient.get(genericType);
+        	}
+        } catch (PhrescoException e) {
+        	throw e;
+		}
+        return customers;
     }
     
     @Override
@@ -901,11 +967,18 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             S_LOGGER.debug("Entered into ServiceManagerImpl.getConfigTemplatesFromServer(String customerId)" + customerId);
         }
     	
+    	List<SettingsTemplate> settings = new ArrayList<SettingsTemplate>();
     	RestClient<SettingsTemplate> settingClient = getRestClient(REST_API_COMPONENT + REST_API_SETTINGS);
     	settingClient.queryString(REST_QUERY_CUSTOMERID, customerId);
         GenericType<List<SettingsTemplate>> genericType = new GenericType<List<SettingsTemplate>>(){};
-        
-        return settingClient.get(genericType);
+        try {
+        	if(settingClient.getResponseCode() != 204) {
+        		settings = settingClient.get(genericType);
+        	}
+        } catch (PhrescoException e) {
+        	throw e;
+		}
+        return settings;
     	
     }
     
@@ -1024,28 +1097,41 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getPilotProjectFromServer(String customerId)");
         }
-    	
+    	List<ApplicationInfo> applicationInfos = new ArrayList<ApplicationInfo>();
     	RestClient<ApplicationInfo> pilotClient = getRestClient(REST_API_COMPONENT + REST_API_PILOTS);
     	Map<String, String> headers = new HashMap<String, String>();
     	headers.put(REST_QUERY_CUSTOMERID, customerId);
     	pilotClient.queryStrings(headers);
 		GenericType<List<ApplicationInfo>> genericType = new GenericType<List<ApplicationInfo>>(){};
-		
-		return pilotClient.get(genericType);
+		try {
+			if(pilotClient.getResponseCode() != 204) {
+				applicationInfos = pilotClient.get(genericType);
+			}
+		} catch (PhrescoException e) {
+			throw e;
+		}
+		return applicationInfos;
     }
     
     private List<ApplicationInfo> getPilotProjectsFromServer(String customerId, String techId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getPilotProjectFromServer(String customerId)");
         }
+        List<ApplicationInfo> applicationInfos = new ArrayList<ApplicationInfo>();
         RestClient<ApplicationInfo> pilotClient = getRestClient(REST_API_COMPONENT + REST_API_PILOTS);
         Map<String, String> headers = new HashMap<String, String>();
         headers.put(REST_QUERY_CUSTOMERID, customerId);
         headers.put(REST_QUERY_TECHID, techId);
         pilotClient.queryStrings(headers);
         GenericType<List<ApplicationInfo>> genericType = new GenericType<List<ApplicationInfo>>(){};
-        
-        return pilotClient.get(genericType);
+        try {
+			if(pilotClient.getResponseCode() != 204) {
+				applicationInfos = pilotClient.get(genericType);
+			}
+		} catch (PhrescoException e) {
+			throw e;
+		}
+        return applicationInfos;
     }
     
     @Override
@@ -1158,10 +1244,17 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             S_LOGGER.debug("Entered into ServiceManagerImpl.getRolesServer()");
         }
     	
+        List<Role> roles = new ArrayList<Role>();
         RestClient<Role> roleClient = getRestClient(REST_API_ADMIN + REST_API_ROLES);
         GenericType<List<Role>> genericType = new GenericType<List<Role>>(){};
-        
-        return roleClient.get(genericType);	
+        try {
+        	if(roleClient.getResponseCode() != 204) {
+        		roles = roleClient.get(genericType); 
+        	}
+        } catch (PhrescoException e) {
+        	throw e;
+		}
+        return roles;	
     }
     
     @Override
@@ -1256,10 +1349,17 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             S_LOGGER.debug("Entered into ServiceManagerImpl.getVideosFromServer()");
         }
         
+        List<VideoInfo> videoInfos = new ArrayList<VideoInfo>();
         RestClient<VideoInfo> videoClient = getRestClient(REST_API_ADMIN + REST_API_VIDEOS);
         GenericType<List<VideoInfo>> genericType = new GenericType<List<VideoInfo>>(){};
-        
-        return videoClient.get(genericType);
+        try {
+        	if(videoClient.getResponseCode() != 204) {
+        		videoInfos = videoClient.get(genericType); 
+        	}
+        } catch (PhrescoException e) {
+        	throw e;
+		}
+        return videoInfos;
     }
     
     @Override
@@ -1412,11 +1512,19 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             S_LOGGER.debug("Entered into ServiceManagerImpl.getDownloadsFromServer(String customerId)");
         }
     	
+        List<DownloadInfo> downloadInfos = new ArrayList<DownloadInfo>();
     	RestClient<DownloadInfo> downloadClient = getRestClient(REST_API_COMPONENT + REST_API_DOWNLOADS);
     	downloadClient.queryString(REST_QUERY_CUSTOMERID, customerId);
 		GenericType<List<DownloadInfo>> genericType = new GenericType<List<DownloadInfo>>(){};
-		
-		return downloadClient.get(genericType);
+		try {
+			if(downloadClient.getResponseCode() != 204) {
+				downloadInfos = downloadClient.get(genericType);;
+			}
+		} catch (PhrescoException e) {
+			e.printErrorStack();
+			throw e;
+		}
+		return downloadInfos;
     }
     
     private List<DownloadInfo> getDownloadsFromServer(String customerId, String techId, String category, String platform) throws PhrescoException {
@@ -1424,6 +1532,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             S_LOGGER.debug("Entered into ServiceManagerImpl.getDownloadsFromServer(String customerId, String techId)");
         }
         
+        List<DownloadInfo> downloadInfos = new ArrayList<DownloadInfo>();
         RestClient<DownloadInfo> downloadClient = getRestClient(REST_API_COMPONENT + REST_API_DOWNLOADS);
         Map<String, String> queryStringsMap = new HashMap<String, String>();
         queryStringsMap.put(REST_QUERY_CUSTOMERID, customerId);
@@ -1432,27 +1541,51 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         queryStringsMap.put(REST_QUERY_PLATFORM, platform);
         downloadClient.queryStrings(queryStringsMap);
         GenericType<List<DownloadInfo>> genericType = new GenericType<List<DownloadInfo>>(){};
-        
-        return downloadClient.get(genericType);
+        try {
+        	if(downloadClient.getResponseCode() != 204) {
+        		downloadInfos = downloadClient.get(genericType);
+        	}
+        } catch (PhrescoException e) {
+        	throw e;
+		}
+        return downloadInfos;
     }
     
     private List<Reports> getTechReportsFromServer(String techId) throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getReportsFromServer(String techId)");
         }
+        
+        List<Reports> reports = new ArrayList<Reports>();
         RestClient<Reports> downloadClient = getRestClient(REST_API_COMPONENT + REST_API_REPORTS);
         downloadClient.queryString(REST_QUERY_TECHID, techId);
         GenericType<List<Reports>> genericType = new GenericType<List<Reports>>(){};
-        return downloadClient.get(genericType);
+        try {
+        	if(downloadClient.getResponseCode() != 204) {
+        		reports = downloadClient.get(genericType);
+        	}
+        } catch (PhrescoException e) {
+        	throw e;
+		}
+        return reports;
     }
     
     private List<Reports> getReportsFromServer() throws PhrescoException {
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getReportsFromServer(String techId)");
         }
+        
+        List<Reports> reports = new ArrayList<Reports>();
         RestClient<Reports> downloadClient = getRestClient(REST_API_COMPONENT + REST_API_REPORTS);
         GenericType<List<Reports>> genericType = new GenericType<List<Reports>>(){};
-        return downloadClient.get(genericType);
+        try {
+        	if(downloadClient.getResponseCode() != 204) {
+        		reports = downloadClient.get(genericType);
+        	}
+        } catch (PhrescoException e) {
+        	throw e;
+		}
+        return reports;
     }
 
     @Override
@@ -1682,10 +1815,18 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
         if (isDebugEnabled) {
             S_LOGGER.debug("Entered into ServiceManagerImpl.getGlobalUrlFromServer(String customerId)");
         }
+        
+        List<Property> properties = new ArrayList<Property>();
     	RestClient<Property> globalUrlClient = getRestClient(REST_API_COMPONENT + REST_API_PROPERTY);
 		GenericType<List<Property>> genericType = new GenericType<List<Property>>(){};
-		
-		return globalUrlClient.get(genericType);
+		try {
+			if(globalUrlClient.getResponseCode() != 204) {
+				properties = globalUrlClient.get(genericType);
+			}
+		} catch (PhrescoException e) {
+			throw e;
+		}
+		return properties;
     }
 
     @Override
@@ -1778,10 +1919,17 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             S_LOGGER.debug("Entered into ServiceManagerImpl.getPermissionsFromServer()");
         }
         
+        List<Permission> permissions = new ArrayList<Permission>();
         RestClient<Permission> permissionClient = getRestClient(REST_API_ADMIN + REST_API_PERMISSIONS);
         GenericType<List<Permission>> genericType = new GenericType<List<Permission>>(){};
-        
-        return permissionClient.get(genericType);
+        try {
+        	if(permissionClient.getResponseCode() != 204) {
+        		permissions = permissionClient.get(genericType);
+        	}
+        } catch (PhrescoException e) {
+        	throw e;
+		}
+        return permissions;
     }
     
     @Override
@@ -1928,10 +2076,16 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     		S_LOGGER.debug("Entered into ServiceManagerImpl.getForumPathFromServer()");
     	}
 
+    	List<Property> properties = new ArrayList<Property>();
     	RestClient<Property> adminClient = getRestClient(REST_API_COMPONENT + REST_API_PROPERTY);
     	GenericType<List<Property>> genericType = new GenericType<List<Property>>() {};
-    	List<Property> properties = adminClient.get(genericType);
-
+    	try {
+    		if(adminClient.getResponseCode() != 204) {
+    			properties = adminClient.get(genericType);
+    		}
+    	} catch (PhrescoException e) {
+    		throw e;
+		}
     	return properties;
     }
 
@@ -1954,10 +2108,17 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             S_LOGGER.debug("Entered into ServiceManagerImpl.getUsersFromServer()");
         }
         
+        List<User> users = new ArrayList<User>();
     	RestClient<User> userClient = getRestClient(REST_API_ADMIN + REST_API_USERS);
 		GenericType<List<User>> genericType = new GenericType<List<User>>(){};
-		
-		return userClient.get(genericType);
+		try {
+			if(userClient.getResponseCode() != 204) {
+				users = userClient.get(genericType);
+			}
+		} catch (PhrescoException e) {
+			throw e;
+		}
+		return users;
     }
     
     public List<User> getUsersFromDB() throws PhrescoException {
@@ -1981,10 +2142,16 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
             S_LOGGER.debug("Entered into ServiceManagerImpl.getPlatforms()");
         }
         
+        List<PlatformType> platforms = new ArrayList<PlatformType>();
         RestClient<PlatformType> client = getRestClient(REST_API_COMPONENT + REST_API_PLATFORMS);
         GenericType<List<PlatformType>> genericType = new GenericType<List<PlatformType>>(){};
-        List<PlatformType> platforms = client.get(genericType);
-        
+        try {
+        	if(client.getResponseCode() != 204) {
+        		platforms = client.get(genericType);	
+        	}
+        } catch (PhrescoException e) {
+        	throw e;
+		}
         return platforms;
     }
 	
@@ -1993,10 +2160,16 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		if (isDebugEnabled) {
 			S_LOGGER.debug("Entered into ServiceManagerImpl.getOptions()");
 		}
+		List<TechnologyOptions> options = new ArrayList<TechnologyOptions>();
 		RestClient<TechnologyOptions> client = getRestClient(REST_API_COMPONENT + REST_API_OPTIONS);
 		GenericType<List<TechnologyOptions>> genericType = new GenericType<List<TechnologyOptions>>(){};
-		List<TechnologyOptions> options = client.get(genericType);
-		
+		try {
+			if(client.getResponseCode() != 204) {
+				options = client.get(genericType);
+			}
+		} catch (PhrescoException e) {
+			throw e;
+		}
 		return options;
 	}
 
@@ -2005,9 +2178,18 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 		if (isDebugEnabled) {
 			S_LOGGER.debug("Entered into ServiceManagerImpl.getLicenses()");
 		}
+		
+		List<License> licenses = new ArrayList<License>();
 		RestClient<License> restClient = getRestClient(REST_API_COMPONENT + REST_API_LICENSE);
 		GenericType<List<License>> genericType = new GenericType<List<License>>(){};
-		return restClient.get(genericType);
+		try {
+			if(restClient.getResponseCode() != 204) {
+				licenses = restClient.get(genericType);
+			}
+		} catch (PhrescoException e) {
+			
+		}
+		return licenses;
 	}
 
 	@Override
@@ -2041,7 +2223,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	RestClient<TechnologyGroup> newTechGrp = getRestClient(REST_API_COMPONENT + REST_API_TECHGROUPS);
 		ClientResponse clientResponse = newTechGrp.create(technologyGroup);
 		CacheKey key = new CacheKey(customerId, ApplicationType.class.getName());
-		cacheManager.add(key, getApplicationTypesFromServer(customerId));
+		cacheManager.add(key, getApplicationTypesFromServer());
 		
 		return clientResponse;
     }
@@ -2056,7 +2238,7 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
     	deleteTechGrp.setPath(TechGrpId);
     	ClientResponse clientResponse = deleteTechGrp.deleteById();
     	CacheKey key = new CacheKey(customerId, ApplicationType.class.getName());
-		cacheManager.add(key, getApplicationTypesFromServer(customerId));
+		cacheManager.add(key, getApplicationTypesFromServer());
 
     	return clientResponse;
     }
@@ -2064,10 +2246,18 @@ public class ServiceManagerImpl implements ServiceManager, ServiceClientConstant
 	@Override
 	public List<Technology> getTechnologyByCustomer(String customerId)
 			throws PhrescoException {
+		List<Technology> technologies = new ArrayList<Technology>();
 		RestClient<Technology> techClient = getRestClient(REST_API_COMPONENT + REST_API_TECHNOLOGIES);
 		techClient.queryString(REST_QUERY_CUSTOMERID, customerId);
 		GenericType<List<Technology>> genericType = new GenericType<List<Technology>>(){};
-        return techClient.get(genericType);
+		try {
+			if(techClient.getResponseCode() != 204) {
+				technologies = techClient.get(genericType);
+			}
+		} catch (PhrescoException e) {
+			throw e;
+		}
+        return technologies;
 	}
 
 	@Override
